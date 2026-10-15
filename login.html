@@ -222,15 +222,23 @@
     ];
 
     function getLoginDestination() {
-      const selectedService =
-        sessionStorage.getItem("gracioustech_after_login");
+  const requestedPage =
+    new URLSearchParams(window.location.search).get("next");
 
-      if (allowedDestinations.includes(selectedService)) {
-        sessionStorage.removeItem("gracioustech_after_login");
-        return selectedService;
-      }
+  // Return to the admin page when it requested login.
+  if (requestedPage === "admin.html") {
+    return "admin.html";
+  }
 
-      return "dashboard.html";
+  const selectedService =
+    sessionStorage.getItem("gracioustech_after_login");
+
+  if (allowedDestinations.includes(selectedService)) {
+    sessionStorage.removeItem("gracioustech_after_login");
+    return selectedService;
+  }
+
+  return "dashboard.html";
     }
 
     loginForm.addEventListener("submit", async function(event) {
