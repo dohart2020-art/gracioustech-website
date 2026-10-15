@@ -506,11 +506,11 @@ async function callAdmin(action, extra = {}) {
     error
   } = await supabaseClient.auth.getSession();
 
-  if (error || !session) {
-    window.location.href = "login.html";
-    return null;
-  }
-
+  
+if (error || !session) {
+  window.location.href = "login.html?next=admin.html";
+  return null;
+}
   const response = await fetch(FUNCTION_URL, {
     method: "POST",
     headers: {
