@@ -1,0 +1,239 @@
+<!DOCTYPE html><html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">  <title>My Profile - Gracioustec</title>  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background: #f4f7f6;
+      color: #222;
+    }
+
+    header {
+      background: #075e3b;
+      color: white;
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    header h2 {
+      font-size: 20px;
+    }
+
+    .back-btn {
+      background: white;
+      color: #075e3b;
+      border: none;
+      padding: 9px 14px;
+      border-radius: 7px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: 30px auto;
+      padding: 15px;
+    }
+
+    .profile-card {
+      background: white;
+      border-radius: 15px;
+      padding: 25px;
+      box-shadow: 0 3px 15px rgba(0,0,0,0.08);
+    }
+
+    .profile-icon {
+      width: 85px;
+      height: 85px;
+      background: #075e3b;
+      color: white;
+      border-radius: 50%;
+      margin: 0 auto 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 38px;
+      font-weight: bold;
+    }
+
+    .profile-card h3 {
+      text-align: center;
+      margin-bottom: 25px;
+      color: #075e3b;
+    }
+
+    .info-box {
+      margin-bottom: 16px;
+    }
+
+    .info-box label {
+      display: block;
+      font-size: 13px;
+      color: #777;
+      margin-bottom: 6px;
+    }
+
+    .info {
+      background: #f5f7f6;
+      border: 1px solid #e1e5e3;
+      padding: 13px;
+      border-radius: 8px;
+      word-break: break-word;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 30px;
+      color: #666;
+    }
+
+    .logout {
+      width: 100%;
+      margin-top: 10px;
+      background: #c62828;
+      color: white;
+      border: none;
+      padding: 14px;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .logout:hover {
+      background: #a91f1f;
+    }
+  </style></head><body><header>
+  <h2>My Profile</h2><button
+class="back-btn"
+onclick="location.href='dashboard.html'"
+
+«»
+
+Dashboard
+
+  </button>
+</header><div class="container">  <div class="profile-card"><div id="loading" class="loading">
+  Loading profile...
+</div>
+
+<div id="profileContent" style="display:none;">
+
+  <div class="profile-icon" id="profileIcon">
+    U
+  </div>
+
+  <h3>Gracioustec Account Information</h3>
+
+  <div class="info-box">
+    <label>Name</label>
+    <div class="info" id="userName">-</div>
+  </div>
+
+  <div class="info-box">
+    <label>Email Address</label>
+    <div class="info" id="userEmail">-</div>
+  </div>
+
+  <div class="info-box">
+    <label>User ID</label>
+    <div class="info" id="userId">-</div>
+  </div>
+
+  <div class="info-box">
+    <label>Account Created</label>
+    <div class="info" id="createdAt">-</div>
+  </div>
+
+  <button class="logout" onclick="logout()">
+    Logout
+  </button>
+
+</div>
+
+  </div></div><script>
+
+const SUPABASE_URL =
+  "https://iknhifndgpwibkfidggq.supabase.co";
+
+const SUPABASE_KEY =
+  "sb_publishable_xELauxOMm7eMkNrPz55Mrw_LVkRoASn";
+
+const supabaseClient =
+  supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+
+// Load logged-in user
+async function loadProfile() {
+
+  const {
+    data: { user },
+    error
+  } = await supabaseClient.auth.getUser();
+
+  if (error || !user) {
+    window.location.href = "login.html";
+    return;
+  }
+
+  const metadata = user.user_metadata || {};
+
+  const name =
+    metadata.full_name ||
+    metadata.name ||
+    metadata.display_name ||
+    "Gracioustec User";
+
+  document.getElementById("userName").textContent =
+    name;
+
+  document.getElementById("userEmail").textContent =
+    user.email || "Not available";
+
+  document.getElementById("userId").textContent =
+    user.id;
+
+  if (user.created_at) {
+
+    const date =
+      new Date(user.created_at);
+
+    document.getElementById("createdAt").textContent =
+      date.toLocaleString();
+
+  }
+
+  // First letter of name
+  document.getElementById("profileIcon").textContent =
+    name.charAt(0).toUpperCase();
+
+  document.getElementById("loading").style.display =
+    "none";
+
+  document.getElementById("profileContent").style.display =
+    "block";
+}
+
+
+// Logout
+async function logout() {
+
+  await supabaseClient.auth.signOut();
+
+  window.location.href =
+    "login.html";
+}
+
+
+loadProfile();
+
+</script></body>
+</html>

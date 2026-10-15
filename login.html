@@ -1,0 +1,299 @@
+<!DOCTYPE html><html lang="en-NG">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">  <title>GRACIOUSTEC | Login</title>  <meta name="description" content="Log in to your GRACIOUSTEC account to access NIN and BVN reprinting and verification services in Nigeria.">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://gracioustec.com.ng/login.html">  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 20px;
+      font-family: Arial, sans-serif;
+      background: #f0f7f3;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 420px;
+      background: white;
+      padding: 32px;
+      border-radius: 12px;
+      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.1);
+    }
+
+    .logo {
+      text-align: center;
+      color: #087443;
+      font-size: 27px;
+      font-weight: bold;
+      letter-spacing: 1px;
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: #666;
+      font-size: 13px;
+      margin-bottom: 25px;
+      line-height: 1.5;
+    }
+
+    h2 {
+      text-align: center;
+      margin: 0 0 25px;
+      color: #222;
+    }
+
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: bold;
+      font-size: 14px;
+    }
+
+    input {
+      display: block;
+      width: 100%;
+      padding: 13px;
+      margin-top: 7px;
+      border: 1px solid #ccc;
+      border-radius: 7px;
+      font-size: 16px;
+    }
+
+    input:focus {
+      outline: 2px solid #087443;
+      border-color: #087443;
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      margin-top: 22px;
+      border: 0;
+      border-radius: 7px;
+      background: #087443;
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #065c35;
+    }
+
+    button:disabled {
+      background: #8cae9a;
+      cursor: not-allowed;
+    }
+
+    #message {
+      text-align: center;
+      margin-top: 15px;
+      font-size: 14px;
+      line-height: 1.5;
+      overflow-wrap: anywhere;
+    }
+
+    .register {
+      text-align: center;
+      margin-top: 22px;
+      line-height: 1.8;
+    }
+
+    .register a {
+      color: #087443;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .register a:hover {
+      text-decoration: underline;
+    }
+
+    .home-link {
+      display: block;
+      text-align: center;
+      margin-top: 15px;
+      color: #555;
+      text-decoration: none;
+      font-size: 14px;
+    }
+
+    .home-link:hover {
+      text-decoration: underline;
+    }
+
+    footer {
+      text-align: center;
+      color: #777;
+      font-size: 12px;
+      margin-top: 25px;
+    }
+  </style></head><body>  <main class="container"><div class="logo">GRACIOUSTEC</div>
+
+<div class="subtitle">
+  NIN &amp; BVN Reprinting and Verification Services
+</div>
+
+<h2>Login to Your Account</h2>
+
+<form id="loginForm">
+
+  <label for="email">Email Address</label>
+
+  <input
+    type="email"
+    id="email"
+    placeholder="Enter your email address"
+    autocomplete="email"
+    required
+  >
+
+  <label for="password">Password</label>
+
+  <input
+    type="password"
+    id="password"
+    placeholder="Enter your password"
+    autocomplete="current-password"
+    required
+  >
+
+  <button type="submit" id="loginButton">
+    Login
+  </button>
+
+</form>
+
+<div id="message" role="status" aria-live="polite"></div>
+
+<div class="register">
+  Don't have an account?
+  <a href="register.html">Create an Account</a>
+</div>
+
+<a href="index.html" class="home-link">
+  &larr; Back to Homepage
+</a>
+
+<footer>
+  &copy; <span id="year"></span> GRACIOUSTEC. All Rights Reserved.
+</footer>
+
+  </main>  <script>
+    const SUPABASE_URL =
+      "https://iknhifndgpwibkfidggq.supabase.co";
+
+    const SUPABASE_KEY =
+      "sb_publishable_xELauxOMm7eMkNrPz55Mrw_LVkRoASn";
+
+    const supabaseClient = window.supabase.createClient(
+      SUPABASE_URL,
+      SUPABASE_KEY
+    );
+
+    document.getElementById("year").textContent =
+      new Date().getFullYear();
+
+    const loginForm =
+      document.getElementById("loginForm");
+
+    const loginButton =
+      document.getElementById("loginButton");
+
+    const message =
+      document.getElementById("message");
+
+    const allowedDestinations = [
+      "nin.html",
+      "bvn.html",
+      "nin-verification.html",
+      "bvn-verification.html",
+      "dashboard.html"
+    ];
+
+    function getLoginDestination() {
+      const selectedService =
+        sessionStorage.getItem("gracioustech_after_login");
+
+      if (allowedDestinations.includes(selectedService)) {
+        sessionStorage.removeItem("gracioustech_after_login");
+        return selectedService;
+      }
+
+      return "dashboard.html";
+    }
+
+    loginForm.addEventListener("submit", async function(event) {
+      event.preventDefault();
+
+      const email =
+        document.getElementById("email").value.trim();
+
+      const password =
+        document.getElementById("password").value;
+
+      if (!email || !password) {
+        message.style.color = "#c62828";
+        message.textContent =
+          "Please enter your email address and password.";
+        return;
+      }
+
+      loginButton.disabled = true;
+      loginButton.textContent = "Logging in...";
+
+      message.style.color = "#444";
+      message.textContent = "";
+
+      try {
+        const { data, error } =
+          await supabaseClient.auth.signInWithPassword({
+            email: email,
+            password: password
+          });
+
+        if (error) {
+          message.style.color = "#c62828";
+          message.textContent = error.message;
+          return;
+        }
+
+        if (!data || !data.session) {
+          message.style.color = "#c62828";
+          message.textContent =
+            "Login could not be confirmed. Please try again.";
+          return;
+        }
+
+        message.style.color = "#087443";
+        message.textContent =
+          "Login successful. Redirecting...";
+
+        const destination = getLoginDestination();
+
+        window.location.replace(destination);
+
+      } catch (error) {
+        console.error("Login error:", error);
+
+        message.style.color = "#c62828";
+        message.textContent =
+          "Something went wrong. Please check your internet connection and try again.";
+
+      } finally {
+        loginButton.disabled = false;
+        loginButton.textContent = "Login";
+      }
+    });
+  </script></body>
+</html>

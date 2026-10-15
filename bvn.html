@@ -1,0 +1,1749 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>BVN Reprinting - Flowtech</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f4f7f5;
+      color: #222;
+    }
+
+    header {
+      background: #087f3e;
+      color: white;
+      padding: 18px;
+      text-align: center;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 25px;
+      letter-spacing: 1px;
+    }
+
+    header p {
+      margin: 6px 0 0;
+      font-size: 14px;
+    }
+
+    .container {
+      width: 94%;
+      max-width: 600px;
+      margin: 25px auto;
+    }
+
+    .card {
+      background: white;
+      padding: 22px;
+      border-radius: 14px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+      margin-bottom: 20px;
+    }
+
+    h2 {
+      margin-top: 0;
+      color: #087f3e;
+      text-align: center;
+    }
+
+    label {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 7px;
+    }
+
+    input {
+      width: 100%;
+      padding: 14px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 16px;
+      margin-bottom: 15px;
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 8px;
+    }
+
+    button:disabled {
+      background: #999 !important;
+      cursor: not-allowed;
+    }
+
+    .verify-btn {
+      background: #087f3e;
+      color: white;
+    }
+
+    .pay-btn {
+      background: #f4a300;
+      color: white;
+    }
+
+    .open-btn {
+      background: #087f3e;
+      color: white;
+    }
+
+    .download-btn {
+      background: #155eef;
+      color: white;
+    }
+
+    .print-btn {
+      background: #333;
+      color: white;
+    }
+
+    .back-btn {
+      background: #666;
+      color: white;
+    }
+
+    .result {
+      display: none;
+      margin-top: 20px;
+    }
+
+    .detail {
+      display: flex;
+      justify-content: space-between;
+      gap: 15px;
+      padding: 11px 0;
+      border-bottom: 1px solid #eee;
+    }
+
+    .detail strong {
+      color: #555;
+    }
+
+    .detail span {
+      text-align: right;
+      font-weight: bold;
+      word-break: break-word;
+    }
+
+    .slip-type {
+      color: #087f3e;
+    }
+
+    .message {
+      padding: 13px;
+      border-radius: 8px;
+      margin-top: 15px;
+      display: none;
+      line-height: 1.5;
+    }
+
+    .success {
+      background: #e7f7ed;
+      color: #087f3e;
+    }
+
+    .error {
+      background: #fdecec;
+      color: #b42318;
+    }
+
+    .loading {
+      text-align: center;
+      display: none;
+      margin-top: 15px;
+      font-weight: bold;
+    }
+
+    footer {
+      text-align: center;
+      padding: 25px;
+      color: #666;
+      font-size: 13px;
+    }
+
+    /* AUTH CHECK SCREEN */
+
+    #authChecking {
+      position: fixed;
+      inset: 0;
+      background: #f4f7f5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+    }
+
+    .auth-box {
+      background: white;
+      width: 90%;
+      max-width: 400px;
+      padding: 30px;
+      border-radius: 14px;
+      text-align: center;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    }
+
+    .auth-box h2 {
+      margin-bottom: 10px;
+    }
+
+    .auth-box p {
+      color: #666;
+      line-height: 1.5;
+    }
+  </style>
+</head>
+
+<body>
+
+<!-- AUTHENTICATION CHECK -->
+
+<div id="authChecking">
+
+  <div class="auth-box">
+
+    <h2>Checking Login...</h2>
+
+    <p>
+      Please wait while we verify your account.
+    </p>
+
+  </div>
+
+</div>
+
+
+<header>
+  <h1>FLOWTECH</h1>
+  <p>NIN & BVN Services</p>
+</header>
+
+
+<div class="container">
+
+  <div class="card">
+
+    <h2>BVN Reprinting</h2>
+
+    <label for="bvn">
+      Enter BVN
+    </label>
+
+    <input
+      type="text"
+      id="bvn"
+      maxlength="11"
+      inputmode="numeric"
+      placeholder="Enter your 11-digit BVN"
+      autocomplete="off"
+    >
+
+    <button
+      class="verify-btn"
+      id="verifyBtn"
+      onclick="verifyBVN()"
+    >
+      Verify BVN
+    </button>
+
+    <div
+      class="loading"
+      id="loading"
+    >
+      Verifying BVN and generating slip...
+    </div>
+
+    <div
+      class="message error"
+      id="errorMessage"
+    ></div>
+
+    <div
+      class="message success"
+      id="successMessage"
+    ></div>
+
+  </div>
+
+
+  <div
+    class="card result"
+    id="resultCard"
+  >
+
+    <h2>BVN Details</h2>
+
+    <div class="detail">
+      <strong>First Name:</strong>
+      <span id="firstName">-</span>
+    </div>
+
+    <div class="detail">
+      <strong>Last Name:</strong>
+      <span id="lastName">-</span>
+    </div>
+
+    <div class="detail">
+      <strong>Middle Name:</strong>
+      <span id="middleName">-</span>
+    </div>
+
+    <div class="detail">
+      <strong>BVN:</strong>
+      <span id="bvnResult">-</span>
+    </div>
+
+    <div class="detail">
+      <strong>Gender:</strong>
+      <span id="gender">-</span>
+    </div>
+
+    <div class="detail">
+      <strong>Date of Birth:</strong>
+      <span id="dob">Not provided</span>
+    </div>
+
+    <div class="detail">
+      <strong>Slip:</strong>
+      <span class="slip-type">
+        Standard Slip
+      </span>
+    </div>
+
+    <div class="detail">
+      <strong>Price:</strong>
+      <span id="priceDisplay">₦250</span>
+    </div>
+
+    <button
+      class="pay-btn"
+      id="payButton"
+      onclick="payFromWallet()"
+    >
+      Pay ₦250 & Continue
+    </button>
+
+    <button
+      class="open-btn"
+      id="openSlipButton"
+      onclick="openBVNSlip()"
+      style="display:none;"
+    >
+      Open BVN Slip
+    </button>
+
+    <button
+      class="download-btn"
+      onclick="downloadBVNSlip()"
+    >
+      Download BVN Slip
+    </button>
+
+    <button
+      class="print-btn"
+      onclick="printBVNSlip()"
+    >
+      Print BVN Slip
+    </button>
+
+  </div>
+
+
+  <div class="card">
+
+    <button
+      class="back-btn"
+      onclick="window.location.href='index.html'"
+    >
+      Back to Home
+    </button>
+
+  </div>
+
+</div>
+
+
+<footer>
+  © 2026 FLOWTECH. All rights reserved.
+</footer>
+
+
+<script>
+
+  /* =====================================================
+     SUPABASE CONFIGURATION
+     ===================================================== */
+
+  const SUPABASE_URL =
+    "https://iknhifndgpwibkfidggq.supabase.co";
+
+  const SUPABASE_KEY =
+    "sb_publishable_xELauxOMm7eMkNrPz55Mrw_LVkRoASn";
+
+  const BVN_FUNCTION_URL =
+    "https://iknhifndgpwibkfidggq.supabase.co/functions/v1/bvn-verification";
+
+
+  /*
+    BVN PRICE
+
+    This remains ₦250 for now.
+    The value can later be connected
+    to service_settings for admin control.
+  */
+
+  const BVN_PRICE = 250;
+
+
+  const supabaseClient =
+    window.supabase.createClient(
+      SUPABASE_URL,
+      SUPABASE_KEY
+    );
+
+
+  /* =====================================================
+     AUTHENTICATION PROTECTION
+     ===================================================== */
+
+  async function checkAuthentication() {
+
+    try {
+
+      const sessionResult =
+        await supabaseClient.auth.getSession();
+
+      const session =
+        sessionResult?.data?.session || null;
+
+
+      if (!session) {
+
+        window.location.replace(
+          "register.html"
+        );
+
+        return false;
+      }
+
+
+      const authScreen =
+        document.getElementById(
+          "authChecking"
+        );
+
+
+      if (authScreen) {
+
+        authScreen.style.display =
+          "none";
+
+      }
+
+
+      return true;
+
+
+    } catch (error) {
+
+      console.error(
+        "Authentication check failed:",
+        error
+      );
+
+
+      window.location.replace(
+        "register.html"
+      );
+
+
+      return false;
+
+    }
+
+  }
+
+
+  let userAuthenticated = false;
+
+
+  window.addEventListener(
+    "DOMContentLoaded",
+    async () => {
+
+      userAuthenticated =
+        await checkAuthentication();
+
+
+      if (userAuthenticated) {
+
+        updatePriceDisplay();
+
+        restoreBVNData();
+
+      }
+
+    }
+  );
+
+
+  /* =====================================================
+     BVN VARIABLES
+     ===================================================== */
+
+  let verifiedBVNData = null;
+
+  let cachedPDFBase64 = null;
+
+  let cachedFileName =
+    "BVN_Slip.pdf";
+
+
+  /* =====================================================
+     PRICE DISPLAY
+     ===================================================== */
+
+  function updatePriceDisplay() {
+
+    const priceDisplay =
+      document.getElementById(
+        "priceDisplay"
+      );
+
+
+    const payButton =
+      document.getElementById(
+        "payButton"
+      );
+
+
+    if (priceDisplay) {
+
+      priceDisplay.textContent =
+        `₦${BVN_PRICE.toLocaleString()}`;
+
+    }
+
+
+    if (payButton) {
+
+      payButton.textContent =
+        `Pay ₦${BVN_PRICE.toLocaleString()} & Continue`;
+
+    }
+
+  }
+
+
+  /* =====================================================
+     MESSAGE FUNCTIONS
+     ===================================================== */
+
+  function showError(message) {
+
+    const box =
+      document.getElementById(
+        "errorMessage"
+      );
+
+
+    box.textContent =
+      message;
+
+
+    box.style.display =
+      "block";
+
+
+    document.getElementById(
+      "successMessage"
+    ).style.display =
+      "none";
+
+  }
+
+
+  function showSuccess(message) {
+
+    const box =
+      document.getElementById(
+        "successMessage"
+      );
+
+
+    box.textContent =
+      message;
+
+
+    box.style.display =
+      "block";
+
+
+    document.getElementById(
+      "errorMessage"
+    ).style.display =
+      "none";
+
+  }
+
+
+  function clearMessages() {
+
+    document.getElementById(
+      "errorMessage"
+    ).style.display =
+      "none";
+
+
+    document.getElementById(
+      "successMessage"
+    ).style.display =
+      "none";
+
+  }
+
+
+  /* =====================================================
+     VERIFY BVN
+     ===================================================== */
+
+  async function verifyBVN() {
+
+    clearMessages();
+
+
+    if (!userAuthenticated) {
+
+      window.location.replace(
+        "register.html"
+      );
+
+      return;
+
+    }
+
+
+    const bvn =
+      document.getElementById(
+        "bvn"
+      ).value.trim();
+
+
+    if (!/^\d{11}$/.test(bvn)) {
+
+      showError(
+        "Please enter a valid 11-digit BVN."
+      );
+
+      return;
+
+    }
+
+
+    const verifyBtn =
+      document.getElementById(
+        "verifyBtn"
+      );
+
+
+    const loading =
+      document.getElementById(
+        "loading"
+      );
+
+
+    verifyBtn.disabled =
+      true;
+
+
+    loading.style.display =
+      "block";
+
+
+    document.getElementById(
+      "resultCard"
+    ).style.display =
+      "none";
+
+
+    try {
+
+      const sessionResult =
+        await supabaseClient.auth.getSession();
+
+
+      const session =
+        sessionResult?.data?.session ||
+        null;
+
+
+      if (!session) {
+
+        window.location.replace(
+          "register.html"
+        );
+
+        return;
+
+      }
+
+
+      /*
+        ONE BVN SLIP REQUEST ONLY.
+      */
+
+      const response =
+        await fetch(
+          BVN_FUNCTION_URL,
+          {
+
+            method: "POST",
+
+            headers: {
+
+              "Content-Type":
+                "application/json",
+
+              "Authorization":
+                `Bearer ${session.access_token}`,
+
+              "apikey":
+                SUPABASE_KEY
+
+            },
+
+            body: JSON.stringify({
+
+              bvn: bvn,
+
+              slip_type:
+                "Standard Slip"
+
+            })
+
+          }
+        );
+
+
+      let result;
+
+
+      try {
+
+        result =
+          await response.json();
+
+      } catch (jsonError) {
+
+        throw new Error(
+          `BVN service returned an invalid response. HTTP ${response.status}.`
+        );
+
+      }
+
+
+      if (!response.ok) {
+
+        throw new Error(
+          result?.message ||
+          `BVN verification failed. HTTP ${response.status}.`
+        );
+
+      }
+
+
+      if (!result?.success) {
+
+        throw new Error(
+          result?.message ||
+          "BVN verification failed."
+        );
+
+      }
+
+
+      const data =
+        result?.data || {};
+
+
+      const firstName =
+        data.firstname ||
+        data.firstName ||
+        "-";
+
+
+      const lastName =
+        data.surname ||
+        data.lastname ||
+        data.lastName ||
+        "-";
+
+
+      const middleName =
+        data.middlename ||
+        data.middleName ||
+        "-";
+
+
+      const gender =
+        data.gender ||
+        "-";
+
+
+      const returnedBVN =
+        data.bvn ||
+        bvn;
+
+
+      const dob =
+        data.dob ||
+        data.dateOfBirth ||
+        data.date_of_birth ||
+        "Not provided";
+
+
+      document.getElementById(
+        "firstName"
+      ).textContent =
+        firstName;
+
+
+      document.getElementById(
+        "lastName"
+      ).textContent =
+        lastName;
+
+
+      document.getElementById(
+        "middleName"
+      ).textContent =
+        middleName;
+
+
+      document.getElementById(
+        "bvnResult"
+      ).textContent =
+        returnedBVN;
+
+
+      document.getElementById(
+        "gender"
+      ).textContent =
+        gender;
+
+
+      document.getElementById(
+        "dob"
+      ).textContent =
+        dob;
+
+
+      /*
+        Cache the PDF returned by
+        the SAME verification request.
+      */
+
+      cachedPDFBase64 =
+        result?.slip?.pdf_base64 ||
+        result?.pdf_base64 ||
+        null;
+
+
+      cachedFileName =
+        result?.slip?.file_name ||
+        result?.file_name ||
+        "BVN_Slip.pdf";
+
+
+      verifiedBVNData = {
+
+        firstname:
+          firstName,
+
+        surname:
+          lastName,
+
+        middlename:
+          middleName,
+
+        bvn:
+          returnedBVN,
+
+        gender:
+          gender,
+
+        dob:
+          dob,
+
+        slip_type:
+          "Standard Slip"
+
+      };
+
+
+      if (!cachedPDFBase64) {
+
+        throw new Error(
+          "BVN was verified, but the PDF slip was not returned."
+        );
+
+      }
+
+
+      sessionStorage.setItem(
+        "gracioustech_bvn_data",
+        JSON.stringify(
+          verifiedBVNData
+        )
+      );
+
+
+      sessionStorage.setItem(
+        "gracioustech_bvn_pdf",
+        cachedPDFBase64
+      );
+
+
+      sessionStorage.setItem(
+        "gracioustech_bvn_filename",
+        cachedFileName
+      );
+
+
+      sessionStorage.removeItem(
+        "gracioustech_bvn_paid"
+      );
+
+
+      sessionStorage.removeItem(
+        "gracioustech_bvn_payment"
+      );
+
+
+      const payButton =
+        document.getElementById(
+          "payButton"
+        );
+
+
+      payButton.disabled =
+        false;
+
+
+      payButton.textContent =
+        `Pay ₦${BVN_PRICE.toLocaleString()} & Continue`;
+
+
+      document.getElementById(
+        "openSlipButton"
+      ).style.display =
+        "none";
+
+
+      document.getElementById(
+        "resultCard"
+      ).style.display =
+        "block";
+
+
+      showSuccess(
+        `BVN verified successfully. Standard Slip generated. Payment: ₦${BVN_PRICE.toLocaleString()}.`
+      );
+
+
+    } catch (error) {
+
+      console.error(
+        "BVN verification error:",
+        error
+      );
+
+
+      showError(
+        error?.message ||
+        "Unable to verify BVN. Please try again."
+      );
+
+
+    } finally {
+
+      verifyBtn.disabled =
+        false;
+
+
+      loading.style.display =
+        "none";
+
+    }
+
+  }
+
+
+  /* =====================================================
+     GET CACHED PDF
+     ===================================================== */
+
+  function getCachedPDF() {
+
+    if (cachedPDFBase64) {
+
+      return cachedPDFBase64;
+
+    }
+
+
+    return sessionStorage.getItem(
+      "gracioustech_bvn_pdf"
+    );
+
+  }
+
+
+  /* =====================================================
+     BASE64 TO PDF BLOB
+     ===================================================== */
+
+  function base64ToBlob(
+    base64,
+    contentType =
+      "application/pdf"
+  ) {
+
+    const byteCharacters =
+      atob(base64);
+
+
+    const byteArrays = [];
+
+
+    for (
+      let offset = 0;
+      offset < byteCharacters.length;
+      offset += 1024
+    ) {
+
+      const slice =
+        byteCharacters.slice(
+          offset,
+          offset + 1024
+        );
+
+
+      const byteNumbers =
+        new Array(
+          slice.length
+        );
+
+
+      for (
+        let i = 0;
+        i < slice.length;
+        i++
+      ) {
+
+        byteNumbers[i] =
+          slice.charCodeAt(i);
+
+      }
+
+
+      const byteArray =
+        new Uint8Array(
+          byteNumbers
+        );
+
+
+      byteArrays.push(
+        byteArray
+      );
+
+    }
+
+
+    return new Blob(
+      byteArrays,
+      {
+        type: contentType
+      }
+    );
+
+  }
+
+
+  /* =====================================================
+     OPEN BVN SLIP
+     ===================================================== */
+
+  function openBVNSlip() {
+
+    if (!userAuthenticated) {
+
+      window.location.replace(
+        "register.html"
+      );
+
+      return;
+
+    }
+
+
+    if (
+      sessionStorage.getItem(
+        "gracioustech_bvn_paid"
+      ) !== "true"
+    ) {
+
+      showError(
+        `Please complete the ₦${BVN_PRICE.toLocaleString()} payment first.`
+      );
+
+      return;
+
+    }
+
+
+    const pdf =
+      getCachedPDF();
+
+
+    if (!pdf) {
+
+      showError(
+        "No BVN slip is available. Please verify the BVN first."
+      );
+
+      return;
+
+    }
+
+
+    const blob =
+      base64ToBlob(pdf);
+
+
+    const url =
+      URL.createObjectURL(blob);
+
+
+    const newWindow =
+      window.open(
+        url,
+        "_blank"
+      );
+
+
+    if (!newWindow) {
+
+      showError(
+        "Please allow pop-ups to open the BVN slip."
+      );
+
+      URL.revokeObjectURL(url);
+
+    }
+
+  }
+
+
+  /* =====================================================
+     DOWNLOAD BVN SLIP
+     ===================================================== */
+
+  function downloadBVNSlip() {
+
+    if (!userAuthenticated) {
+
+      window.location.replace(
+        "register.html"
+      );
+
+      return;
+
+    }
+
+
+    if (
+      sessionStorage.getItem(
+        "gracioustech_bvn_paid"
+      ) !== "true"
+    ) {
+
+      showError(
+        `Please complete the ₦${BVN_PRICE.toLocaleString()} payment first.`
+      );
+
+      return;
+
+    }
+
+
+    const pdf =
+      getCachedPDF();
+
+
+    if (!pdf) {
+
+      showError(
+        "No BVN slip is available. Please verify the BVN first."
+      );
+
+      return;
+
+    }
+
+
+    const blob =
+      base64ToBlob(pdf);
+
+
+    const url =
+      URL.createObjectURL(blob);
+
+
+    const link =
+      document.createElement("a");
+
+
+    link.href =
+      url;
+
+
+    link.download =
+      sessionStorage.getItem(
+        "gracioustech_bvn_filename"
+      ) ||
+      cachedFileName ||
+      "BVN_Slip.pdf";
+
+
+    document.body.appendChild(
+      link
+    );
+
+
+    link.click();
+
+
+    link.remove();
+
+
+    setTimeout(
+      () => {
+
+        URL.revokeObjectURL(
+          url
+        );
+
+      },
+      1000
+    );
+
+  }
+
+
+  /* =====================================================
+     PRINT BVN SLIP
+     ===================================================== */
+
+  function printBVNSlip() {
+
+    if (!userAuthenticated) {
+
+      window.location.replace(
+        "register.html"
+      );
+
+      return;
+
+    }
+
+
+    if (
+      sessionStorage.getItem(
+        "gracioustech_bvn_paid"
+      ) !== "true"
+    ) {
+
+      showError(
+        `Please complete the ₦${BVN_PRICE.toLocaleString()} payment first.`
+      );
+
+      return;
+
+    }
+
+
+    const pdf =
+      getCachedPDF();
+
+
+    if (!pdf) {
+
+      showError(
+        "No BVN slip is available. Please verify the BVN first."
+      );
+
+      return;
+
+    }
+
+
+    const blob =
+      base64ToBlob(pdf);
+
+
+    const url =
+      URL.createObjectURL(blob);
+
+
+    const printWindow =
+      window.open(
+        url,
+        "_blank"
+      );
+
+
+    if (!printWindow) {
+
+      showError(
+        "Please allow pop-ups to print the BVN slip."
+      );
+
+      URL.revokeObjectURL(url);
+
+      return;
+
+    }
+
+
+    /*
+      Give the browser a moment to
+      load the PDF before opening
+      the print dialog.
+    */
+
+    setTimeout(
+      () => {
+
+        try {
+
+          printWindow.focus();
+
+          printWindow.print();
+
+        } catch (error) {
+
+          console.warn(
+            "Automatic PDF printing was not available:",
+            error
+          );
+
+        }
+
+      },
+      1200
+    );
+
+  }
+
+
+  /* =====================================================
+     PAY FROM WALLET
+     ===================================================== */
+
+  async function payFromWallet() {
+
+    clearMessages();
+
+
+    if (!userAuthenticated) {
+
+      window.location.replace(
+        "register.html"
+      );
+
+      return;
+
+    }
+
+
+    if (!verifiedBVNData) {
+
+      showError(
+        "Please verify the BVN first."
+      );
+
+      return;
+
+    }
+
+
+    if (!cachedPDFBase64) {
+
+      showError(
+        "Your BVN slip has not been generated yet. Please verify the BVN again."
+      );
+
+      return;
+
+    }
+
+
+    /*
+      Prevent accidental double payment.
+    */
+
+    if (
+      sessionStorage.getItem(
+        "gracioustech_bvn_paid"
+      ) === "true"
+    ) {
+
+      showSuccess(
+        "Payment has already been completed."
+      );
+
+
+      document.getElementById(
+        "openSlipButton"
+      ).style.display =
+        "block";
+
+
+      return;
+
+    }
+
+
+    const button =
+      document.getElementById(
+        "payButton"
+      );
+
+
+    button.disabled =
+      true;
+
+
+    button.textContent =
+      "Processing Payment...";
+
+
+    try {
+
+      const sessionResult =
+        await supabaseClient.auth.getSession();
+
+
+      const session =
+        sessionResult?.data?.session ||
+        null;
+
+
+      if (!session) {
+
+        window.location.replace(
+          "register.html"
+        );
+
+        return;
+
+      }
+
+
+      /*
+        Existing wallet payment RPC.
+
+        The database function controls
+        the actual wallet deduction.
+      */
+
+      const rpcResult =
+        await supabaseClient.rpc(
+          "pay_nin_reprint",
+          {
+            slip_price:
+              BVN_PRICE
+          }
+        );
+
+
+      if (rpcResult.error) {
+
+        throw rpcResult.error;
+
+      }
+
+
+      const paymentResult =
+        rpcResult.data;
+
+
+      if (
+        !paymentResult ||
+        paymentResult.success !== true
+      ) {
+
+        throw new Error(
+          paymentResult?.message ||
+          "Payment failed."
+        );
+
+      }
+
+
+      /*
+        Payment successful.
+      */
+
+      sessionStorage.setItem(
+        "gracioustech_bvn_paid",
+        "true"
+      );
+
+
+      sessionStorage.setItem(
+        "gracioustech_bvn_payment",
+        JSON.stringify({
+
+          amount:
+            BVN_PRICE,
+
+          transaction_id:
+            paymentResult.transaction_id ||
+            null,
+
+          balance:
+            paymentResult.balance ||
+            null
+
+        })
+      );
+
+
+      showSuccess(
+        `Payment successful. ₦${BVN_PRICE.toLocaleString()} has been deducted from your wallet. Your BVN Standard Slip is ready.`
+      );
+
+
+      button.disabled =
+        true;
+
+
+      button.textContent =
+        "Payment Successful ✓";
+
+
+      document.getElementById(
+        "openSlipButton"
+      ).style.display =
+        "block";
+
+
+    } catch (error) {
+
+      console.error(
+        "BVN wallet payment error:",
+        error
+      );
+
+
+      showError(
+        error?.message ||
+        "Payment failed. Your wallet was not charged."
+      );
+
+
+      button.disabled =
+        false;
+
+
+      button.textContent =
+        `Pay ₦${BVN_PRICE.toLocaleString()} & Continue`;
+
+    }
+
+  }
+
+
+  /* =====================================================
+     RESTORE CACHED BVN DATA
+     ===================================================== */
+
+  function restoreBVNData() {
+
+    const savedData =
+      sessionStorage.getItem(
+        "gracioustech_bvn_data"
+      );
+
+
+    const savedPDF =
+      sessionStorage.getItem(
+        "gracioustech_bvn_pdf"
+      );
+
+
+    const savedFileName =
+      sessionStorage.getItem(
+        "gracioustech_bvn_filename"
+      );
+
+
+    const paid =
+      sessionStorage.getItem(
+        "gracioustech_bvn_paid"
+      ) === "true";
+
+
+    if (
+      savedData &&
+      savedPDF
+    ) {
+
+      try {
+
+        const data =
+          JSON.parse(
+            savedData
+          );
+
+
+        document.getElementById(
+          "firstName"
+        ).textContent =
+          data.firstname ||
+          "-";
+
+
+        document.getElementById(
+          "lastName"
+        ).textContent =
+          data.surname ||
+          "-";
+
+
+        document.getElementById(
+          "middleName"
+        ).textContent =
+          data.middlename ||
+          "-";
+
+
+        document.getElementById(
+          "bvnResult"
+        ).textContent =
+          data.bvn ||
+          "-";
+
+
+        document.getElementById(
+          "gender"
+        ).textContent =
+          data.gender ||
+          "-";
+
+
+        document.getElementById(
+          "dob"
+        ).textContent =
+          data.dob ||
+          "Not provided";
+
+
+        cachedPDFBase64 =
+          savedPDF;
+
+
+        cachedFileName =
+          savedFileName ||
+          "BVN_Slip.pdf";
+
+
+        verifiedBVNData =
+          data;
+
+
+        document.getElementById(
+          "resultCard"
+        ).style.display =
+          "block";
+
+
+        if (paid) {
+
+          const button =
+            document.getElementById(
+              "payButton"
+            );
+
+
+          button.disabled =
+            true;
+
+
+          button.textContent =
+            "Payment Successful ✓";
+
+
+          document.getElementById(
+            "openSlipButton"
+          ).style.display =
+            "block";
+
+        } else {
+
+          const button =
+            document.getElementById(
+              "payButton"
+            );
+
+
+          button.disabled =
+            false;
+
+
+          button.textContent =
+            `Pay ₦${BVN_PRICE.toLocaleString()} & Continue`;
+
+        }
+
+
+      } catch (error) {
+
+        console.error(
+          "Unable to restore cached BVN:",
+          error
+        );
+
+      }
+
+    }
+
+  }
+
+</script>
+
+</body>
+</html>
+
+This version is ready for the BVN page. The internal "gracioustech_*" session-storage names are intentionally left unchanged so we don't break existing saved BVN data.
+
+Next we can move to "nin-slip.html" and change its visible branding to FLOWTECH.

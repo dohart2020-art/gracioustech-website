@@ -1,0 +1,1603 @@
+<!DOCTYPE html><html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">  <title>Fund Wallet - Gracioustec</title>  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background: #f4f7f5;
+      color: #17251c;
+    }
+
+    header {
+      background: #087a3d;
+      color: white;
+      padding: 17px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .logo {
+      font-size: 20px;
+      font-weight: bold;
+    }
+
+    .back-btn {
+      background: white;
+      color: #087a3d;
+      text-decoration: none;
+      padding: 9px 13px;
+      border-radius: 8px;
+      font-weight: bold;
+    }
+
+    .container {
+      width: 92%;
+      max-width: 520px;
+      margin: 25px auto;
+    }
+
+    .card {
+      background: white;
+      border-radius: 18px;
+      padding: 25px 20px;
+      box-shadow: 0 5px 18px rgba(0,0,0,0.08);
+    }
+
+    h1 {
+      font-size: 25px;
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      color: #68736d;
+      font-size: 14px;
+      line-height: 1.5;
+      margin-bottom: 22px;
+    }
+
+    .balance-box {
+      background: #eaf7ef;
+      border-radius: 12px;
+      padding: 17px;
+      margin-bottom: 22px;
+    }
+
+    .balance-label {
+      color: #68736d;
+      font-size: 13px;
+      margin-bottom: 5px;
+    }
+
+    .balance {
+      color: #087a3d;
+      font-size: 28px;
+      font-weight: bold;
+    }
+
+    .section-title {
+      font-size: 18px;
+      font-weight: bold;
+      margin-top: 25px;
+      margin-bottom: 8px;
+    }
+
+    .section-subtitle {
+      color: #68736d;
+      font-size: 13px;
+      line-height: 1.5;
+      margin-bottom: 15px;
+    }
+
+    .account-box {
+      background: #087a3d;
+      color: white;
+      border-radius: 15px;
+      padding: 22px;
+      margin-top: 20px;
+    }
+
+    .paymentpoint-box {
+      background: #064f2a;
+    }
+
+    .account-title {
+      font-size: 15px;
+      font-weight: bold;
+      margin-bottom: 18px;
+    }
+
+    .account-row {
+      background: rgba(255,255,255,0.10);
+      padding: 13px;
+      border-radius: 9px;
+      margin-bottom: 10px;
+    }
+
+    .account-label {
+      font-size: 12px;
+      opacity: 0.85;
+      margin-bottom: 5px;
+    }
+
+    .account-value {
+      font-size: 17px;
+      font-weight: bold;
+      word-break: break-word;
+    }
+
+    .account-number {
+      font-size: 25px;
+      letter-spacing: 1px;
+    }
+
+    .copy-btn {
+      width: 100%;
+      background: white;
+      color: #087a3d;
+      border: none;
+      border-radius: 9px;
+      padding: 12px;
+      margin-top: 8px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .instruction {
+      background: #f5f7f6;
+      padding: 17px;
+      border-radius: 12px;
+      margin-top: 20px;
+      color: #5f6b64;
+      font-size: 14px;
+      line-height: 1.7;
+    }
+
+    .instruction strong {
+      color: #17251c;
+    }
+
+    .refresh-btn,
+    .generate-btn {
+      width: 100%;
+      background: #087a3d;
+      color: white;
+      border: none;
+      padding: 13px;
+      border-radius: 9px;
+      margin-top: 20px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .generate-btn {
+      margin-top: 10px;
+    }
+
+    .refresh-btn:disabled,
+    .generate-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .phone-box {
+      margin-top: 15px;
+    }
+
+    .phone-label {
+      display: block;
+      font-size: 13px;
+      color: #4e5a53;
+      margin-bottom: 7px;
+      font-weight: bold;
+    }
+
+    .phone-input {
+      width: 100%;
+      padding: 13px;
+      border: 1px solid #d4ddd7;
+      border-radius: 9px;
+      outline: none;
+      font-size: 15px;
+    }
+
+    .phone-input:focus {
+      border-color: #087a3d;
+    }
+
+    .message {
+      display: none;
+      margin-top: 18px;
+      padding: 13px;
+      border-radius: 9px;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .error {
+      background: #ffe8e8;
+      color: #a40000;
+    }
+
+    .success {
+      background: #e8f8ee;
+      color: #087a3d;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 30px 10px;
+      color: #087a3d;
+      font-weight: bold;
+    }
+
+    .divider {
+      height: 1px;
+      background: #e2e8e4;
+      margin: 30px 0 5px;
+    }
+
+    .no-methods {
+      background: #fff4e5;
+      color: #8a5300;
+      border-radius: 12px;
+      padding: 18px;
+      margin-top: 20px;
+      line-height: 1.6;
+      font-size: 14px;
+    }
+
+    footer {
+      text-align: center;
+      padding: 25px;
+      color: #758078;
+      font-size: 12px;
+    }
+
+    @media (max-width: 500px) {
+      .account-number {
+        font-size: 22px;
+      }
+
+      h1 {
+        font-size: 23px;
+      }
+    }
+  </style></head><body><header>
+  <div class="logo">GRACIOUSTEC</div>  <a href="dashboard.html" class="back-btn">
+    Dashboard
+  </a>
+</header><div class="container">  <div class="card"><h1>Fund Wallet</h1>
+
+<p class="subtitle">
+  Fund your GRACIOUSTEC wallet by transferring money to your
+  dedicated payment account. Your wallet will be credited
+  automatically after successful confirmation.
+</p>
+
+<!-- WALLET BALANCE -->
+
+<div class="balance-box">
+
+  <div class="balance-label">
+    Current Wallet Balance
+  </div>
+
+  <div class="balance" id="walletBalance">
+    ₦0.00
+  </div>
+
+</div>
+
+<!-- PAYMENT METHOD LOADING -->
+
+<div
+  id="paymentMethodsLoading"
+  class="loading">
+
+  Checking available payment methods...
+
+</div>
+
+<!-- NO PAYMENT METHOD -->
+
+<div
+  id="noPaymentMethods"
+  class="no-methods"
+  style="display:none;">
+
+  <strong>No payment method is currently available.</strong>
+
+  <br><br>
+
+  Please try again later or contact Gracioustec support.
+
+</div>
+
+<!-- =================================================
+     REKOPAY
+     ================================================= -->
+
+<div
+  id="reckopaySection"
+  style="display:none;">
+
+  <div class="section-title">
+    RecoPay Account
+  </div>
+
+  <div class="section-subtitle">
+    Transfer money to this account to fund your wallet
+    through RecoPay.
+  </div>
+
+  <div
+    id="reckopayLoading"
+    class="loading">
+
+    Loading RecoPay account...
+
+  </div>
+
+  <div
+    id="reckopayAccountBox"
+    class="account-box"
+    style="display:none;">
+
+    <div class="account-title">
+      YOUR REKOPAY PAYMENT ACCOUNT
+    </div>
+
+    <div class="account-row">
+
+      <div class="account-label">
+        Account Name
+      </div>
+
+      <div
+        class="account-value"
+        id="reckopayAccountName">
+
+        -
+
+      </div>
+
+    </div>
+
+    <div class="account-row">
+
+      <div class="account-label">
+        Bank Name
+      </div>
+
+      <div
+        class="account-value"
+        id="reckopayBankName">
+
+        -
+
+      </div>
+
+    </div>
+
+    <div class="account-row">
+
+      <div class="account-label">
+        Account Number
+      </div>
+
+      <div
+        class="account-value account-number"
+        id="reckopayAccountNumber">
+
+        -
+
+      </div>
+
+      <button
+        class="copy-btn"
+        onclick="copyNumber('reckopayAccountNumber')">
+
+        Copy Account Number
+
+      </button>
+
+    </div>
+
+  </div>
+
+  <button
+    id="reckopayRefreshBtn"
+    class="refresh-btn"
+    onclick="loadReckopayAccount()">
+
+    Refresh RecoPay Account
+
+  </button>
+
+</div>
+
+<!-- =================================================
+     PAYMENTPOINT
+     ================================================= -->
+
+<div
+  id="paymentpointSection"
+  style="display:none;">
+
+  <div class="divider"></div>
+
+  <div class="section-title">
+    PaymentPoint Account
+  </div>
+
+  <div class="section-subtitle">
+    You can fund your wallet using your dedicated
+    PaymentPoint account.
+  </div>
+
+  <!-- PHONE INPUT -->
+
+  <div
+    id="phoneBox"
+    class="phone-box"
+    style="display:none;">
+
+    <label
+      class="phone-label"
+      for="phoneNumber">
+
+      Phone Number
+
+    </label>
+
+    <input
+      type="tel"
+      id="phoneNumber"
+      class="phone-input"
+      placeholder="08012345678"
+      autocomplete="tel">
+
+  </div>
+
+  <button
+    id="generatePaymentpointBtn"
+    class="generate-btn"
+    onclick="createPaymentpointAccount()">
+
+    Generate PaymentPoint Account
+
+  </button>
+
+  <div
+    id="paymentpointLoading"
+    class="loading"
+    style="display:none;">
+
+    Creating PaymentPoint account...
+
+  </div>
+
+  <div
+    id="paymentpointAccountBox"
+    class="account-box paymentpoint-box"
+    style="display:none;">
+
+    <div class="account-title">
+      YOUR PAYMENTPOINT PAYMENT ACCOUNT
+    </div>
+
+    <div class="account-row">
+
+      <div class="account-label">
+        Account Name
+      </div>
+
+      <div
+        class="account-value"
+        id="paymentpointAccountName">
+
+        -
+
+      </div>
+
+    </div>
+
+    <div class="account-row">
+
+      <div class="account-label">
+        Bank Name
+      </div>
+
+      <div
+        class="account-value"
+        id="paymentpointBankName">
+
+        -
+
+      </div>
+
+    </div>
+
+    <div class="account-row">
+
+      <div class="account-label">
+        Account Number
+      </div>
+
+      <div
+        class="account-value account-number"
+        id="paymentpointAccountNumber">
+
+        -
+
+      </div>
+
+      <button
+        class="copy-btn"
+        onclick="copyNumber('paymentpointAccountNumber')">
+
+        Copy Account Number
+
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+
+<!-- INSTRUCTIONS -->
+
+<div
+  id="instruction"
+  class="instruction"
+  style="display:none;">
+
+  <strong>How to fund your wallet</strong>
+
+  <br><br>
+
+  1. Choose an available payment account.
+
+  <br>
+
+  2. Copy the account number.
+
+  <br>
+
+  3. Open your bank app or visit your bank.
+
+  <br>
+
+  4. Transfer the amount you want to add to your wallet.
+
+  <br>
+
+  5. Wait for the payment to be confirmed.
+
+  <br>
+
+  6. Your Gracioustec wallet will be credited automatically.
+
+  <br><br>
+
+  <strong>
+    Important:
+  </strong>
+
+  Always transfer to one of the dedicated accounts
+  displayed on this page.
+
+</div>
+
+<div
+  id="message"
+  class="message">
+</div>
+
+  </div></div><footer>
+  © 2026 Gracioustec
+</footer><script>
+
+  // =====================================================
+  // SUPABASE
+  // =====================================================
+
+  const SUPABASE_URL =
+    "https://iknhifndgpwibkfidggq.supabase.co";
+
+  const SUPABASE_KEY =
+    "sb_publishable_xELauxOMm7eMkNrPz55Mrw_LVkRoASn";
+
+  const supabaseClient =
+    window.supabase.createClient(
+      SUPABASE_URL,
+      SUPABASE_KEY
+    );
+
+  // =====================================================
+  // EDGE FUNCTIONS
+  // =====================================================
+
+  const REKOPAY_ACCOUNT_FUNCTION =
+    SUPABASE_URL +
+    "/functions/v1/smooth-hacreate-reckopay-accountndler";
+
+  const PAYMENTPOINT_ACCOUNT_FUNCTION =
+    SUPABASE_URL +
+    "/functions/v1/create-paymentpoint-account";
+
+  // =====================================================
+  // PAYMENT METHOD STATUS
+  // =====================================================
+
+  let paymentMethods = {
+    recopay: false,
+    paymentpoint: false
+  };
+
+  // =====================================================
+  // GET CURRENT SESSION
+  // =====================================================
+
+  async function getCurrentSession() {
+
+    const {
+      data,
+      error
+    } =
+      await supabaseClient.auth.getSession();
+
+    if (error) {
+
+      console.error(
+        "Session error:",
+        error
+      );
+
+      return null;
+    }
+
+    return data.session;
+  }
+
+  // =====================================================
+  // LOAD WALLET BALANCE
+  // =====================================================
+
+  async function loadWalletBalance(userId) {
+
+    const {
+      data,
+      error
+    } =
+      await supabaseClient
+        .from("wallets")
+        .select("balance")
+        .eq("user_id", userId)
+        .maybeSingle();
+
+    if (error) {
+
+      console.error(
+        "Wallet error:",
+        error
+      );
+
+      return;
+    }
+
+    const balance =
+      Number(
+        data?.balance || 0
+      );
+
+    document.getElementById(
+      "walletBalance"
+    ).textContent =
+      "₦" +
+      balance.toLocaleString(
+        "en-NG",
+        {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2
+        }
+      );
+  }
+
+  // =====================================================
+  // LOAD PAYMENT METHOD SETTINGS
+  // =====================================================
+
+  async function loadPaymentMethods() {
+
+    const {
+      data,
+      error
+    } =
+      await supabaseClient
+        .from("payment_methods")
+        .select(
+          "method_code, method_name, is_active"
+        )
+        .in(
+          "method_code",
+          [
+            "paymentpoint",
+            "recopay"
+          ]
+        );
+
+    if (error) {
+
+      console.error(
+        "Payment method error:",
+        error
+      );
+
+      throw new Error(
+        "Unable to check available payment methods."
+      );
+    }
+
+    paymentMethods = {
+      recopay: false,
+      paymentpoint: false
+    };
+
+    (data || []).forEach(method => {
+
+      const code =
+        String(
+          method.method_code || ""
+        ).toLowerCase();
+
+      if (code === "recopay") {
+
+        paymentMethods.recopay =
+          method.is_active === true;
+      }
+
+      if (code === "paymentpoint") {
+
+        paymentMethods.paymentpoint =
+          method.is_active === true;
+      }
+
+    });
+
+    return paymentMethods;
+  }
+
+  // =====================================================
+  // DISPLAY AVAILABLE PAYMENT METHODS
+  // =====================================================
+
+  function displayPaymentMethods() {
+
+    const loading =
+      document.getElementById(
+        "paymentMethodsLoading"
+      );
+
+    const noMethods =
+      document.getElementById(
+        "noPaymentMethods"
+      );
+
+    const reckopaySection =
+      document.getElementById(
+        "reckopaySection"
+      );
+
+    const paymentpointSection =
+      document.getElementById(
+        "paymentpointSection"
+      );
+
+    const instruction =
+      document.getElementById(
+        "instruction"
+      );
+
+    loading.style.display =
+      "none";
+
+    reckopaySection.style.display =
+      paymentMethods.recopay
+        ? "block"
+        : "none";
+
+    paymentpointSection.style.display =
+      paymentMethods.paymentpoint
+        ? "block"
+        : "none";
+
+    const anyAvailable =
+      paymentMethods.recopay ||
+      paymentMethods.paymentpoint;
+
+    if (!anyAvailable) {
+
+      noMethods.style.display =
+        "block";
+
+      instruction.style.display =
+        "none";
+
+    } else {
+
+      noMethods.style.display =
+        "none";
+
+      instruction.style.display =
+        "block";
+    }
+  }
+
+  // =====================================================
+  // LOAD REKOPAY ACCOUNT
+  // =====================================================
+
+  async function loadReckopayAccount() {
+
+    if (!paymentMethods.recopay) {
+
+      return;
+    }
+
+    const refreshBtn =
+      document.getElementById(
+        "reckopayRefreshBtn"
+      );
+
+    const loading =
+      document.getElementById(
+        "reckopayLoading"
+      );
+
+    const accountBox =
+      document.getElementById(
+        "reckopayAccountBox"
+      );
+
+    refreshBtn.disabled =
+      true;
+
+    refreshBtn.textContent =
+      "Loading...";
+
+    loading.style.display =
+      "block";
+
+    accountBox.style.display =
+      "none";
+
+    try {
+
+      const session =
+        await getCurrentSession();
+
+      if (!session) {
+
+        window.location.href =
+          "login.html";
+
+        return;
+      }
+
+      const response =
+        await fetch(
+          REKOPAY_ACCOUNT_FUNCTION,
+          {
+            method: "POST",
+
+            headers: {
+              "Authorization":
+                "Bearer " +
+                session.access_token,
+
+              "Content-Type":
+                "application/json"
+            },
+
+            body: JSON.stringify({})
+          }
+        );
+
+      const result =
+        await response.json();
+
+      console.log(
+        "RecoPay account response:",
+        result
+      );
+
+      if (!response.ok) {
+
+        throw new Error(
+          result?.message ||
+          result?.error ||
+          "Unable to load RecoPay account."
+        );
+      }
+
+      const account =
+        findAccountObject(result);
+
+      if (!account) {
+
+        throw new Error(
+          result?.message ||
+          "No RecoPay account was returned."
+        );
+      }
+
+      const accountName =
+        findValue(
+          account,
+          [
+            "accountName",
+            "account_name",
+            "accountname",
+            "name"
+          ]
+        );
+
+      const bankName =
+        findValue(
+          account,
+          [
+            "bankName",
+            "bank_name",
+            "bank"
+          ]
+        );
+
+      const accountNumber =
+        findValue(
+          account,
+          [
+            "accountNumber",
+            "account_number",
+            "accountNo",
+            "account_no",
+            "account"
+          ]
+        );
+
+      if (!accountNumber) {
+
+        throw new Error(
+          "RecoPay account number was not returned."
+        );
+      }
+
+      document.getElementById(
+        "reckopayAccountName"
+      ).textContent =
+        accountName ||
+        "Not provided";
+
+      document.getElementById(
+        "reckopayBankName"
+      ).textContent =
+        bankName ||
+        "Not provided";
+
+      document.getElementById(
+        "reckopayAccountNumber"
+      ).textContent =
+        accountNumber;
+
+      loading.style.display =
+        "none";
+
+      accountBox.style.display =
+        "block";
+
+    } catch (error) {
+
+      console.error(
+        "RecoPay error:",
+        error
+      );
+
+      loading.style.display =
+        "none";
+
+      showMessage(
+        error.message ||
+        "Unable to load RecoPay account.",
+        "error"
+      );
+
+    } finally {
+
+      refreshBtn.disabled =
+        false;
+
+      refreshBtn.textContent =
+        "Refresh RecoPay Account";
+    }
+  }
+
+  // =====================================================
+  // CREATE / LOAD PAYMENTPOINT ACCOUNT
+  // =====================================================
+
+  async function createPaymentpointAccount() {
+
+    if (!paymentMethods.paymentpoint) {
+
+      showMessage(
+        "PaymentPoint is currently unavailable.",
+        "error"
+      );
+
+      return;
+    }
+
+    const button =
+      document.getElementById(
+        "generatePaymentpointBtn"
+      );
+
+    const loading =
+      document.getElementById(
+        "paymentpointLoading"
+      );
+
+    const accountBox =
+      document.getElementById(
+        "paymentpointAccountBox"
+      );
+
+    const phoneBox =
+      document.getElementById(
+        "phoneBox"
+      );
+
+    const phoneInput =
+      document.getElementById(
+        "phoneNumber"
+      );
+
+    button.disabled =
+      true;
+
+    button.textContent =
+      "Connecting to PaymentPoint...";
+
+    loading.style.display =
+      "block";
+
+    try {
+
+      const session =
+        await getCurrentSession();
+
+      if (!session) {
+
+        window.location.href =
+          "login.html";
+
+        return;
+      }
+
+      let phoneNumber =
+        session.user.user_metadata?.phone ||
+        session.user.user_metadata?.phone_number ||
+        "";
+
+      if (!phoneNumber) {
+
+        phoneNumber =
+          phoneInput.value.trim();
+
+        if (!phoneNumber) {
+
+          phoneBox.style.display =
+            "block";
+
+          throw new Error(
+            "Please enter your phone number to create your PaymentPoint account."
+          );
+        }
+      }
+
+      const response =
+        await fetch(
+          PAYMENTPOINT_ACCOUNT_FUNCTION,
+          {
+            method: "POST",
+
+            headers: {
+              "Authorization":
+                "Bearer " +
+                session.access_token,
+
+              "Content-Type":
+                "application/json"
+            },
+
+            body: JSON.stringify({
+              phoneNumber:
+                phoneNumber
+            })
+          }
+        );
+
+      const result =
+        await response.json();
+
+      console.log(
+        "PaymentPoint response:",
+        result
+      );
+
+      if (!response.ok) {
+
+        throw new Error(
+          result?.message ||
+          result?.error ||
+          "Unable to create PaymentPoint account."
+        );
+      }
+
+      if (!result?.success) {
+
+        throw new Error(
+          result?.message ||
+          "PaymentPoint account creation failed."
+        );
+      }
+
+      const account =
+        result.account;
+
+      if (!account) {
+
+        throw new Error(
+          "PaymentPoint did not return an account."
+        );
+      }
+
+      const accountName =
+        account.account_name ||
+        account.accountName ||
+        "Not provided";
+
+      const bankName =
+        account.bank_name ||
+        account.bankName ||
+        "Not provided";
+
+      const accountNumber =
+        account.account_number ||
+        account.accountNumber;
+
+      if (!accountNumber) {
+
+        throw new Error(
+          "PaymentPoint account number was not returned."
+        );
+      }
+
+      document.getElementById(
+        "paymentpointAccountName"
+      ).textContent =
+        accountName;
+
+      document.getElementById(
+        "paymentpointBankName"
+      ).textContent =
+        bankName;
+
+      document.getElementById(
+        "paymentpointAccountNumber"
+      ).textContent =
+        accountNumber;
+
+      accountBox.style.display =
+        "block";
+
+      phoneBox.style.display =
+        "none";
+
+      button.style.display =
+        "none";
+
+      showMessage(
+        "Your PaymentPoint account is ready.",
+        "success"
+      );
+
+    } catch (error) {
+
+      console.error(
+        "PaymentPoint error:",
+        error
+      );
+
+      showMessage(
+        error.message ||
+        "Unable to create PaymentPoint account.",
+        "error"
+      );
+
+    } finally {
+
+      loading.style.display =
+        "none";
+
+      button.disabled =
+        false;
+
+      if (
+        button.style.display !==
+        "none"
+      ) {
+
+        button.textContent =
+          "Generate PaymentPoint Account";
+      }
+    }
+  }
+
+  // =====================================================
+  // FIND ACCOUNT OBJECT
+  // =====================================================
+
+  function findAccountObject(value) {
+
+    if (
+      !value ||
+      typeof value !== "object"
+    ) {
+
+      return null;
+    }
+
+    const directKeys = [
+      "account",
+      "accountDetails",
+      "account_details",
+      "data",
+      "result"
+    ];
+
+    for (
+      const key of directKeys
+    ) {
+
+      if (
+        value[key] &&
+        typeof value[key] === "object"
+      ) {
+
+        const found =
+          findAccountObject(
+            value[key]
+          );
+
+        if (found) {
+
+          return found;
+        }
+      }
+    }
+
+    if (
+      findValue(
+        value,
+        [
+          "accountNumber",
+          "account_number",
+          "accountNo",
+          "account_no"
+        ]
+      )
+    ) {
+
+      return value;
+    }
+
+    for (
+      const key of Object.keys(value)
+    ) {
+
+      if (
+        value[key] &&
+        typeof value[key] === "object"
+      ) {
+
+        const found =
+          findAccountObject(
+            value[key]
+          );
+
+        if (found) {
+
+          return found;
+        }
+      }
+    }
+
+    return null;
+  }
+
+  // =====================================================
+  // FIND VALUE
+  // =====================================================
+
+  function findValue(
+    object,
+    keys
+  ) {
+
+    if (
+      !object ||
+      typeof object !== "object"
+    ) {
+
+      return null;
+    }
+
+    for (
+      const key of keys
+    ) {
+
+      if (
+        object[key] !== undefined &&
+        object[key] !== null &&
+        object[key] !== ""
+      ) {
+
+        return String(
+          object[key]
+        );
+      }
+    }
+
+    return null;
+  }
+
+  // =====================================================
+  // COPY ACCOUNT NUMBER
+  // =====================================================
+
+  async function copyNumber(
+    elementId
+  ) {
+
+    const element =
+      document.getElementById(
+        elementId
+      );
+
+    if (!element) {
+
+      return;
+    }
+
+    const accountNumber =
+      element.textContent.trim();
+
+    if (
+      !accountNumber ||
+      accountNumber === "-"
+    ) {
+
+      return;
+    }
+
+    try {
+
+      await navigator.clipboard.writeText(
+        accountNumber
+      );
+
+      showMessage(
+        "Account number copied.",
+        "success"
+      );
+
+    } catch (error) {
+
+      showMessage(
+        "Unable to copy automatically. Please copy the account number manually.",
+        "error"
+      );
+    }
+  }
+
+  // =====================================================
+  // MESSAGE
+  // =====================================================
+
+  function showMessage(
+    message,
+    type
+  ) {
+
+    const box =
+      document.getElementById(
+        "message"
+      );
+
+    box.textContent =
+      message;
+
+    box.className =
+      "message " + type;
+
+    box.style.display =
+      "block";
+  }
+
+  // =====================================================
+  // LOAD EXISTING PAYMENTPOINT ACCOUNT
+  // =====================================================
+
+  async function loadExistingPaymentpointAccount(
+    userId
+  ) {
+
+    if (!paymentMethods.paymentpoint) {
+
+      return;
+    }
+
+    try {
+
+      const {
+        data,
+        error
+      } =
+        await supabaseClient
+          .from("paymentpoint_accounts")
+          .select("*")
+          .eq(
+            "user_id",
+            userId
+          )
+          .maybeSingle();
+
+      if (error) {
+
+        console.error(
+          "PaymentPoint database lookup error:",
+          error
+        );
+
+        return;
+      }
+
+      if (!data) {
+
+        return;
+      }
+
+      document.getElementById(
+        "paymentpointAccountName"
+      ).textContent =
+        data.account_name ||
+        "Not provided";
+
+      document.getElementById(
+        "paymentpointBankName"
+      ).textContent =
+        data.bank_name ||
+        "Not provided";
+
+      document.getElementById(
+        "paymentpointAccountNumber"
+      ).textContent =
+        data.account_number ||
+        "-";
+
+      document.getElementById(
+        "paymentpointAccountBox"
+      ).style.display =
+        "block";
+
+      document.getElementById(
+        "generatePaymentpointBtn"
+      ).style.display =
+        "none";
+
+    } catch (error) {
+
+      console.error(
+        "PaymentPoint account error:",
+        error
+      );
+    }
+  }
+
+  // =====================================================
+  // START PAGE
+  // =====================================================
+
+  async function startPage() {
+
+    try {
+
+      const session =
+        await getCurrentSession();
+
+      if (!session) {
+
+        window.location.href =
+          "login.html";
+
+        return;
+      }
+
+      // Load wallet balance.
+
+      await loadWalletBalance(
+        session.user.id
+      );
+
+      // Read admin payment settings.
+
+      await loadPaymentMethods();
+
+      // Display only enabled methods.
+
+      displayPaymentMethods();
+
+      // If RecoPay is ON, load it.
+
+      if (paymentMethods.recopay) {
+
+        await loadReckopayAccount();
+      }
+
+      // If PaymentPoint is ON,
+      // load existing dedicated account.
+
+      if (paymentMethods.paymentpoint) {
+
+        await loadExistingPaymentpointAccount(
+          session.user.id
+        );
+      }
+
+    } catch (error) {
+
+      console.error(
+        "Fund Wallet startup error:",
+        error
+      );
+
+      document.getElementById(
+        "paymentMethodsLoading"
+      ).style.display =
+        "none";
+
+      showMessage(
+        error.message ||
+        "Unable to load funding options.",
+        "error"
+      );
+    }
+  }
+
+  // =====================================================
+  // START
+  // =====================================================
+
+  startPage();
+
+</script></body>
+</html>

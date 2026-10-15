@@ -1,0 +1,329 @@
+<!DOCTYPE html><html lang="en-NG">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">  <title>GRACIOUSTEC | Create Account</title>  <meta name="description" content="Create your GRACIOUSTEC account to access NIN and BVN reprinting and verification services in Nigeria.">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://gracioustec.com.ng/register.html">  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 20px;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: Arial, sans-serif;
+      background: #f0f7f3;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 420px;
+      background: white;
+      padding: 30px;
+      border-radius: 14px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .brand {
+      text-align: center;
+      color: #087443;
+      font-size: 27px;
+      font-weight: bold;
+      letter-spacing: 1px;
+      margin-bottom: 5px;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: #666;
+      font-size: 14px;
+      margin-bottom: 25px;
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 22px;
+      color: #222;
+    }
+
+    input {
+      display: block;
+      width: 100%;
+      padding: 13px;
+      margin: 10px 0;
+      border: 1px solid #ccc;
+      border-radius: 7px;
+      font-size: 15px;
+      outline: none;
+    }
+
+    input:focus {
+      border-color: #087443;
+      box-shadow: 0 0 0 2px rgba(8, 116, 67, 0.1);
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      margin-top: 15px;
+      border: 0;
+      border-radius: 7px;
+      background: #087443;
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #065c35;
+    }
+
+    button:disabled {
+      background: #999;
+      cursor: not-allowed;
+    }
+
+    #message {
+      text-align: center;
+      margin-top: 15px;
+      line-height: 1.5;
+      overflow-wrap: anywhere;
+      font-size: 14px;
+    }
+
+    .login {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 14px;
+      color: #444;
+    }
+
+    .login a {
+      color: #087443;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .login a:hover {
+      text-decoration: underline;
+    }
+
+    .note {
+      font-size: 12px;
+      color: #666;
+      margin-top: -3px;
+      margin-bottom: 10px;
+      line-height: 1.5;
+    }
+
+    .footer {
+      text-align: center;
+      margin-top: 22px;
+      color: #888;
+      font-size: 12px;
+    }
+  </style></head><body>  <div class="container"><div class="brand">GRACIOUSTEC</div>
+
+<div class="subtitle">
+  NIN &amp; BVN Reprinting and Verification Services
+</div>
+
+<h2>Create Your Account</h2>
+
+<form id="registerForm">
+
+  <input
+    type="text"
+    id="name"
+    placeholder="Full Name"
+    autocomplete="name"
+    required
+  >
+
+  <input
+    type="tel"
+    id="phone"
+    placeholder="Phone Number"
+    inputmode="tel"
+    autocomplete="tel"
+    required
+  >
+
+  <input
+    type="text"
+    id="nin"
+    placeholder="11-digit NIN Number"
+    inputmode="numeric"
+    maxlength="11"
+    autocomplete="off"
+    required
+  >
+
+  <div class="note">
+    Enter your 11-digit NIN correctly. Your NIN is sensitive personal information; only provide it if required for the service.
+  </div>
+
+  <input
+    type="email"
+    id="email"
+    placeholder="Email Address"
+    autocomplete="email"
+    required
+  >
+
+  <input
+    type="password"
+    id="password"
+    placeholder="Create Password"
+    autocomplete="new-password"
+    minlength="6"
+    required
+  >
+
+  <input
+    type="password"
+    id="confirmPassword"
+    placeholder="Confirm Password"
+    autocomplete="new-password"
+    minlength="6"
+    required
+  >
+
+  <button type="submit" id="registerButton">
+    Create Account
+  </button>
+
+</form>
+
+<div id="message" role="status" aria-live="polite"></div>
+
+<div class="login">
+  Already have an account?
+  <a href="login.html">Login here</a>
+</div>
+
+<div class="footer">
+  &copy; <span id="year"></span> GRACIOUSTEC. All rights reserved.
+</div>
+
+  </div>  <script>
+    const SUPABASE_URL =
+      "https://iknhifndgpwibkfidggq.supabase.co";
+
+    const SUPABASE_KEY =
+      "sb_publishable_xELauxOMm7eMkNrPz55Mrw_LVkRoASn";
+
+    const supabaseClient =
+      window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY
+      );
+
+    document.getElementById("year").textContent =
+      new Date().getFullYear();
+
+    const registerForm =
+      document.getElementById("registerForm");
+
+    const message =
+      document.getElementById("message");
+
+    const registerButton =
+      document.getElementById("registerButton");
+
+    registerForm.addEventListener("submit", async function(event) {
+      event.preventDefault();
+
+      const name =
+        document.getElementById("name").value.trim();
+
+      const phone =
+        document.getElementById("phone").value.trim();
+
+      const nin =
+        document.getElementById("nin").value.trim().replace(/\s/g, "");
+
+      const email =
+        document.getElementById("email").value.trim();
+
+      const password =
+        document.getElementById("password").value;
+
+      const confirmPassword =
+        document.getElementById("confirmPassword").value;
+
+      if (!name || !phone || !nin || !email || !password || !confirmPassword) {
+        message.style.color = "#c62828";
+        message.textContent = "Please fill in all fields.";
+        return;
+      }
+
+      if (!/^\d{11}$/.test(nin)) {
+        message.style.color = "#c62828";
+        message.textContent = "Your NIN must contain exactly 11 digits.";
+        return;
+      }
+
+      if (password !== confirmPassword) {
+        message.style.color = "#c62828";
+        message.textContent = "Passwords do not match.";
+        return;
+      }
+
+      if (password.length < 6) {
+        message.style.color = "#c62828";
+        message.textContent = "Password must be at least 6 characters.";
+        return;
+      }
+
+      registerButton.disabled = true;
+      registerButton.textContent = "Creating Account...";
+      message.style.color = "#444";
+      message.textContent = "Please wait while we create your account.";
+
+      try {
+        const { data, error } =
+          await supabaseClient.auth.signUp({
+            email: email,
+            password: password,
+            options: {
+              data: {
+                full_name: name,
+                phone: phone,
+                nin: nin
+              }
+            }
+          });
+
+        if (error) {
+          throw error;
+        }
+
+        message.style.color = "#087443";
+
+        if (data.user && data.session) {
+          message.textContent =
+            "Your GRACIOUSTEC account has been created successfully. You can now log in.";
+
+          registerForm.reset();
+        } else {
+          message.textContent =
+            "Registration submitted successfully. Please check your email for a verification link before logging in.";
+        }
+
+      } catch (error) {
+        message.style.color = "#c62828";
+        message.textContent =
+          error.message || "Registration failed. Please try again.";
+      } finally {
+        registerButton.disabled = false;
+        registerButton.textContent = "Create Account";
+      }
+    });
+  </script></body>
+</html>

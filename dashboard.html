@@ -1,0 +1,918 @@
+<!DOCTYPE html><html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard - Gracioustec</title>  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background: #f4f7f9;
+      color: #222;
+    }
+
+    header {
+      background: #063b2b;
+      color: white;
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .logo {
+      font-size: 20px;
+      font-weight: bold;
+    }
+
+    .menu-btn {
+      background: transparent;
+      border: none;
+      color: white;
+      font-size: 26px;
+      cursor: pointer;
+    }
+
+    .menu {
+      display: none;
+      position: absolute;
+      right: 15px;
+      top: 60px;
+      background: white;
+      width: 220px;
+      border-radius: 10px;
+      box-shadow: 0 5px 20px rgba(0,0,0,.15);
+      overflow: hidden;
+    }
+
+    .menu.show {
+      display: block;
+    }
+
+    .menu a,
+    .menu button {
+      display: block;
+      width: 100%;
+      padding: 14px 16px;
+      text-decoration: none;
+      color: #222;
+      background: white;
+      border: none;
+      text-align: left;
+      font-size: 15px;
+      cursor: pointer;
+    }
+
+    .menu a:hover,
+    .menu button:hover {
+      background: #f1f1f1;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: auto;
+      padding: 20px;
+    }
+
+    .welcome {
+      margin-bottom: 20px;
+    }
+
+    .welcome h2 {
+      color: #063b2b;
+      margin-bottom: 5px;
+    }
+
+    .welcome p {
+      color: #666;
+      font-size: 14px;
+    }
+
+    .wallet {
+      background: #063b2b;
+      color: white;
+      padding: 22px;
+      border-radius: 15px;
+      margin-bottom: 20px;
+    }
+
+    .wallet-title {
+      font-size: 14px;
+      opacity: .9;
+    }
+
+    .wallet-balance {
+      font-size: 30px;
+      font-weight: bold;
+      margin: 8px 0 15px;
+    }
+
+    .wallet-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .fund-btn,
+    .refresh-btn {
+      display: inline-block;
+      padding: 11px 18px;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      text-decoration: none;
+      border: none;
+    }
+
+    .fund-btn {
+      background: white;
+      color: #063b2b;
+    }
+
+    .refresh-btn {
+      background: rgba(255,255,255,.15);
+      color: white;
+      border: 1px solid rgba(255,255,255,.35);
+    }
+
+    .refresh-btn:hover,
+    .fund-btn:hover {
+      opacity: .9;
+    }
+
+    .account-card {
+      background: white;
+      border-radius: 14px;
+      padding: 18px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 10px rgba(0,0,0,.06);
+    }
+
+    .account-card h3 {
+      color: #063b2b;
+      margin-bottom: 12px;
+    }
+
+    .account-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 9px 0;
+      border-bottom: 1px solid #eee;
+      gap: 10px;
+    }
+
+    .account-row:last-child {
+      border-bottom: none;
+    }
+
+    .account-label {
+      color: #777;
+    }
+
+    .account-value {
+      font-weight: bold;
+      text-align: right;
+      word-break: break-word;
+    }
+
+    .section-title {
+      margin: 25px 0 12px;
+      color: #063b2b;
+    }
+
+    .services {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 15px;
+    }
+
+    .service-card {
+      background: white;
+      padding: 20px;
+      border-radius: 14px;
+      box-shadow: 0 2px 10px rgba(0,0,0,.06);
+    }
+
+    .service-card h3 {
+      color: #063b2b;
+      margin-bottom: 8px;
+    }
+
+    .service-card p {
+      color: #666;
+      font-size: 14px;
+      line-height: 1.5;
+      min-height: 42px;
+    }
+
+    .price {
+      font-size: 20px;
+      font-weight: bold;
+      margin: 12px 0;
+      color: #111;
+    }
+
+    .service-btn {
+      display: inline-block;
+      width: 100%;
+      text-align: center;
+      background: #063b2b;
+      color: white;
+      padding: 11px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .service-btn:hover {
+      opacity: .9;
+    }
+
+    .service-card.disabled {
+      opacity: .65;
+    }
+
+    .service-btn.disabled-btn {
+      background: #999;
+      pointer-events: none;
+      cursor: not-allowed;
+    }
+
+    .quick-links {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
+      margin-top: 15px;
+    }
+
+    .quick-link {
+      background: white;
+      padding: 16px;
+      border-radius: 12px;
+      text-decoration: none;
+      color: #063b2b;
+      font-weight: bold;
+      text-align: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,.05);
+    }
+
+    .quick-link:hover {
+      background: #eef5f2;
+    }
+
+    .loading {
+      color: #777;
+      font-size: 14px;
+    }
+
+    .error {
+      color: #b00020;
+      font-size: 14px;
+    }
+
+    .success-message {
+      color: #087443;
+      font-size: 14px;
+      margin-top: 8px;
+    }
+
+    .account-note {
+      color: #777;
+      font-size: 13px;
+      line-height: 1.5;
+      margin-top: 10px;
+    }
+
+    /* ANNOUNCEMENT */
+
+    .announcement-overlay {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.70);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      z-index: 2147483647;
+    }
+
+    .announcement-overlay.show {
+      display: flex !important;
+    }
+
+    .announcement-box {
+      width: 100%;
+      max-width: 500px;
+      background: #fff;
+      border-radius: 18px;
+      overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0,0,0,.35);
+      position: relative;
+      animation: announcementIn .25s ease;
+    }
+
+    @keyframes announcementIn {
+      from {
+        opacity: 0;
+        transform: translateY(-25px) scale(.96);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    .announcement-header {
+      background: #063b2b;
+      color: white;
+      padding: 18px 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .announcement-icon {
+      width: 40px;
+      height: 40px;
+      background: white;
+      color: #063b2b;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      font-weight: bold;
+      flex-shrink: 0;
+    }
+
+    .announcement-header h2 {
+      font-size: 19px;
+      line-height: 1.3;
+    }
+
+    .announcement-body {
+      padding: 24px 20px 20px;
+    }
+
+    .announcement-title {
+      color: #063b2b;
+      font-size: 21px;
+      font-weight: bold;
+      margin-bottom: 12px;
+    }
+
+    .announcement-message {
+      color: #444;
+      font-size: 15px;
+      line-height: 1.7;
+      word-break: break-word;
+    }
+
+    .announcement-footer {
+      padding: 0 20px 20px;
+    }
+
+    .announcement-close {
+      width: 100%;
+      border: none;
+      background: #063b2b;
+      color: white;
+      padding: 14px;
+      border-radius: 9px;
+      font-size: 15px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .announcement-close:hover {
+      opacity: .9;
+    }
+
+    @media (max-width: 600px) {
+      .container {
+        padding: 15px;
+      }
+
+      .wallet-balance {
+        font-size: 26px;
+      }
+
+      .account-row {
+        flex-direction: column;
+      }
+
+      .account-value {
+        text-align: left;
+      }
+
+      .announcement-box {
+        max-width: 100%;
+      }
+
+      .announcement-title {
+        font-size: 19px;
+      }
+
+      .announcement-message {
+        font-size: 14px;
+      }
+    }
+  </style></head><body><!-- ANNOUNCEMENT POPUP --><div id="announcementOverlay" class="announcement-overlay">
+  <div class="announcement-box"><div class="announcement-header">
+  <div class="announcement-icon">!</div>
+  <h2>Gracioustec Announcement</h2>
+</div>
+
+<div class="announcement-body">
+  <div id="announcementTitle" class="announcement-title">
+    Announcement
+  </div>
+
+  <div id="announcementMessage" class="announcement-message"></div>
+</div>
+
+<div class="announcement-footer">
+  <button id="announcementCloseBtn" class="announcement-close" type="button">
+    Continue to Dashboard
+  </button>
+</div>
+
+  </div>
+</div><!-- HEADER --><header>
+  <div class="logo">GRACIOUSTEC</div>  <button class="menu-btn" id="menuBtn" type="button" aria-label="Open menu">
+    ☰
+  </button>  <div class="menu" id="menu">
+    <a href="dashboard.html">Dashboard</a>
+    <a href="transactions.html">Transaction History</a>
+    <a href="fund-wallet.html">Fund Wallet</a>
+    <a href="profile.html">Profile</a><button type="button" id="logoutBtn">Logout</button>
+
+  </div>
+</header><div class="container">  <!-- WELCOME -->  <div class="welcome">
+    <h2>Welcome to Gracioustec</h2>
+    <p id="userEmail">Loading account...</p>
+  </div>  <!-- WALLET -->  <div class="wallet">
+    <div class="wallet-title">Wallet Balance</div><div class="wallet-balance" id="walletBalance">₦0.00</div>
+
+<div class="wallet-actions">
+  <a href="fund-wallet.html" class="fund-btn">Fund Wallet</a>
+
+  <button type="button" class="refresh-btn" id="refreshBtn">
+    ↻ Refresh
+  </button>
+</div>
+
+<div id="refreshMessage" style="font-size:13px;margin-top:10px;opacity:.9;"></div>
+
+  </div>  <!-- DEDICATED ACCOUNT -->  <div class="account-card" id="paymentPointCard">
+    <h3>My Dedicated Account</h3><div id="accountLoading" class="loading">Checking account...</div>
+
+<div id="accountDetails" style="display:none;">
+
+  <div class="account-row">
+    <span class="account-label">Account Name</span>
+    <span class="account-value" id="accountName">---</span>
+  </div>
+
+  <div class="account-row">
+    <span class="account-label">Bank</span>
+    <span class="account-value" id="bankName">---</span>
+  </div>
+
+  <div class="account-row">
+    <span class="account-label">Account Number</span>
+    <span class="account-value" id="accountNumber">---</span>
+  </div>
+
+  <div class="account-note">
+    Transfer money to this dedicated account to fund your Gracioustec wallet.
+  </div>
+</div>
+
+<div id="accountError" class="error"></div>
+
+  </div>  <!-- NIN SERVICES -->  <h2 class="section-title">NIN Services</h2>  <div class="services"><div class="service-card" id="ninStandardCard">
+  <h3>NIN Reprinting</h3>
+  <p>Get your NIN slip reprinted quickly.</p>
+  <div class="price" id="ninStandardPrice">Loading price...</div>
+  <a href="nin.html" class="service-btn" id="ninStandardBtn">Continue</a>
+</div>
+
+<div class="service-card" id="ninLostCard">
+  <h3>NIN Lost Slip</h3>
+  <p>Reprint your NIN slip if the original is lost.</p>
+  <div class="price" id="ninLostPrice">Loading price...</div>
+  <a href="nin.html" class="service-btn" id="ninLostBtn">Continue</a>
+</div>
+
+<div class="service-card" id="ninPremiumCard">
+  <h3>Premium / Foreigner Slip</h3>
+  <p>Premium NIN slip service.</p>
+  <div class="price" id="ninPremiumPrice">Loading price...</div>
+  <a href="nin.html" class="service-btn" id="ninPremiumBtn">Continue</a>
+</div>
+
+  </div>  <!-- BVN SERVICES -->  <h2 class="section-title">BVN Services</h2>  <div class="services">
+    <div class="service-card" id="bvnCard">
+      <h3>BVN Reprinting</h3>
+      <p>Verify and reprint your BVN slip.</p>
+      <div class="price" id="bvnPrice">Loading price...</div>
+      <a href="bvn.html" class="service-btn" id="bvnBtn">Continue</a>
+    </div>
+  </div>  <!-- VERIFICATION -->  <h2 class="section-title">Verification</h2>  <div class="services"><div class="service-card">
+  <h3>NIN Verification</h3>
+  <p>Verify NIN information and view available details.</p>
+  <a href="nin-verification.html" class="service-btn">Verify NIN</a>
+</div>
+
+<div class="service-card">
+  <h3>BVN Verification</h3>
+  <p>Verify BVN information.</p>
+  <a href="bvn-verification.html" class="service-btn">Verify BVN</a>
+</div>
+
+  </div>  <!-- QUICK LINKS -->  <h2 class="section-title">Quick Links</h2>  <div class="quick-links">
+    <a href="transactions.html" class="quick-link">Transaction History</a>
+    <a href="fund-wallet.html" class="quick-link">Fund Wallet</a>
+    <a href="profile.html" class="quick-link">My Profile</a>
+  </div></div><script>
+  /* SUPABASE */
+
+  const SUPABASE_URL = "https://iknhifndgpwibkfidggq.supabase.co";
+
+  const SUPABASE_KEY = "sb_publishable_xELauxOMm7eMkNrPz55Mrw_LVkRoASn";
+
+  const supabaseClient = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+  );
+
+  let currentUser = null;
+
+  let paymentMethods = {
+    paymentpoint: false,
+    recopay: false
+  };
+
+  /* MENU */
+
+  document.getElementById("menuBtn").addEventListener("click", function () {
+    document.getElementById("menu").classList.toggle("show");
+  });
+
+  document.addEventListener("click", function (event) {
+    const menu = document.getElementById("menu");
+    const menuBtn = document.getElementById("menuBtn");
+
+    if (!menu.contains(event.target) && !menuBtn.contains(event.target)) {
+      menu.classList.remove("show");
+    }
+  });
+
+  /* LOGOUT */
+
+  document.getElementById("logoutBtn").addEventListener("click", async function () {
+    const { error } = await supabaseClient.auth.signOut();
+
+    if (error) {
+      console.error("Logout error:", error);
+      alert("Unable to log out. Please try again.");
+      return;
+    }
+
+    window.location.href = "login.html";
+  });
+
+  /* MONEY */
+
+  function formatMoney(amount) {
+    return "₦" + Number(amount || 0).toLocaleString("en-NG", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    });
+  }
+
+  /* LOAD USER */
+
+  async function loadUser() {
+    const { data, error } = await supabaseClient.auth.getUser();
+
+    if (error || !data || !data.user) {
+      window.location.href = "login.html";
+      return null;
+    }
+
+    currentUser = data.user;
+
+    document.getElementById("userEmail").textContent =
+      data.user.email || "";
+
+    return data.user;
+  }
+
+  /* LOAD WALLET */
+
+  async function loadWallet(user) {
+    const { data, error } = await supabaseClient
+      .from("wallets")
+      .select("balance")
+      .eq("user_id", user.id)
+      .maybeSingle();
+
+    if (error) {
+      console.error("Wallet error:", error);
+      document.getElementById("walletBalance").textContent =
+        "Unable to load";
+      return;
+    }
+
+    document.getElementById("walletBalance").textContent =
+      formatMoney(data ? data.balance : 0);
+  }
+
+  /* LOAD PAYMENT METHODS */
+
+  async function loadPaymentMethods() {
+    const { data, error } = await supabaseClient
+      .from("payment_methods")
+      .select("method_code,method_name,is_active")
+      .in("method_code", ["paymentpoint", "recopay"]);
+
+    if (error) {
+      console.error("Payment methods error:", error);
+      return;
+    }
+
+    paymentMethods = {
+      paymentpoint: false,
+      recopay: false
+    };
+
+    (data || []).forEach(method => {
+      if (method.method_code === "paymentpoint") {
+        paymentMethods.paymentpoint = Boolean(method.is_active);
+      }
+
+      if (method.method_code === "recopay") {
+        paymentMethods.recopay = Boolean(method.is_active);
+      }
+    });
+  }
+
+  /* DEDICATED ACCOUNT */
+
+  async function loadPaymentPointAccount(user) {
+    const card = document.getElementById("paymentPointCard");
+    const loading = document.getElementById("accountLoading");
+    const details = document.getElementById("accountDetails");
+    const errorBox = document.getElementById("accountError");
+
+    loading.style.display = "none";
+    details.style.display = "none";
+    errorBox.textContent = "";
+
+    if (!paymentMethods.paymentpoint) {
+      card.style.display = "none";
+      return;
+    }
+
+    card.style.display = "block";
+    loading.style.display = "block";
+    loading.textContent = "Loading dedicated account...";
+
+    const { data, error } = await supabaseClient
+      .from("paymentpoint_accounts")
+      .select("account_name,bank_name,account_number,created_at")
+      .eq("user_id", user.id)
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    loading.style.display = "none";
+
+    if (error) {
+      console.error("PaymentPoint account error:", error);
+      errorBox.textContent = "Unable to load dedicated account.";
+      return;
+    }
+
+    if (!data) {
+      errorBox.textContent =
+        "No dedicated account found. Please open Fund Wallet to create or view your account.";
+      return;
+    }
+
+    document.getElementById("accountName").textContent =
+      data.account_name || "---";
+
+    document.getElementById("bankName").textContent =
+      data.bank_name || "---";
+
+    document.getElementById("accountNumber").textContent =
+      data.account_number || "---";
+
+    details.style.display = "block";
+  }
+
+  /* SERVICE PRICES */
+
+  async function loadServicePrices() {
+    const { data, error } = await supabaseClient
+      .from("service_settings")
+      .select("service_code,price,is_active");
+
+    if (error) {
+      console.error("Service price error:", error);
+      return;
+    }
+
+    const services = data || [];
+
+    updateServiceCard(
+      "ninStandardCard",
+      "ninStandardPrice",
+      "ninStandardBtn",
+      services.find(item => item.service_code === "nin_standard"),
+      "nin.html"
+    );
+
+    updateServiceCard(
+      "ninLostCard",
+      "ninLostPrice",
+      "ninLostBtn",
+      services.find(item => item.service_code === "nin_lost"),
+      "nin.html"
+    );
+
+    updateServiceCard(
+      "ninPremiumCard",
+      "ninPremiumPrice",
+      "ninPremiumBtn",
+      services.find(item => item.service_code === "nin_premium"),
+      "nin.html"
+    );
+
+    updateServiceCard(
+      "bvnCard",
+      "bvnPrice",
+      "bvnBtn",
+      services.find(item => item.service_code === "bvn_reprint"),
+      "bvn.html"
+    );
+  }
+
+  /* UPDATE SERVICE CARD */
+
+  function updateServiceCard(cardId, priceId, buttonId, service, page) {
+    const card = document.getElementById(cardId);
+    const price = document.getElementById(priceId);
+    const button = document.getElementById(buttonId);
+
+    if (!card || !price || !button) return;
+
+    if (!service) {
+      card.style.display = "none";
+      return;
+    }
+
+    card.style.display = "block";
+
+    if (!service.is_active) {
+      card.classList.add("disabled");
+      price.textContent = "Currently unavailable";
+      button.textContent = "Unavailable";
+      button.classList.add("disabled-btn");
+      button.removeAttribute("href");
+      return;
+    }
+
+    card.classList.remove("disabled");
+    price.textContent = formatMoney(service.price);
+    button.textContent = "Continue";
+    button.classList.remove("disabled-btn");
+    button.href = page;
+  }
+
+  /* ANNOUNCEMENT */
+
+  async function loadAnnouncement() {
+    const overlay = document.getElementById("announcementOverlay");
+    const title = document.getElementById("announcementTitle");
+    const message = document.getElementById("announcementMessage");
+
+    if (!overlay || !title || !message) return;
+
+    const { data, error } = await supabaseClient
+      .from("announcements")
+      .select("id,title,message,is_active,created_at")
+      .eq("is_active", true)
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    if (error) {
+      console.error("Announcement error:", error);
+      return;
+    }
+
+    if (!data) return;
+
+    title.textContent = data.title || "Gracioustec Announcement";
+
+    /*
+      Display the announcement as plain text.
+      This avoids executing HTML supplied in a database message.
+    */
+    message.textContent = data.message || "";
+
+    overlay.classList.add("show");
+  }
+
+  /* CLOSE ANNOUNCEMENT */
+
+  function closeAnnouncement() {
+    const overlay = document.getElementById("announcementOverlay");
+    overlay.classList.remove("show");
+    overlay.style.display = "none";
+  }
+
+  document.getElementById("announcementCloseBtn").addEventListener(
+    "click",
+    closeAnnouncement
+  );
+
+  /* REFRESH DASHBOARD */
+
+  async function refreshDashboard() {
+    if (!currentUser) return;
+
+    const button = document.getElementById("refreshBtn");
+    const message = document.getElementById("refreshMessage");
+
+    button.disabled = true;
+    button.textContent = "↻ Refreshing...";
+    message.textContent = "";
+
+    try {
+      await loadPaymentMethods();
+
+      await Promise.all([
+        loadWallet(currentUser),
+        loadPaymentPointAccount(currentUser),
+        loadServicePrices()
+      ]);
+
+      message.textContent = "Updated successfully.";
+    } catch (error) {
+      console.error("Refresh error:", error);
+      message.textContent = "Unable to refresh.";
+    }
+
+    button.disabled = false;
+    button.textContent = "↻ Refresh";
+
+    setTimeout(() => {
+      message.textContent = "";
+    }, 3000);
+  }
+
+  document.getElementById("refreshBtn").addEventListener(
+    "click",
+    refreshDashboard
+  );
+
+  /* START DASHBOARD */
+
+  async function startDashboard() {
+    const user = await loadUser();
+
+    if (!user) return;
+
+    await loadPaymentMethods();
+
+    await loadAnnouncement();
+
+    await Promise.all([
+      loadWallet(user),
+      loadPaymentPointAccount(user),
+      loadServicePrices()
+    ]);
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", startDashboard);
+  } else {
+    startDashboard();
+  }
+</script></body>
+</html>

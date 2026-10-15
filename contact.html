@@ -1,0 +1,305 @@
+<!DOCTYPE html><html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">  <title>Gracioustec - Contact Us</title>  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background: #f5f7fa;
+      color: #222;
+    }
+
+    header {
+      background: #0b6b3a;
+      color: white;
+      padding: 25px 20px;
+      text-align: center;
+    }
+
+    header h1 {
+      font-size: 28px;
+      margin-bottom: 6px;
+    }
+
+    header p {
+      font-size: 15px;
+    }
+
+    nav {
+      background: white;
+      padding: 15px;
+      text-align: center;
+      box-shadow: 0 2px 5px #ddd;
+    }
+
+    nav a {
+      margin: 0 10px;
+      text-decoration: none;
+      color: #0b6b3a;
+      font-weight: bold;
+    }
+
+    nav a:hover {
+      color: #064d2a;
+    }
+
+    .container {
+      max-width: 850px;
+      margin: 40px auto;
+      padding: 20px;
+    }
+
+    .title {
+      text-align: center;
+      margin-bottom: 35px;
+    }
+
+    .title h2 {
+      font-size: 30px;
+      color: #0b6b3a;
+      margin-bottom: 10px;
+    }
+
+    .title p {
+      color: #666;
+      line-height: 1.6;
+    }
+
+    .contact-card {
+      background: white;
+      max-width: 400px;
+      margin: 0 auto;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 3px 10px #ddd;
+      text-align: center;
+    }
+
+    .contact-card .icon {
+      font-size: 40px;
+      margin-bottom: 15px;
+    }
+
+    .contact-card h3 {
+      color: #0b6b3a;
+      margin-bottom: 10px;
+    }
+
+    .contact-card p {
+      color: #666;
+      line-height: 1.6;
+      margin-bottom: 15px;
+      word-break: break-word;
+    }
+
+    .contact-card a {
+      display: inline-block;
+      background: #0b6b3a;
+      color: white;
+      text-decoration: none;
+      padding: 11px 20px;
+      border-radius: 7px;
+      font-weight: bold;
+    }
+
+    .contact-card a:hover {
+      opacity: 0.9;
+    }
+
+    .form-box {
+      max-width: 650px;
+      margin: 40px auto 0;
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 3px 10px #ddd;
+    }
+
+    .form-box h3 {
+      text-align: center;
+      color: #0b6b3a;
+      margin-bottom: 20px;
+      font-size: 23px;
+    }
+
+    .form-box label {
+      display: block;
+      margin-top: 15px;
+      margin-bottom: 6px;
+      font-weight: bold;
+    }
+
+    .form-box input,
+    .form-box textarea {
+      width: 100%;
+      padding: 13px;
+      border: 1px solid #ccc;
+      border-radius: 7px;
+      font-family: Arial, sans-serif;
+      font-size: 15px;
+    }
+
+    .form-box textarea {
+      min-height: 140px;
+      resize: vertical;
+    }
+
+    .submit-btn {
+      width: 100%;
+      margin-top: 20px;
+      padding: 14px;
+      border: 0;
+      border-radius: 7px;
+      background: #0b6b3a;
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .submit-btn:hover {
+      opacity: 0.9;
+    }
+
+    .home-button {
+      text-align: center;
+      margin-top: 35px;
+    }
+
+    .home-button a {
+      display: inline-block;
+      background: #111;
+      color: white;
+      text-decoration: none;
+      padding: 13px 25px;
+      border-radius: 7px;
+      font-weight: bold;
+    }
+
+    footer {
+      text-align: center;
+      background: #111;
+      color: white;
+      padding: 25px;
+      margin-top: 50px;
+    }
+
+    @media (max-width: 600px) {
+      .container {
+        margin: 25px auto;
+        padding: 15px;
+      }
+
+      .title h2 {
+        font-size: 25px;
+      }
+
+      nav a {
+        display: inline-block;
+        margin: 5px 7px;
+      }
+    }
+  </style></head><body><header>
+  <h1>GRACIOUSTEC</h1>
+  <p>NIN & BVN Reprinting Services</p>
+</header><nav>
+  <a href="index.html">Home</a>
+  <a href="services.html">Services</a>
+  <a href="login.html">Login</a>
+  <a href="contact.html">Contact</a>
+</nav><div class="container">  <div class="title">
+    <h2>Contact Us</h2><p>
+  Have a question or need assistance with our services?
+  Get in touch with Gracioustec.
+</p>
+
+  </div>  <div class="contact-card"><div class="icon">📧</div>
+
+<h3>Email Us</h3>
+
+<p>
+  graceictofficial@gmail.com
+</p>
+
+<a href="mailto:graceictofficial@gmail.com">
+  Send Email
+</a>
+
+  </div>  <div class="form-box"><h3>Send Us a Message</h3>
+
+<form onsubmit="sendMessage(event)">
+
+  <label for="name">Your Name</label>
+
+  <input
+    type="text"
+    id="name"
+    placeholder="Enter your name"
+    required
+  >
+
+  <label for="email">Email Address</label>
+
+  <input
+    type="email"
+    id="email"
+    placeholder="Enter your email"
+    required
+  >
+
+  <label for="message">Message</label>
+
+  <textarea
+    id="message"
+    placeholder="Type your message here..."
+    required
+  ></textarea>
+
+  <button type="submit" class="submit-btn">
+    Send Message
+  </button>
+
+</form>
+
+  </div>  <div class="home-button">
+    <a href="index.html">
+      ← Back to Home
+    </a>
+  </div></div><footer>
+  <p>© 2026 GRACIOUSTEC. All Rights Reserved.</p>
+</footer><script>
+
+function sendMessage(event) {
+
+  event.preventDefault();
+
+  const name =
+    document.getElementById("name").value.trim();
+
+  const email =
+    document.getElementById("email").value.trim();
+
+  const message =
+    document.getElementById("message").value.trim();
+
+  const subject =
+    "Gracioustec Website Contact";
+
+  const body =
+    "Name: " + name +
+    "\n\nEmail: " + email +
+    "\n\nMessage:\n" + message;
+
+  window.location.href =
+    "mailto:graceictofficial@gmail.com" +
+    "?subject=" + encodeURIComponent(subject) +
+    "&body=" + encodeURIComponent(body);
+}
+
+</script></body>
+</html>

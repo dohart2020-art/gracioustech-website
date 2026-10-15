@@ -1,0 +1,460 @@
+DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NIN Long Slip Template</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    padding: 30px;
+    background: #f1f1f1;
+    font-family: Arial, Helvetica, sans-serif;
+    color: #111;
+}
+
+.slip {
+    width: 768px;
+    max-width: 100%;
+    margin: auto;
+    background: #fff;
+    border: 2px solid #222;
+    box-shadow: 0 4px 18px rgba(0,0,0,.15);
+}
+
+/* HEADER */
+.header {
+    display: grid;
+    grid-template-columns: 110px 1fr 110px;
+    align-items: center;
+    min-height: 145px;
+    padding: 15px;
+    border-bottom: 2px solid #222;
+}
+
+.logo-box {
+    width: 85px;
+    height: 85px;
+    margin: auto;
+    border: 2px solid #555;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    font-size: 11px;
+    font-weight: bold;
+}
+
+.header-title {
+    text-align: center;
+}
+
+.header-title h1 {
+    margin: 0;
+    font-size: 25px;
+    font-weight: 800;
+}
+
+.header-title h2 {
+    margin: 6px 0;
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.header-title p {
+    margin: 4px 0 0;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.slip-title {
+    margin: 12px auto 0;
+    padding: 9px 15px;
+    background: #eee;
+    border: 1px solid #555;
+    font-size: 18px;
+    font-weight: 800;
+    text-align: center;
+}
+
+/* MAIN AREA */
+.main {
+    display: grid;
+    grid-template-columns: 1fr 220px;
+    border-bottom: 2px solid #222;
+}
+
+/* INFORMATION TABLE */
+.info {
+    border-right: 2px solid #222;
+}
+
+.row {
+    display: grid;
+    grid-template-columns: 175px 1fr;
+    min-height: 55px;
+    border-bottom: 1px solid #777;
+}
+
+.row:last-child {
+    border-bottom: 0;
+}
+
+.label {
+    padding: 13px 10px;
+    background: #f0f0f0;
+    border-right: 1px solid #777;
+    font-weight: bold;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+}
+
+.value {
+    padding: 13px 12px;
+    font-size: 14px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    color: #444;
+}
+
+/* PHOTO */
+.photo-area {
+    padding: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.photo {
+    width: 175px;
+    height: 215px;
+    border: 1px solid #999;
+    background: #f7f7f7;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: #777;
+    font-size: 13px;
+    font-weight: bold;
+}
+
+/* NOTICE */
+.notice {
+    padding: 15px;
+    background: #f5f5f5;
+    border-bottom: 2px solid #222;
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+.notice strong {
+    font-size: 13px;
+}
+
+/* FOOTER */
+.footer {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+}
+
+.footer-box {
+    min-height: 105px;
+    padding: 12px 8px;
+    text-align: center;
+    border-right: 1px solid #777;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.footer-box:last-child {
+    border-right: none;
+}
+
+.footer-box h4 {
+    margin: 0 0 8px;
+    font-size: 12px;
+}
+
+.footer-box p {
+    margin: 2px 0;
+    font-size: 10px;
+    color: #555;
+}
+
+/* TEMPLATE LABEL */
+.template-label {
+    padding: 9px;
+    text-align: center;
+    background: #222;
+    color: white;
+    font-size: 11px;
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+
+/* PRINT */
+.print-button {
+    display: block;
+    margin: 20px auto;
+    padding: 12px 25px;
+    border: none;
+    border-radius: 5px;
+    background: #222;
+    color: white;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.print-button:hover {
+    background: #444;
+}
+
+@media (max-width: 650px) {
+
+    body {
+        padding: 10px;
+    }
+
+    .header {
+        grid-template-columns: 70px 1fr 70px;
+        padding: 8px;
+    }
+
+    .logo-box {
+        width: 55px;
+        height: 55px;
+        font-size: 8px;
+    }
+
+    .header-title h1 {
+        font-size: 16px;
+    }
+
+    .header-title h2 {
+        font-size: 13px;
+    }
+
+    .header-title p {
+        font-size: 10px;
+    }
+
+    .slip-title {
+        font-size: 13px;
+    }
+
+    .main {
+        grid-template-columns: 1fr;
+    }
+
+    .info {
+        border-right: none;
+        border-bottom: 2px solid #222;
+    }
+
+    .photo-area {
+        padding: 15px;
+    }
+
+    .row {
+        grid-template-columns: 130px 1fr;
+    }
+
+    .label,
+    .value {
+        font-size: 11px;
+    }
+
+    .footer {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .footer-box {
+        border-bottom: 1px solid #777;
+    }
+}
+
+@media print {
+
+    body {
+        padding: 0;
+        background: white;
+    }
+
+    .slip {
+        width: 100%;
+        max-width: none;
+        box-shadow: none;
+        border: 2px solid #222;
+    }
+
+    .print-button {
+        display: none;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="slip">
+
+    <!-- HEADER -->
+    <div class="header">
+
+        <div class="logo-box">
+            IDENTITY<br>
+            EMBLEM
+        </div>
+
+        <div class="header-title">
+
+            <h1>NATIONAL IDENTITY MANAGEMENT SYSTEM</h1>
+
+            <h2>FEDERAL REPUBLIC OF NIGERIA</h2>
+
+            <p>(ENROLLMENT TRANSACTION SLIP)</p>
+
+            <div class="slip-title">
+                NIN LONG SLIP
+            </div>
+
+        </div>
+
+        <div class="logo-box">
+            IDENTITY<br>
+            LOGO
+        </div>
+
+    </div>
+
+
+    <!-- MAIN INFORMATION -->
+    <div class="main">
+
+        <div class="info">
+
+            <div class="row">
+                <div class="label">Tracking ID:</div>
+                <div class="value">________________________</div>
+            </div>
+
+            <div class="row">
+                <div class="label">Registration Center:</div>
+                <div class="value">________________________</div>
+            </div>
+
+            <div class="row">
+                <div class="label">Registration Date:</div>
+                <div class="value">____ / ____ / ______</div>
+            </div>
+
+            <div class="row">
+                <div class="label">Enroller's ID:</div>
+                <div class="value">________________________</div>
+            </div>
+
+            <div class="row">
+                <div class="label">Surname:</div>
+                <div class="value">________________________</div>
+            </div>
+
+            <div class="row">
+                <div class="label">First Name:</div>
+                <div class="value">________________________</div>
+            </div>
+
+            <div class="row">
+                <div class="label">Middle Name:</div>
+                <div class="value">________________________</div>
+            </div>
+
+            <div class="row">
+                <div class="label">Gender:</div>
+                <div class="value">________________________</div>
+            </div>
+
+        </div>
+
+
+        <!-- PHOTO PLACEHOLDER -->
+        <div class="photo-area">
+
+            <div class="photo">
+                PHOTO AREA
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- NOTICE -->
+    <div class="notice">
+
+        <strong>NOTE:</strong>
+
+        This template contains no personal identity information.
+        Fields are intentionally blank for development and testing.
+
+        <br><br>
+
+        Keep your identity information confidential and only use
+        authorized channels for obtaining official identity documents.
+
+    </div>
+
+
+    <!-- FOOTER -->
+    <div class="footer">
+
+        <div class="footer-box">
+            <h4>EMAIL</h4>
+            <p>Official Helpdesk</p>
+            <p>________________</p>
+        </div>
+
+        <div class="footer-box">
+            <h4>WEBSITE</h4>
+            <p>Official Website</p>
+            <p>________________</p>
+        </div>
+
+        <div class="footer-box">
+            <h4>PHONE</h4>
+            <p>Official Contact</p>
+            <p>________________</p>
+        </div>
+
+        <div class="footer-box">
+            <h4>OFFICE</h4>
+            <p>Official Office Address</p>
+            <p>________________</p>
+        </div>
+
+    </div>
+
+
+    <div class="template-label">
+        BLANK DEVELOPMENT TEMPLATE — NOT AN ISSUED GOVERNMENT DOCUMENT
+    </div>
+
+</div>
+
+
+<button class="print-button" onclick="window.print()">
+    Print Template
+</button>
+
+</body>
+</html>

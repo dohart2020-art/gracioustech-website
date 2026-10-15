@@ -1,0 +1,764 @@
+<!DOCTYPE html><html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">  <title>BVN Verification - Gracioustec</title>  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f4f7f6;
+      color: #222;
+    }
+
+    header {
+      background: #075e3b;
+      color: white;
+      padding: 18px;
+      text-align: center;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 24px;
+    }
+
+    header p {
+      margin: 6px 0 0;
+      font-size: 14px;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: 30px auto;
+      padding: 15px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 12px;
+      padding: 22px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    }
+
+    .wallet {
+      background: #e8f5e9;
+      border-radius: 10px;
+      padding: 15px;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .wallet-title {
+      font-size: 14px;
+      color: #555;
+    }
+
+    .wallet-balance {
+      font-size: 25px;
+      font-weight: bold;
+      color: #075e3b;
+      margin-top: 5px;
+    }
+
+    .fee {
+      background: #e8f5e9;
+      border: 1px solid #c8e6c9;
+      color: #075e3b;
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 20px;
+      text-align: center;
+      font-weight: bold;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: bold;
+    }
+
+    input {
+      width: 100%;
+      padding: 14px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 17px;
+      margin-bottom: 15px;
+      outline: none;
+    }
+
+    input:focus {
+      border-color: #075e3b;
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 8px;
+      background: #075e3b;
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button:disabled {
+      background: #999;
+      cursor: not-allowed;
+    }
+
+    .fund-btn {
+      margin-top: 10px;
+      background: #ff9800;
+      display: none;
+    }
+
+    .message {
+      margin-top: 18px;
+      padding: 13px;
+      border-radius: 8px;
+      display: none;
+      line-height: 1.5;
+    }
+
+    .success {
+      background: #e8f5e9;
+      color: #1b5e20;
+    }
+
+    .error {
+      background: #ffebee;
+      color: #b71c1c;
+    }
+
+    .loading {
+      background: #e3f2fd;
+      color: #0d47a1;
+    }
+
+    .result {
+      margin-top: 20px;
+      display: none;
+    }
+
+    .result h2 {
+      font-size: 20px;
+      margin-bottom: 15px;
+      color: #075e3b;
+    }
+
+    .detail {
+      background: #f5f7f6;
+      border: 1px solid #e1e5e3;
+      padding: 12px;
+      border-radius: 7px;
+      margin-bottom: 10px;
+    }
+
+    .detail strong {
+      display: block;
+      color: #555;
+      font-size: 13px;
+      margin-bottom: 4px;
+    }
+
+    .detail span {
+      font-size: 16px;
+      word-break: break-word;
+    }
+
+    .back {
+      margin-top: 15px;
+      background: #075e3b;
+    }
+
+    .note {
+      margin-top: 18px;
+      font-size: 13px;
+      color: #666;
+      text-align: center;
+      line-height: 1.5;
+    }
+  </style></head><body><header>
+  <h1>BVN Verification</h1>
+  <p>Verify your Bank Verification Number</p>
+</header><div class="container">  <div class="card"><div class="wallet">
+  <div class="wallet-title">Wallet Balance</div>
+  <div class="wallet-balance" id="walletBalance">
+    ₦0.00
+  </div>
+</div>
+
+<div class="fee">
+  Verification Fee: ₦250
+</div>
+
+<form id="verificationForm">
+
+  <label for="bvn">Enter BVN</label>
+
+  <input
+    type="text"
+    id="bvn"
+    placeholder="Enter 11-digit BVN"
+    maxlength="11"
+    inputmode="numeric"
+    autocomplete="off"
+    required
+  >
+
+  <button type="submit" id="verifyBtn">
+    Verify Now — ₦250
+  </button>
+
+</form>
+
+<button
+  class="fund-btn"
+  id="fundBtn"
+  onclick="window.location.href='fund-wallet.html'">
+  Fund Wallet
+</button>
+
+<div id="message" class="message"></div>
+
+<div id="result" class="result">
+  <h2>BVN Verification Result</h2>
+  <div id="details"></div>
+</div>
+
+<button
+  class="back"
+  onclick="window.location.href='dashboard.html'">
+  Back to Dashboard
+</button>
+
+<div class="note">
+  Your BVN is processed securely for verification purposes.
+</div>
+
+  </div></div><script>
+
+  const SUPABASE_URL =
+    "https://iknhifndgpwibkfidggq.supabase.co";
+
+  const SUPABASE_KEY =
+    "sb_publishable_xELauxOMm7eMkNrPz55Mrw_LVkRoASn";
+
+  const supabaseClient =
+    window.supabase.createClient(
+      SUPABASE_URL,
+      SUPABASE_KEY
+    );
+
+  const VERIFICATION_FEE = 250;
+
+  const form =
+    document.getElementById("verificationForm");
+
+  const bvnInput =
+    document.getElementById("bvn");
+
+  const verifyBtn =
+    document.getElementById("verifyBtn");
+
+  const message =
+    document.getElementById("message");
+
+  const result =
+    document.getElementById("result");
+
+  const details =
+    document.getElementById("details");
+
+  const walletBalance =
+    document.getElementById("walletBalance");
+
+  const fundBtn =
+    document.getElementById("fundBtn");
+
+
+  function showMessage(text, type) {
+
+    message.textContent = text;
+
+    message.className =
+      "message " + type;
+
+    message.style.display = "block";
+  }
+
+
+  function hideMessage() {
+
+    message.style.display = "none";
+
+  }
+
+
+  async function checkLogin() {
+
+    const {
+      data: { user }
+    } = await supabaseClient.auth.getUser();
+
+    if (!user) {
+
+      window.location.href = "login.html";
+
+      return null;
+
+    }
+
+    return user;
+
+  }
+
+
+  async function loadWallet() {
+
+    const user = await checkLogin();
+
+    if (!user) return;
+
+    const {
+      data,
+      error
+    } = await supabaseClient
+      .from("wallets")
+      .select("balance")
+      .eq("user_id", user.id)
+      .maybeSingle();
+
+    if (error) {
+
+      console.error(error);
+
+      walletBalance.textContent = "₦0.00";
+
+      return;
+
+    }
+
+    const balance =
+      Number(data?.balance || 0);
+
+    walletBalance.textContent =
+      "₦" +
+      balance.toLocaleString(
+        "en-NG",
+        {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2
+        }
+      );
+
+  }
+
+
+  function cleanKey(key) {
+
+    return key
+      .replace(/_/g, " ")
+      .replace(/-/g, " ")
+      .replace(/\b\w/g, c => c.toUpperCase());
+
+  }
+
+
+  function escapeHtml(value) {
+
+    return String(value ?? "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
+
+  }
+
+
+  function displayResult(data) {
+
+    details.innerHTML = "";
+
+    let found = false;
+
+    const hiddenKeys = [
+      "success",
+      "status",
+      "message",
+      "error",
+      "pdf",
+      "pdf_url",
+      "download_url",
+      "slip",
+      "slip_url"
+    ];
+
+    function addDetail(key, value) {
+
+      if (
+        value === null ||
+        value === undefined ||
+        value === ""
+      ) {
+        return;
+      }
+
+      if (
+        hiddenKeys.includes(
+          key.toLowerCase()
+        )
+      ) {
+        return;
+      }
+
+      if (
+        typeof value === "object"
+      ) {
+
+        value =
+          JSON.stringify(
+            value,
+            null,
+            2
+          );
+
+      }
+
+      const div =
+        document.createElement("div");
+
+      div.className = "detail";
+
+      const label =
+        document.createElement("strong");
+
+      label.textContent = cleanKey(key);
+
+      const span =
+        document.createElement("span");
+
+      span.textContent = String(value);
+
+      div.appendChild(label);
+      div.appendChild(span);
+
+      details.appendChild(div);
+
+      found = true;
+
+    }
+
+
+    if (
+      data &&
+      typeof data === "object"
+    ) {
+
+      Object.entries(data)
+        .forEach(([key, value]) => {
+
+          if (
+            key === "data" &&
+            value &&
+            typeof value === "object" &&
+            !Array.isArray(value)
+          ) {
+
+            Object.entries(value)
+              .forEach(([k, v]) =>
+                addDetail(k, v)
+              );
+
+          } else {
+
+            addDetail(key, value);
+
+          }
+
+        });
+
+    }
+
+
+    if (!found) {
+
+      const div =
+        document.createElement("div");
+
+      div.className = "detail";
+
+      const span =
+        document.createElement("span");
+
+      span.textContent =
+        "Verification was successful, but no identity details were returned.";
+
+      div.appendChild(span);
+
+      details.appendChild(div);
+
+    }
+
+    result.style.display = "block";
+
+  }
+
+
+  form.addEventListener(
+    "submit",
+    async function(event) {
+
+      event.preventDefault();
+
+      hideMessage();
+
+      result.style.display = "none";
+
+      fundBtn.style.display = "none";
+
+      const bvn =
+        bvnInput.value.trim();
+
+
+      if (!/^\d{11}$/.test(bvn)) {
+
+        showMessage(
+          "Please enter a valid 11-digit BVN.",
+          "error"
+        );
+
+        return;
+
+      }
+
+
+      const user =
+        await checkLogin();
+
+      if (!user) return;
+
+
+      verifyBtn.disabled = true;
+
+      verifyBtn.textContent =
+        "Processing...";
+
+
+      try {
+
+        /*
+         * STEP 1
+         * Charge ₦250 from wallet
+         */
+
+        showMessage(
+          "Checking wallet balance...",
+          "loading"
+        );
+
+
+        const {
+          data: chargeData,
+          error: chargeError
+        } =
+          await supabaseClient.rpc(
+            "charge_bvn_verification",
+            {
+              p_amount: VERIFICATION_FEE
+            }
+          );
+
+
+        if (chargeError) {
+
+          console.error(
+            "Charge error:",
+            chargeError
+          );
+
+          throw new Error(
+            chargeError.message
+          );
+
+        }
+
+
+        if (
+          !chargeData ||
+          !chargeData.success
+        ) {
+
+          fundBtn.style.display =
+            "block";
+
+          throw new Error(
+            chargeData?.message ||
+            "Unable to charge wallet."
+          );
+
+        }
+
+
+        /*
+         * Update wallet balance
+         */
+
+        if (
+          chargeData.balance !== undefined
+        ) {
+
+          const newBalance =
+            Number(
+              chargeData.balance
+            );
+
+          walletBalance.textContent =
+            "₦" +
+            newBalance.toLocaleString(
+              "en-NG",
+              {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+              }
+            );
+
+        }
+
+
+        /*
+         * STEP 2
+         * Call BVN verification API
+         */
+
+        showMessage(
+          "Payment successful. Verifying BVN...",
+          "loading"
+        );
+
+
+        const {
+          data: verificationData,
+          error: verificationError
+        } =
+          await supabaseClient.functions.invoke(
+            "bvn-verification",
+            {
+              body: {
+                bvn: bvn
+              }
+            }
+          );
+
+
+        if (verificationError) {
+
+          console.error(
+            "Verification error:",
+            verificationError
+          );
+
+          throw new Error(
+            verificationError.message ||
+            "BVN verification failed."
+          );
+
+        }
+
+
+        if (
+          !verificationData
+        ) {
+
+          throw new Error(
+            "No response was received from the BVN verification service."
+          );
+
+        }
+
+
+        if (
+          verificationData.success === false
+        ) {
+
+          throw new Error(
+            verificationData.message ||
+            "BVN verification failed."
+          );
+
+        }
+
+
+        /*
+         * STEP 3
+         * Display result
+         */
+
+        showMessage(
+          "BVN verification completed successfully.",
+          "success"
+        );
+
+        displayResult(
+          verificationData
+        );
+
+        await loadWallet();
+
+      }
+
+      catch (error) {
+
+        console.error(error);
+
+        showMessage(
+          error.message ||
+          "An error occurred during BVN verification.",
+          "error"
+        );
+
+      }
+
+      finally {
+
+        verifyBtn.disabled = false;
+
+        verifyBtn.textContent =
+          "Verify Now — ₦250";
+
+      }
+
+    });
+
+
+  /*
+   * Allow numbers only
+   */
+
+  bvnInput.addEventListener(
+    "input",
+    function() {
+
+      this.value =
+        this.value
+          .replace(/\D/g, "")
+          .slice(0, 11);
+
+    }
+  );
+
+
+  /*
+   * Load wallet when page opens
+   */
+
+  loadWallet();
+
+</script></body>
+</html>

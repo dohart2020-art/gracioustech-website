@@ -1,0 +1,668 @@
+<!DOCTYPE html><html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">  <title>Transaction History - Gracioustec</title>  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    body {
+      background: #f4f7fb;
+      color: #172033;
+    }
+
+    .header {
+      background: #075e54;
+      color: white;
+      padding: 15px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    }
+
+    .brand {
+      font-size: 20px;
+      font-weight: bold;
+    }
+
+    .back-btn {
+      background: white;
+      color: #075e54;
+      border: none;
+      border-radius: 8px;
+      padding: 9px 14px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: auto;
+      padding: 20px;
+    }
+
+    .page-title {
+      margin-bottom: 18px;
+    }
+
+    .page-title h2 {
+      font-size: 24px;
+      margin-bottom: 6px;
+    }
+
+    .page-title p {
+      color: #667085;
+      font-size: 14px;
+    }
+
+    .summary {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .summary-card {
+      background: white;
+      border-radius: 14px;
+      padding: 20px;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.06);
+    }
+
+    .summary-card small {
+      color: #667085;
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    .summary-card strong {
+      font-size: 23px;
+    }
+
+    .transactions-card {
+      background: white;
+      border-radius: 14px;
+      padding: 18px;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.06);
+      overflow-x: auto;
+    }
+
+    .transactions-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+
+    .transactions-header h3 {
+      font-size: 18px;
+    }
+
+    .refresh-btn {
+      border: none;
+      background: #075e54;
+      color: white;
+      padding: 8px 13px;
+      border-radius: 7px;
+      cursor: pointer;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 650px;
+    }
+
+    th {
+      background: #f4f7fb;
+      text-align: left;
+      padding: 12px;
+      font-size: 13px;
+    }
+
+    td {
+      padding: 13px 12px;
+      border-bottom: 1px solid #eeeeee;
+      font-size: 13px;
+    }
+
+    .credit {
+      color: #067647;
+      font-weight: bold;
+    }
+
+    .debit {
+      color: #b42318;
+      font-weight: bold;
+    }
+
+    .type {
+      font-weight: bold;
+    }
+
+    .empty {
+      text-align: center;
+      padding: 35px 15px;
+      color: #667085;
+      display: none;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 30px;
+      color: #667085;
+    }
+
+    .error {
+      background: #fef3f2;
+      color: #b42318;
+      padding: 14px;
+      border-radius: 9px;
+      margin-bottom: 15px;
+      display: none;
+    }
+
+    footer {
+      text-align: center;
+      padding: 30px 20px;
+      color: #667085;
+      font-size: 13px;
+    }
+
+    @media (max-width: 600px) {
+      .container {
+        padding: 15px;
+      }
+
+      .summary {
+        grid-template-columns: 1fr;
+      }
+
+      .page-title h2 {
+        font-size: 21px;
+      }
+
+      .brand {
+        font-size: 18px;
+      }
+    }
+  </style></head><body><header class="header">  <div class="brand">
+    Gracioustec
+  </div><button
+class="back-btn"
+onclick="goBack()"
+
+«»
+
+← Dashboard
+
+  </button></header><main class="container">  <div class="page-title"><h2>
+  Transaction History
+</h2>
+
+<p>
+  Your wallet funding and wallet transactions.
+</p>
+
+  </div>  <div
+    id="errorBox"
+    class="error"
+  ></div>  <div class="summary"><div class="summary-card">
+
+  <small>
+    Total Transactions
+  </small>
+
+  <strong id="totalTransactions">
+    0
+  </strong>
+
+</div>
+
+<div class="summary-card">
+
+  <small>
+    Total Wallet Credits
+  </small>
+
+  <strong id="totalCredits">
+    ₦0.00
+  </strong>
+
+</div>
+
+  </div>  <section class="transactions-card"><div class="transactions-header">
+
+  <h3>
+    Recent Transactions
+  </h3>
+
+  <button
+    class="refresh-btn"
+    onclick="loadTransactions()"
+  >
+    Refresh
+  </button>
+
+</div>
+
+<div
+  id="loading"
+  class="loading"
+>
+  Loading transactions...
+</div>
+
+<div
+  id="empty"
+  class="empty"
+>
+
+  <div style="font-size:35px;">
+    📋
+  </div>
+
+  <p>
+    No transactions found yet.
+  </p>
+
+</div>
+
+<table id="transactionTable">
+
+  <thead>
+
+    <tr>
+
+      <th>Date</th>
+
+      <th>Type</th>
+
+      <th>Description</th>
+
+      <th>Amount</th>
+
+      <th>Reference</th>
+
+    </tr>
+
+  </thead>
+
+  <tbody id="transactionBody"></tbody>
+
+</table>
+
+  </section></main><footer>
+  © 2026 Gracioustec. All rights reserved.
+</footer><script>
+
+  /* ==========================================
+     SUPABASE
+     ========================================== */
+
+  const SUPABASE_URL =
+    "https://iknhifndgpwibkfidggq.supabase.co";
+
+  const SUPABASE_KEY =
+    "sb_publishable_xELauxOMm7eMkNrPz55Mrw_LVkRoASn";
+
+  const supabaseClient =
+    window.supabase.createClient(
+      SUPABASE_URL,
+      SUPABASE_KEY
+    );
+
+
+  /* ==========================================
+     FORMAT NAIRA
+     ========================================== */
+
+  function formatNaira(amount) {
+
+    return "₦" +
+      Number(amount || 0).toLocaleString(
+        "en-NG",
+        {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2
+        }
+      );
+
+  }
+
+
+  /* ==========================================
+     FORMAT DATE
+     ========================================== */
+
+  function formatDate(date) {
+
+    if (!date) {
+      return "—";
+    }
+
+    return new Date(date).toLocaleString(
+      "en-NG",
+      {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit"
+      }
+    );
+
+  }
+
+
+  /* ==========================================
+     ESCAPE HTML
+     ========================================== */
+
+  function escapeHtml(value) {
+
+    return String(value ?? "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
+
+  }
+
+
+  /* ==========================================
+     BACK TO DASHBOARD
+     ========================================== */
+
+  function goBack() {
+
+    window.location.href =
+      "dashboard.html";
+
+  }
+
+
+  /* ==========================================
+     LOAD TRANSACTIONS
+     ========================================== */
+
+  async function loadTransactions() {
+
+    const loading =
+      document.getElementById("loading");
+
+    const empty =
+      document.getElementById("empty");
+
+    const table =
+      document.getElementById("transactionTable");
+
+    const body =
+      document.getElementById("transactionBody");
+
+    const errorBox =
+      document.getElementById("errorBox");
+
+
+    loading.style.display = "block";
+
+    empty.style.display = "none";
+
+    table.style.display = "none";
+
+    errorBox.style.display = "none";
+
+    body.innerHTML = "";
+
+
+    try {
+
+      /* GET CURRENT USER */
+
+      const {
+        data: {
+          session
+        },
+        error: sessionError
+      } =
+        await supabaseClient.auth.getSession();
+
+
+      if (sessionError) {
+        throw sessionError;
+      }
+
+
+      if (!session) {
+
+        window.location.href =
+          "login.html";
+
+        return;
+
+      }
+
+
+      const user =
+        session.user;
+
+
+      /* ======================================
+         GET WALLET TRANSACTIONS
+         ====================================== */
+
+      const {
+        data: transactions,
+        error
+      } =
+        await supabaseClient
+          .from("wallet_transactions")
+          .select(
+            "id, user_id, type, amount, description, reference, created_at"
+          )
+          .eq(
+            "user_id",
+            user.id
+          )
+          .order(
+            "created_at",
+            {
+              ascending: false
+            }
+          );
+
+
+      if (error) {
+
+        console.error(
+          "Wallet transaction error:",
+          error
+        );
+
+        throw error;
+
+      }
+
+
+      loading.style.display = "none";
+
+
+      /* NO TRANSACTIONS */
+
+      if (
+        !transactions ||
+        transactions.length === 0
+      ) {
+
+        empty.style.display = "block";
+
+        document.getElementById(
+          "totalTransactions"
+        ).textContent = "0";
+
+        document.getElementById(
+          "totalCredits"
+        ).textContent = "₦0.00";
+
+        return;
+
+      }
+
+
+      /* SHOW TABLE */
+
+      table.style.display = "table";
+
+
+      document.getElementById(
+        "totalTransactions"
+      ).textContent =
+        transactions.length;
+
+
+      let totalCredits = 0;
+
+
+      /* ======================================
+         BUILD TRANSACTION ROWS
+         ====================================== */
+
+      transactions.forEach(
+        transaction => {
+
+          const type =
+            transaction.type || "Transaction";
+
+
+          const description =
+            transaction.description ||
+            "Wallet transaction";
+
+
+          const reference =
+            transaction.reference ||
+            "—";
+
+
+          const amount =
+            Number(
+              transaction.amount || 0
+            );
+
+
+          const lowerType =
+            String(type).toLowerCase();
+
+
+          /*
+           * CREDIT TYPES
+           *
+           * Reckopay wallet funding should
+           * normally appear as a credit.
+           */
+
+          const isCredit =
+            lowerType.includes("credit") ||
+            lowerType.includes("fund") ||
+            lowerType.includes("deposit") ||
+            lowerType.includes("wallet");
+
+
+          if (isCredit) {
+
+            totalCredits += amount;
+
+          }
+
+
+          const amountClass =
+            isCredit
+              ? "credit"
+              : "debit";
+
+
+          const sign =
+            isCredit
+              ? "+"
+              : "-";
+
+
+          const row =
+            document.createElement("tr");
+
+
+          row.innerHTML = `
+
+            <td>
+              ${formatDate(
+                transaction.created_at
+              )}
+            </td>
+
+            <td class="type">
+              ${escapeHtml(type)}
+            </td>
+
+            <td>
+              ${escapeHtml(description)}
+            </td>
+
+            <td class="${amountClass}">
+              ${sign}${formatNaira(amount)}
+            </td>
+
+            <td>
+              ${escapeHtml(reference)}
+            </td>
+
+          `;
+
+
+          body.appendChild(row);
+
+        }
+      );
+
+
+      document.getElementById(
+        "totalCredits"
+      ).textContent =
+        formatNaira(totalCredits);
+
+    }
+
+    catch (error) {
+
+      console.error(
+        "Transaction history error:",
+        error
+      );
+
+      loading.style.display = "none";
+
+      errorBox.textContent =
+        "Unable to load your transaction history. Please try again.";
+
+      errorBox.style.display = "block";
+
+    }
+
+  }
+
+
+  /* ==========================================
+     START
+     ========================================== */
+
+  loadTransactions();
+
+</script></body>
+</html>

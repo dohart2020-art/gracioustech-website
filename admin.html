@@ -1,0 +1,1270 @@
+<!DOCTYPE html><html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gracioustec Admin Dashboard</title>  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f4f7f9;
+      color: #17212b;
+    }
+
+    header {
+      background: #087f5b;
+      color: white;
+      padding: 18px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    header h1 { margin: 0; font-size: 21px; }
+
+    .logout {
+      background: white;
+      color: #087f5b;
+      border: none;
+      padding: 9px 14px;
+      border-radius: 7px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .container {
+      max-width: 1300px;
+      margin: auto;
+      padding: 18px;
+    }
+
+    #loading {
+      text-align: center;
+      padding: 40px;
+      font-size: 18px;
+    }
+
+    #error {
+      display: none;
+      background: #ffe3e3;
+      color: #b00020;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 15px;
+    }
+
+    .success-message {
+      display: none;
+      background: #d3f9d8;
+      color: #087f5b;
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 15px;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 15px;
+      margin-bottom: 25px;
+    }
+
+    .stat {
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,.07);
+    }
+
+    .stat h3 {
+      margin: 0 0 10px;
+      font-size: 14px;
+      color: #666;
+    }
+
+    .stat strong {
+      font-size: 24px;
+      color: #087f5b;
+    }
+
+    .section {
+      background: white;
+      padding: 20px;
+      margin-bottom: 20px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,.06);
+    }
+
+    .section h2 {
+      margin-top: 0;
+      color: #087f5b;
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+
+    .section-header h2 { margin-bottom: 0; }
+
+    .service {
+      display: grid;
+      grid-template-columns: 1fr 150px 100px 110px;
+      gap: 10px;
+      align-items: center;
+      padding: 14px 0;
+      border-bottom: 1px solid #eee;
+    }
+
+    .service:last-child { border-bottom: none; }
+    .service-name { font-weight: bold; }
+
+    input, select {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 7px;
+      background: white;
+    }
+
+    button { cursor: pointer; }
+
+    .save {
+      background: #087f5b;
+      color: white;
+      border: none;
+      padding: 10px;
+      border-radius: 7px;
+      font-weight: bold;
+    }
+
+    .toggle {
+      padding: 9px;
+      border: none;
+      border-radius: 7px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .active { background: #d3f9d8; color: #087f5b; }
+    .inactive { background: #ffe3e3; color: #c92a2a; }
+
+    .payment-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 0;
+      border-bottom: 1px solid #eee;
+    }
+
+    .payment-row:last-child { border-bottom: none; }
+
+    textarea {
+      width: 100%;
+      min-height: 120px;
+      padding: 12px;
+      border: 1px solid #ccc;
+      border-radius: 7px;
+      resize: vertical;
+    }
+
+    .announcement-box {
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 15px;
+      margin-top: 15px;
+    }
+
+    .announcement-box h3 { margin-top: 0; }
+
+    .delete {
+      background: #c92a2a;
+      color: white;
+      border: none;
+      padding: 9px 12px;
+      border-radius: 7px;
+      margin-left: 8px;
+    }
+
+    .table-wrap { overflow-x: auto; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 900px;
+    }
+
+    th, td {
+      padding: 11px;
+      border-bottom: 1px solid #eee;
+      text-align: left;
+      vertical-align: middle;
+    }
+
+    th { background: #f1f3f5; }
+
+    .small { color: #666; font-size: 13px; }
+    .empty { text-align: center; color: #777; padding: 20px; }
+
+    .refresh-btn {
+      background: white;
+      color: #087f5b;
+      border: 1px solid #087f5b;
+      padding: 9px 14px;
+      border-radius: 7px;
+      font-weight: bold;
+      margin-bottom: 15px;
+    }
+
+    .user-search { margin: 15px 0; }
+    .user-search input { max-width: 500px; }
+
+    .action-btn {
+      border: none;
+      padding: 8px 10px;
+      border-radius: 6px;
+      font-weight: bold;
+      margin: 2px;
+      color: white;
+    }
+
+    .fund-btn { background: #087f5b; }
+    .subtract-btn { background: #e67700; }
+    .remove-btn { background: #c92a2a; }
+
+    .add-user-form {
+      display: grid;
+      grid-template-columns: 1fr 1fr 150px;
+      gap: 10px;
+      margin-top: 15px;
+      padding: 15px;
+      background: #f8f9fa;
+      border-radius: 8px;
+    }
+
+    .wallet-box {
+      display: grid;
+      grid-template-columns: 1fr 1fr 150px;
+      gap: 10px;
+      padding: 15px;
+      background: #f8f9fa;
+      border-radius: 8px;
+      margin-top: 15px;
+    }
+
+    .wallet-box select, .wallet-box input {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 7px;
+      background: white;
+    }
+
+    .user-balance { font-weight: bold; color: #087f5b; }
+
+    .status-badge {
+      display: inline-block;
+      padding: 5px 8px;
+      border-radius: 5px;
+      font-size: 12px;
+      font-weight: bold;
+    }
+
+    .status-active { background: #d3f9d8; color: #087f5b; }
+    .status-inactive { background: #ffe3e3; color: #c92a2a; }
+    .credit { color: #087f5b; font-weight: bold; }
+    .debit { color: #c92a2a; font-weight: bold; }
+
+    .transaction-filters {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr;
+      gap: 10px;
+      margin: 15px 0;
+      padding: 15px;
+      background: #f8f9fa;
+      border-radius: 8px;
+    }
+
+    .report-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
+      margin-top: 15px;
+    }
+
+    .report-card {
+      background: #f8f9fa;
+      border: 1px solid #e9ecef;
+      border-radius: 9px;
+      padding: 15px;
+    }
+
+    .report-card .label {
+      color: #666;
+      font-size: 13px;
+      margin-bottom: 7px;
+    }
+
+    .report-card .value {
+      font-size: 21px;
+      font-weight: bold;
+      color: #087f5b;
+    }
+
+    .clear-btn {
+      background: #6c757d;
+      color: white;
+      border: none;
+      padding: 10px 14px;
+      border-radius: 7px;
+      font-weight: bold;
+    }
+
+    @media(max-width:800px) {
+      .service, .add-user-form, .wallet-box, .transaction-filters {
+        grid-template-columns: 1fr;
+      }
+
+      .payment-row { gap: 10px; }
+      header { gap: 10px; }
+      header h1 { font-size: 17px; }
+      .container { padding: 12px; }
+      .section { padding: 15px; }
+    }
+  </style></head><body>
+<header>
+  <h1>Gracioustec Admin</h1>
+  <button class="logout" onclick="logout()">Logout</button>
+</header><div class="container">
+  <div id="loading">Loading Gracioustec Admin Dashboard...</div>
+  <div id="error"></div>
+  <div id="success" class="success-message"></div>  <div id="dashboard" style="display:none">
+    <button class="refresh-btn" onclick="loadDashboard()">↻ Refresh Dashboard</button><div class="stats">
+  <div class="stat"><h3>Total Users</h3><strong id="totalUsers">0</strong></div>
+  <div class="stat"><h3>Total Deposits</h3><strong id="totalDeposits">₦0.00</strong></div>
+  <div class="stat"><h3>Total Wallet Balance</h3><strong id="totalWallet">₦0.00</strong></div>
+  <div class="stat"><h3>NIN Reprints</h3><strong id="ninReprints">0</strong></div>
+  <div class="stat"><h3>BVN Reprints</h3><strong id="bvnReprints">0</strong></div>
+  <div class="stat"><h3>NIN Revenue</h3><strong id="ninRevenue">₦0.00</strong></div>
+  <div class="stat"><h3>BVN Revenue</h3><strong id="bvnRevenue">₦0.00</strong></div>
+  <div class="stat"><h3>Wallet Transactions</h3><strong id="walletTransactions">0</strong></div>
+  <div class="stat"><h3>Funded Users</h3><strong id="fundedUsers">0</strong></div>
+</div>
+
+<div class="section">
+  <h2>Financial Overview</h2>
+  <p class="small">Summary of wallet funding, service revenue and current customer wallet balances.</p>
+
+  <div class="report-grid">
+    <div class="report-card"><div class="label">Total Deposits</div><div class="value" id="reportDeposits">₦0.00</div></div>
+    <div class="report-card"><div class="label">NIN Revenue</div><div class="value" id="reportNIN">₦0.00</div></div>
+    <div class="report-card"><div class="label">BVN Revenue</div><div class="value" id="reportBVN">₦0.00</div></div>
+    <div class="report-card"><div class="label">Current Wallet Balance</div><div class="value" id="reportWallet">₦0.00</div></div>
+    <div class="report-card"><div class="label">Wallet Transactions</div><div class="value" id="reportTransactions">0</div></div>
+    <div class="report-card"><div class="label">Users With Funds</div><div class="value" id="reportFundedUsers">0</div></div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-header"><h2>User Management</h2></div>
+  <p class="small">Add users, search registered users, fund wallets, subtract funds, or remove user login accounts.</p>
+
+  <h3>Add New User</h3>
+  <div class="add-user-form">
+    <input id="newUserEmail" type="email" placeholder="User email">
+    <input id="newUserPassword" type="password" placeholder="Temporary password">
+    <button class="save" onclick="createUser()">Add User</button>
+  </div>
+
+  <p class="small">Password must contain at least 6 characters. The new user will be created as a confirmed account.</p>
+
+  <h3>Wallet Control</h3>
+  <div class="wallet-box">
+    <select id="walletUser"><option value="">Select a user</option></select>
+    <input id="walletAmount" type="number" min="1" step="1" placeholder="Amount">
+    <button class="save" onclick="applyWalletFromBox()">Apply</button>
+  </div>
+  <p class="small">Select a user and amount, then choose CREDIT to fund the wallet or DEBIT to subtract funds.</p>
+
+  <h3>Registered Users</h3>
+  <div class="user-search">
+    <input id="userSearch" type="search" placeholder="Search user by email or ID..." oninput="filterUsers()">
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Email</th><th>Registration</th><th>Last Login</th><th>Wallet Balance</th><th>Status</th><th>Actions</th></tr></thead>
+      <tbody id="usersTable"></tbody>
+    </table>
+  </div>
+</div>
+
+<div class="section">
+  <h2>Service Pricing</h2>
+  <p class="small">These prices are stored in Supabase. Customer payment functions use the current database price when charging the wallet.</p>
+  <div id="services"></div>
+</div>
+
+<div class="section">
+  <h2>Payment Methods</h2>
+  <p class="small">Turn a payment method ON or OFF. Existing customer accounts are not deleted.</p>
+  <div id="paymentMethods"></div>
+</div>
+
+<div class="section">
+  <h2>Broadcast Announcement</h2>
+  <p class="small">Create an announcement that can be shown to customers when they log in.</p>
+  <input id="announcementTitle" type="text" placeholder="Announcement title">
+  <br><br>
+  <textarea id="announcementMessage" placeholder="Write your announcement here..."></textarea>
+  <br><br>
+  <button class="save" onclick="createAnnouncement()">Publish Announcement</button>
+  <div id="announcements"></div>
+</div>
+
+<div class="section">
+  <div class="section-header">
+    <h2>Wallet Transactions</h2>
+    <button class="refresh-btn" onclick="clearTransactionFilters()">Clear Filters</button>
+  </div>
+  <p class="small">Search deposits, service payments, admin wallet adjustments and other wallet transactions.</p>
+
+  <div class="transaction-filters">
+    <input id="transactionSearch" type="search" placeholder="Search email, description or reference..." oninput="applyTransactionFilters()">
+    <select id="transactionType" onchange="applyTransactionFilters()">
+      <option value="all">All Types</option>
+      <option value="credit">Credit</option>
+      <option value="debit">Debit</option>
+      <option value="deposit">Deposit</option>
+    </select>
+    <select id="transactionCategory" onchange="applyTransactionFilters()">
+      <option value="all">All Categories</option>
+      <option value="nin">NIN</option>
+      <option value="bvn">BVN</option>
+      <option value="admin">Admin Adjustment</option>
+      <option value="funding">Wallet Funding</option>
+    </select>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Date</th><th>User</th><th>Type</th><th>Amount</th><th>Description</th><th>Reference</th></tr></thead>
+      <tbody id="transactionsTable"></tbody>
+    </table>
+  </div>
+</div>
+
+<div class="section">
+  <h2>NIN Reprint Transactions</h2>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Date</th><th>User</th><th>Amount</th><th>Status</th></tr></thead>
+      <tbody id="ninTable"></tbody>
+    </table>
+  </div>
+</div>
+
+<div class="section">
+  <h2>BVN Reprint Transactions</h2>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Date</th><th>User</th><th>Amount</th><th>Status</th></tr></thead>
+      <tbody id="bvnTable"></tbody>
+    </table>
+  </div>
+</div>
+
+  </div>
+</div><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script>
+const SUPABASE_URL = "https://iknhifndgpwibkfidggq.supabase.co";
+const SUPABASE_KEY = "sb_publishable_xELauxOMm7eMkNrPz55Mrw_LVkRoASn";
+
+const supabaseClient = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
+
+const FUNCTION_URL = SUPABASE_URL + "/functions/v1/admin-dashboard";
+
+const ALLOWED_SERVICES = [
+  "nin_standard",
+  "nin_lost",
+  "nin_premium",
+  "bvn_reprint"
+];
+
+let allUsers = [];
+let allWalletTransactions = [];
+
+async function callAdmin(action, extra = {}) {
+  const {
+    data: { session },
+    error
+  } = await supabaseClient.auth.getSession();
+
+  if (error || !session) {
+    window.location.href = "login.html";
+    return null;
+  }
+
+  const response = await fetch(FUNCTION_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": "Bearer " + session.access_token
+    },
+    body: JSON.stringify({ action, ...extra })
+  });
+
+  let result;
+
+  try {
+    result = await response.json();
+  } catch {
+    throw new Error("Invalid response from admin server.");
+  }
+
+  if (!response.ok || !result.success) {
+    throw new Error(result.message || "Admin request failed.");
+  }
+
+  return result;
+}
+
+async function loadDashboard() {
+  const loading = document.getElementById("loading");
+  const dashboard = document.getElementById("dashboard");
+  const errorBox = document.getElementById("error");
+
+  errorBox.style.display = "none";
+  loading.style.display = "block";
+  dashboard.style.display = "none";
+
+  try {
+    const result = await callAdmin("get_data");
+    if (!result) return;
+
+    loading.style.display = "none";
+    dashboard.style.display = "block";
+
+    const statistics = result.stats || {};
+
+    document.getElementById("totalUsers").textContent =
+      Number(statistics.total_users || 0).toLocaleString("en-NG");
+    document.getElementById("totalDeposits").textContent =
+      money(statistics.total_deposits);
+    document.getElementById("totalWallet").textContent =
+      money(statistics.total_wallet_balance);
+    document.getElementById("ninReprints").textContent =
+      Number(statistics.total_nin_reprints || 0).toLocaleString("en-NG");
+    document.getElementById("bvnReprints").textContent =
+      Number(statistics.total_bvn_reprints || 0).toLocaleString("en-NG");
+    document.getElementById("ninRevenue").textContent =
+      money(statistics.total_nin_revenue);
+    document.getElementById("bvnRevenue").textContent =
+      money(statistics.total_bvn_revenue);
+    document.getElementById("walletTransactions").textContent =
+      Number(statistics.total_wallet_transactions || 0).toLocaleString("en-NG");
+    document.getElementById("fundedUsers").textContent =
+      Number(statistics.total_users_with_wallet || 0).toLocaleString("en-NG");
+
+    document.getElementById("reportDeposits").textContent =
+      money(statistics.total_deposits);
+    document.getElementById("reportNIN").textContent =
+      money(statistics.total_nin_revenue);
+    document.getElementById("reportBVN").textContent =
+      money(statistics.total_bvn_revenue);
+    document.getElementById("reportWallet").textContent =
+      money(statistics.total_wallet_balance);
+    document.getElementById("reportTransactions").textContent =
+      Number(statistics.total_wallet_transactions || 0).toLocaleString("en-NG");
+    document.getElementById("reportFundedUsers").textContent =
+      Number(statistics.total_users_with_wallet || 0).toLocaleString("en-NG");
+
+    allUsers = result.users || [];
+    allWalletTransactions = result.wallet_transactions || [];
+
+    renderServices(result.service_settings || []);
+    renderPaymentMethods(result.payment_methods || []);
+    renderAnnouncements(result.announcements || []);
+    renderUsers(allUsers);
+    populateWalletUsers(allUsers);
+    applyTransactionFilters();
+    renderNIN(result.nin_transactions || []);
+    renderBVN(result.bvn_transactions || []);
+  } catch (error) {
+    loading.style.display = "none";
+    dashboard.style.display = "none";
+    errorBox.style.display = "block";
+    errorBox.textContent = error.message ||
+      "Unable to load Gracioustec admin dashboard.";
+  }
+}
+
+function money(value) {
+  return "₦" + Number(value || 0).toLocaleString("en-NG", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  });
+}
+
+function showSuccess(message) {
+  const box = document.getElementById("success");
+  box.textContent = message;
+  box.style.display = "block";
+
+  setTimeout(() => {
+    box.style.display = "none";
+  }, 3000);
+}
+
+function renderUsers(users) {
+  const table = document.getElementById("usersTable");
+  table.innerHTML = "";
+
+  if (!users.length) {
+    table.innerHTML = '<tr><td colspan="6" class="empty">No registered users found.</td></tr>';
+    return;
+  }
+
+  const search = (document.getElementById("userSearch")?.value || "")
+    .trim().toLowerCase();
+
+  const filtered = users.filter(user => {
+    const email = String(user.email || "").toLowerCase();
+    const id = String(user.id || "").toLowerCase();
+    return !search || email.includes(search) || id.includes(search);
+  });
+
+  if (!filtered.length) {
+    table.innerHTML = '<tr><td colspan="6" class="empty">No user matches your search.</td></tr>';
+    return;
+  }
+
+  filtered.forEach(user => {
+    const row = document.createElement("tr");
+    const confirmed = Boolean(user.email_confirmed_at);
+
+    row.innerHTML = `
+      <td><strong>${escapeHTML(user.email || "")}</strong>
+        <div class="small">${escapeHTML(user.id || "")}</div></td>
+      <td>${formatDate(user.created_at)}</td>
+      <td>${user.last_sign_in_at ? formatDate(user.last_sign_in_at) : "Never"}</td>
+      <td><span class="user-balance">${money(user.wallet_balance)}</span></td>
+      <td><span class="status-badge ${confirmed ? "status-active" : "status-inactive"}">
+        ${confirmed ? "Confirmed" : "Unconfirmed"}</span></td>
+      <td>
+        <button class="action-btn fund-btn" data-action="fund">Fund</button>
+        <button class="action-btn subtract-btn" data-action="subtract">Subtract</button>
+        <button class="action-btn remove-btn" data-action="remove">Remove</button>
+      </td>`;
+
+    row.querySelector('[data-action="fund"]').addEventListener("click", () =>
+      fundUser(user.id, user.email || ""));
+    row.querySelector('[data-action="subtract"]').addEventListener("click", () =>
+      subtractUser(user.id, user.email || ""));
+    row.querySelector('[data-action="remove"]').addEventListener("click", () =>
+      removeUser(user.id, user.email || ""));
+
+    table.appendChild(row);
+  });
+}
+
+function filterUsers() {
+  renderUsers(allUsers);
+}
+
+function populateWalletUsers(users) {
+  const select = document.getElementById("walletUser");
+  if (!select) return;
+
+  const current = select.value;
+  select.innerHTML = '<option value="">Select a user</option>';
+
+  users.forEach(user => {
+    const option = document.createElement("option");
+    option.value = user.id;
+    option.textContent = `${user.email || user.id} — ${money(user.wallet_balance)}`;
+    select.appendChild(option);
+  });
+
+  if (current && users.some(u => u.id === current)) {
+    select.value = current;
+  }
+}
+
+async function createUser() {
+  const email = document.getElementById("newUserEmail").value.trim().toLowerCase();
+  const password = document.getElementById("newUserPassword").value;
+
+  if (!email) {
+    alert("Enter the user's email.");
+    return;
+  }
+
+  if (password.length < 6) {
+    alert("Password must contain at least 6 characters.");
+    return;
+  }
+
+  if (!confirm(`Create this user?\n\n${email}`)) return;
+
+  try {
+    await callAdmin("create_user", { email, password });
+    document.getElementById("newUserEmail").value = "";
+    document.getElementById("newUserPassword").value = "";
+    showSuccess("User created successfully.");
+    await loadDashboard();
+  } catch (error) {
+    alert(error.message);
+  }
+}
+
+async function fundUser(userId, email) {
+  const amount = prompt(`Enter amount to FUND:\n\n${email}`);
+  if (amount === null) return;
+
+  const value = Number(amount);
+  if (!Number.isFinite(value) || value <= 0) {
+    alert("Enter a valid amount greater than zero.");
+    return;
+  }
+
+  if (!confirm(`Fund ${email} with ${money(value)}?`)) return;
+
+  try {
+    await callAdmin("adjust_wallet", {
+      user_id: userId,
+      amount: value,
+      wallet_action: "credit",
+      description: "Admin wallet funding"
+    });
+
+    showSuccess(`${email} wallet funded with ${money(value)}.`);
+    await loadDashboard();
+  } catch (error) {
+    alert(error.message);
+  }
+}
+
+async function subtractUser(userId, email) {
+  const amount = prompt(`Enter amount to SUBTRACT:\n\n${email}`);
+  if (amount === null) return;
+
+  const value = Number(amount);
+  if (!Number.isFinite(value) || value <= 0) {
+    alert("Enter a valid amount greater than zero.");
+    return;
+  }
+
+  if (!confirm(`Remove ${money(value)} from ${email}'s wallet?`)) return;
+
+  try {
+    await callAdmin("adjust_wallet", {
+      user_id: userId,
+      amount: value,
+      wallet_action: "debit",
+      description: "Admin wallet deduction"
+    });
+
+    showSuccess(`${money(value)} removed from ${email}'s wallet.`);
+    await loadDashboard();
+  } catch (error) {
+    alert(error.message);
+  }
+}
+
+async function applyWalletFromBox() {
+  const userId = document.getElementById("walletUser").value;
+  const amount = Number(document.getElementById("walletAmount").value);
+
+  if (!userId) {
+    alert("Select a user first.");
+    return;
+  }
+
+  if (!Number.isFinite(amount) || amount <= 0) {
+    alert("Enter a valid amount.");
+    return;
+  }
+
+  const user = allUsers.find(u => u.id === userId);
+  if (!user) {
+    alert("User not found.");
+    return;
+  }
+
+  const action = prompt(
+    `Enter action for ${user.email}:\n\n` +
+    "Type CREDIT to fund the wallet.\n" +
+    "Type DEBIT to subtract funds."
+  );
+
+  if (!action) return;
+
+  const normalized = action.trim().toLowerCase();
+
+  if (normalized !== "credit" && normalized !== "debit") {
+    alert("Enter CREDIT or DEBIT.");
+    return;
+  }
+
+  if (normalized === "debit" && Number(user.wallet_balance || 0) < amount) {
+    alert("The user's current wallet balance is not enough for this deduction.");
+    return;
+  }
+
+  const confirmed = confirm(
+    normalized === "credit"
+      ? `Fund ${user.email} with ${money(amount)}?`
+      : `Subtract ${money(amount)} from ${user.email}'s wallet?`
+  );
+
+  if (!confirmed) return;
+
+  try {
+    await callAdmin("adjust_wallet", {
+      user_id: userId,
+      amount,
+      wallet_action: normalized,
+      description: normalized === "credit"
+        ? "Admin wallet funding"
+        : "Admin wallet deduction"
+    });
+
+    document.getElementById("walletAmount").value = "";
+    showSuccess(normalized === "credit"
+      ? "User wallet funded successfully."
+      : "Funds removed from user wallet successfully.");
+    await loadDashboard();
+  } catch (error) {
+    alert(error.message);
+  }
+}
+
+async function removeUser(userId, email) {
+  const confirmed = confirm(
+    `REMOVE USER?\n\n${email}\n\n` +
+    "This will remove the user's login account.\n\n" +
+    "Financial transaction records are retained for audit purposes.\n\n" +
+    "This action cannot be undone."
+  );
+
+  if (!confirmed) return;
+
+  const secondConfirm = prompt(
+    `To confirm removal of ${email}, type:\n\nREMOVE`
+  );
+
+  if (String(secondConfirm || "").trim().toUpperCase() !== "REMOVE") {
+    alert("User removal cancelled.");
+    return;
+  }
+
+  try {
+    await callAdmin("delete_user", { user_id: userId });
+    showSuccess("User removed successfully.");
+    await loadDashboard();
+  } catch (error) {
+    alert(error.message);
+  }
+}
+
+function renderServices(services) {
+  const container = document.getElementById("services");
+  container.innerHTML = "";
+
+  const filtered = services.filter(service =>
+    ALLOWED_SERVICES.includes(service.service_code)
+  );
+
+  if (!filtered.length) {
+    container.innerHTML = '<div class="empty">No service settings found.</div>';
+    return;
+  }
+
+  const order = ["nin_standard", "nin_lost", "nin_premium", "bvn_reprint"];
+  filtered.sort((a, b) =>
+    order.indexOf(a.service_code) - order.indexOf(b.service_code)
+  );
+
+  filtered.forEach(service => {
+    const div = document.createElement("div");
+    div.className = "service";
+
+    div.innerHTML = `
+      <div>
+        <div class="service-name">${escapeHTML(service.service_name)}</div>
+        <div class="small">${escapeHTML(service.service_code)}</div>
+      </div>
+      <input type="number"
+        id="price-${escapeAttribute(service.service_code)}"
+        value="${Number(service.price || 0)}" min="0" step="1">
+      <button class="save" data-action="save">Save</button>
+      <button class="toggle ${service.is_active ? "active" : "inactive"}" data-action="toggle">
+        ${service.is_active ? "Enabled" : "Disabled"}
+      </button>`;
+
+    div.querySelector('[data-action="save"]').addEventListener("click", () =>
+      updatePrice(service.service_code));
+
+    div.querySelector('[data-action="toggle"]').addEventListener("click", () =>
+      toggleService(service.service_code, !service.is_active));
+
+    container.appendChild(div);
+  });
+}
+
+async function updatePrice(serviceCode) {
+  const input = document.getElementById("price-" + serviceCode);
+
+  if (!input) {
+    alert("Price field not found.");
+    return;
+  }
+
+  const price = Number(input.value);
+
+  if (!Number.isFinite(price) || price < 0) {
+    alert("Enter a valid price.");
+    return;
+  }
+
+  try {
+    await callAdmin("update_service", { service_code: serviceCode, price });
+    showSuccess("Price updated successfully.");
+    await loadDashboard();
+  } catch (error) {
+    alert(error.message);
+  }
+}
+
+async function toggleService(serviceCode, active) {
+  try {
+    await callAdmin("toggle_service", {
+      service_code: serviceCode,
+      is_active: active
+    });
+
+    showSuccess(active ? "Service enabled." : "Service disabled.");
+    await loadDashboard();
+  } catch (error) {
+    alert(error.message);
+  }
+}
+
+function renderPaymentMethods(methods) {
+  const container = document.getElementById("paymentMethods");
+  container.innerHTML = "";
+
+  if (!methods.length) {
+    container.innerHTML = '<div class="empty">No payment methods found.</div>';
+    return;
+  }
+
+  methods.forEach(method => {
+    const row = document.createElement("div");
+    row.className = "payment-row";
+
+    row.innerHTML = `
+      <div>
+        <strong>${escapeHTML(method.method_name)}</strong>
+        <div class="small">${escapeHTML(method.method_code)}</div>
+      </div>
+      <button class="toggle ${method.is_active ? "active" : "inactive"}">
+        ${method.is_active ? "ON" : "OFF"}
+      </button>`;
+
+    row.querySelector("button").addEventListener("click", () =>
+      togglePayment(method.method_code, !method.is_active));
+
+    container.appendChild(row);
+  });
+}
+
+async function togglePayment(methodCode, active) {
+  try {
+    await callAdmin("toggle_payment_method", {
+      method_code: methodCode,
+      is_active: active
+    });
+
+    showSuccess(active ? "Payment method enabled." : "Payment method disabled.");
+    await loadDashboard();
+  } catch (error) {
+    alert(error.message);
+  }
+}
+
+async function createAnnouncement() {
+  const title = document.getElementById("announcementTitle").value.trim();
+  const message = document.getElementById("announcementMessage").value.trim();
+
+  if (!title || !message) {
+    alert("Enter both a title and message.");
+    return;
+  }
+
+  try {
+    await callAdmin("create_announcement", {
+      title,
+      message,
+      is_active: true
+    });
+
+    document.getElementById("announcementTitle").value = "";
+    document.getElementById("announcementMessage").value = "";
+    showSuccess("Announcement published successfully.");
+    await loadDashboard();
+  } catch (error) {
+    alert(error.message);
+  }
+}
+
+function renderAnnouncements(announcements) {
+  const container = document.getElementById("announcements");
+  container.innerHTML = "";
+
+  if (!announcements.length) {
+    container.innerHTML = '<div class="empty">No announcements yet.</div>';
+    return;
+  }
+
+  announcements.forEach(item => {
+    const div = document.createElement("div");
+    div.className = "announcement-box";
+
+    div.innerHTML = `
+      <h3>${escapeHTML(item.title)}</h3>
+      <p>${escapeHTML(item.message)}</p>
+      <p class="small">Status: <strong>${item.is_active ? "Active" : "Inactive"}</strong></p>
+      <button class="toggle ${item.is_active ? "active" : "inactive"}" data-action="toggle">
+        ${item.is_active ? "Deactivate" : "Activate"}
+      </button>
+      <button class="delete" data-action="delete">Delete</button>`;
+
+    div.querySelector('[data-action="toggle"]').addEventListener("click", () =>
+      toggleAnnouncement(item.id, !item.is_active));
+
+    div.querySelector('[data-action="delete"]').addEventListener("click", () =>
+      deleteAnnouncement(item.id));
+
+    container.appendChild(div);
+  });
+}
+
+async function toggleAnnouncement(id, active) {
+  try {
+    await callAdmin("toggle_announcement", {
+      announcement_id: id,
+      is_active: active
+    });
+
+    showSuccess(active ? "Announcement activated." : "Announcement deactivated.");
+    await loadDashboard();
+  } catch (error) {
+    alert(error.message);
+  }
+}
+
+async function deleteAnnouncement(id) {
+  if (!confirm("Delete this announcement?")) return;
+
+  try {
+    await callAdmin("delete_announcement", { announcement_id: id });
+    showSuccess("Announcement deleted.");
+    await loadDashboard();
+  } catch (error) {
+    alert(error.message);
+  }
+}
+
+function applyTransactionFilters() {
+  const table = document.getElementById("transactionsTable");
+  if (!table) return;
+
+  const search = String(document.getElementById("transactionSearch")?.value || "")
+    .trim().toLowerCase();
+
+  const typeFilter = document.getElementById("transactionType")?.value || "all";
+  const categoryFilter = document.getElementById("transactionCategory")?.value || "all";
+
+  const filtered = allWalletTransactions.filter(item => {
+    const email = findUserEmail(item.user_id).toLowerCase();
+    const description = String(item.description || "").toLowerCase();
+    const reference = String(item.reference || "").toLowerCase();
+    const type = String(item.type || "").toLowerCase();
+
+    const searchMatch = !search ||
+      email.includes(search) ||
+      description.includes(search) ||
+      reference.includes(search);
+
+    let typeMatch = true;
+
+    if (typeFilter !== "all") {
+      if (typeFilter === "deposit") {
+        typeMatch = type.includes("deposit") ||
+          type.includes("fund") ||
+          reference.includes("paymentpoint") ||
+          reference.includes("recopay") ||
+          reference.includes("reckopay");
+      } else {
+        typeMatch = type === typeFilter;
+      }
+    }
+
+    let categoryMatch = true;
+
+    if (categoryFilter === "nin") {
+      categoryMatch = reference.startsWith("nin-");
+    } else if (categoryFilter === "bvn") {
+      categoryMatch = reference.startsWith("bvn-");
+    } else if (categoryFilter === "admin") {
+      categoryMatch = reference.startsWith("admin-credit-") ||
+        reference.startsWith("admin-debit-");
+    } else if (categoryFilter === "funding") {
+      categoryMatch = type.includes("deposit") ||
+        type.includes("fund") ||
+        reference.includes("paymentpoint") ||
+        reference.includes("recopay") ||
+        reference.includes("reckopay");
+    }
+
+    return searchMatch && typeMatch && categoryMatch;
+  });
+
+  renderTransactions(filtered);
+}
+
+function clearTransactionFilters() {
+  document.getElementById("transactionSearch").value = "";
+  document.getElementById("transactionType").value = "all";
+  document.getElementById("transactionCategory").value = "all";
+  applyTransactionFilters();
+}
+
+function renderTransactions(transactions) {
+  const table = document.getElementById("transactionsTable");
+  table.innerHTML = "";
+
+  if (!transactions.length) {
+    table.innerHTML = '<tr><td colspan="6" class="empty">No wallet transactions found.</td></tr>';
+    return;
+  }
+
+  transactions.forEach(item => {
+    const row = document.createElement("tr");
+    const type = String(item.type || "").toLowerCase();
+    const reference = String(item.reference || "").toLowerCase();
+
+    const isCredit = type === "credit" ||
+      type === "deposit" ||
+      type === "fund" ||
+      reference.includes("paymentpoint") ||
+      reference.includes("recopay") ||
+      reference.includes("reckopay");
+
+    const typeClass = isCredit ? "credit" : "debit";
+    const sign = isCredit ? "+" : "-";
+
+    row.innerHTML = `
+      <td>${formatDate(item.created_at)}</td>
+      <td>${escapeHTML(findUserEmail(item.user_id))}</td>
+      <td><span class="${typeClass}">${escapeHTML(item.type || "")}</span></td>
+      <td><span class="${typeClass}">${sign}${money(item.amount)}</span></td>
+      <td>${escapeHTML(item.description || "")}</td>
+      <td>${escapeHTML(item.reference || "")}</td>`;
+
+    table.appendChild(row);
+  });
+}
+
+function renderNIN(transactions) {
+  const table = document.getElementById("ninTable");
+  table.innerHTML = "";
+
+  if (!transactions.length) {
+    table.innerHTML = '<tr><td colspan="4" class="empty">No NIN reprint transactions found.</td></tr>';
+    return;
+  }
+
+  transactions.forEach(item => {
+    const row = document.createElement("tr");
+    row.innerHTML = `
+      <td>${formatDate(item.created_at)}</td>
+      <td>${escapeHTML(findUserEmail(item.user_id))}</td>
+      <td>${money(item.amount)}</td>
+      <td>${escapeHTML(item.status || "Paid")}</td>`;
+    table.appendChild(row);
+  });
+}
+
+function renderBVN(transactions) {
+  const table = document.getElementById("bvnTable");
+  table.innerHTML = "";
+
+  if (!transactions.length) {
+    table.innerHTML = '<tr><td colspan="4" class="empty">No BVN reprint transactions found.</td></tr>';
+    return;
+  }
+
+  transactions.forEach(item => {
+    const row = document.createElement("tr");
+    row.innerHTML = `
+      <td>${formatDate(item.created_at)}</td>
+      <td>${escapeHTML(findUserEmail(item.user_id))}</td>
+      <td>${money(item.amount)}</td>
+      <td>${escapeHTML(item.status || "Paid")}</td>`;
+    table.appendChild(row);
+  });
+}
+
+function findUserEmail(userId) {
+  const user = allUsers.find(u => u.id === userId);
+  return user?.email || userId || "";
+}
+
+function formatDate(date) {
+  if (!date) return "";
+
+  const parsed = new Date(date);
+  if (Number.isNaN(parsed.getTime())) return String(date);
+
+  return parsed.toLocaleString("en-NG");
+}
+
+function escapeHTML(value) {
+  return String(value ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+function escapeJS(value) {
+  return String(value ?? "")
+    .replace(/\\/g, "\\\\")
+    .replace(/'/g, "\\'")
+    .replace(/"/g, '\\"')
+    .replace(/\n/g, "\\n")
+    .replace(/\r/g, "\\r");
+}
+
+function escapeAttribute(value) {
+  return String(value ?? "").replace(/[^a-zA-Z0-9_-]/g, "_");
+}
+
+async function logout() {
+  await supabaseClient.auth.signOut();
+  window.location.href = "login.html";
+}
+
+loadDashboard();
+</script></body>
+</html>

@@ -1,0 +1,3243 @@
+<!DOCTYPE html><html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0"><title>GRACIOUSTEC - NIN Reprint</title><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><style>
+*{
+  box-sizing:border-box;
+}
+
+body{
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:#f1f8f4;
+  color:#222;
+}
+
+.header{
+  background:#087f3d;
+  color:white;
+  text-align:center;
+  padding:20px 15px;
+}
+
+.header h2{
+  margin:0;
+  font-size:25px;
+}
+
+.header p{
+  margin:6px 0 0;
+}
+
+.container{
+  max-width:700px;
+  margin:20px auto;
+  padding:0 15px;
+}
+
+.card{
+  background:white;
+  border-radius:12px;
+  padding:20px;
+  margin-bottom:20px;
+  box-shadow:0 3px 12px rgba(0,0,0,.08);
+}
+
+.card h3{
+  margin-top:0;
+  color:#087f3d;
+}
+
+label{
+  display:block;
+  font-weight:bold;
+  margin-top:12px;
+}
+
+input,
+select{
+  width:100%;
+  padding:13px;
+  margin-top:7px;
+  border:1px solid #ccc;
+  border-radius:7px;
+  font-size:15px;
+}
+
+button{
+  width:100%;
+  padding:14px;
+  margin-top:18px;
+  border:0;
+  border-radius:7px;
+  background:#087f3d;
+  color:white;
+  font-size:16px;
+  font-weight:bold;
+  cursor:pointer;
+}
+
+button:disabled{
+  background:#999;
+  cursor:not-allowed;
+}
+
+.hidden{
+  display:none !important;
+}
+
+.message{
+  margin-top:15px;
+  padding:12px;
+  border-radius:7px;
+  display:none;
+}
+
+.success{
+  background:#e7f7ed;
+  color:#087f3d;
+}
+
+.error{
+  background:#fdeaea;
+  color:#b00020;
+}
+
+.result-row{
+  padding:9px 0;
+  border-bottom:1px solid #eee;
+}
+
+.result-row strong{
+  display:inline-block;
+  width:130px;
+}
+
+.photo{
+  text-align:center;
+  margin:15px 0;
+}
+
+.photo img{
+  width:120px;
+  height:140px;
+  object-fit:cover;
+  border:1px solid #ddd;
+  border-radius:6px;
+}
+
+.price-box{
+  border:1px solid #ddd;
+  border-radius:8px;
+  padding:13px;
+  margin-top:10px;
+}
+
+.price-box label{
+  margin:0;
+  font-weight:normal;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:9px 0;
+}
+
+.price-box input{
+  width:auto;
+  margin:0;
+}
+
+.open-slip{
+  display:block;
+  width:100%;
+  padding:14px;
+  margin-top:15px;
+  background:#075e2d;
+  color:white;
+  text-align:center;
+  text-decoration:none;
+  border-radius:7px;
+  font-weight:bold;
+  border:0;
+  cursor:pointer;
+}
+
+.notice{
+  background:#fff8df;
+  border-left:4px solid #e0a800;
+  padding:12px;
+  margin-bottom:15px;
+  line-height:1.5;
+}
+
+.small{
+  font-size:13px;
+  color:#666;
+  margin-top:8px;
+}
+
+.slip-success{
+  text-align:center;
+  border:2px solid #087f3d;
+}
+
+.slip-icon{
+  width:65px;
+  height:65px;
+  margin:0 auto 12px;
+  border-radius:50%;
+  background:#e7f7ed;
+  color:#087f3d;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:34px;
+  font-weight:bold;
+}
+
+.slip-success h3{
+  margin-bottom:8px;
+}
+
+.slip-success p{
+  line-height:1.5;
+}
+
+.slip-info{
+  background:#f7f7f7;
+  border-radius:8px;
+  padding:12px;
+  margin-top:15px;
+  text-align:left;
+}
+
+.slip-info-row{
+  padding:7px 0;
+  border-bottom:1px solid #ddd;
+}
+
+.slip-info-row:last-child{
+  border-bottom:0;
+}
+
+.slip-actions{
+  display:grid;
+  grid-template-columns:1fr;
+  gap:10px;
+  margin-top:15px;
+}
+
+.slip-action{
+  width:100%;
+  padding:14px;
+  border:0;
+  border-radius:7px;
+  background:#087f3d;
+  color:white;
+  font-size:16px;
+  font-weight:bold;
+  text-decoration:none;
+  text-align:center;
+  cursor:pointer;
+}
+
+.slip-action.secondary{
+  background:#075e2d;
+}
+
+.slip-action.light{
+  background:#eeeeee;
+  color:#222;
+}
+
+.auth-screen{
+  position:fixed;
+  inset:0;
+  background:#f1f8f4;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:99999;
+}
+
+.auth-box{
+  width:90%;
+  max-width:400px;
+  background:white;
+  padding:30px;
+  border-radius:14px;
+  text-align:center;
+  box-shadow:0 4px 15px rgba(0,0,0,.12);
+}
+
+.auth-box h2{
+  color:#087f3d;
+  margin-top:0;
+}
+
+.auth-box p{
+  color:#666;
+  line-height:1.5;
+}
+
+.price-loading{
+  color:#666;
+  font-size:14px;
+  padding:8px 0;
+}
+
+.price-error{
+  background:#fdeaea;
+  color:#b00020;
+  border-left:4px solid #b00020;
+  padding:10px;
+  margin-top:10px;
+  border-radius:6px;
+  font-size:13px;
+}
+
+@keyframes spin{
+  100%{
+    transform:rotate(360deg);
+  }
+}
+
+@media(min-width:500px){
+  .slip-actions{
+    grid-template-columns:1fr 1fr;
+  }
+}
+</style></head><body><div id="authScreen" class="auth-screen">
+  <div class="auth-box">
+    <h2>Checking Account...</h2>
+    <p>
+      Please wait while we check your GRACIOUSTEC account.
+    </p>
+  </div>
+</div><div class="header">
+  <h2>GRACIOUSTEC</h2>
+  <p>NIN Reprint Service</p>
+</div><div class="container">  <!-- VERIFICATION CARD -->  <div class="card"><h3>NIN Verification</h3>
+
+<div class="notice">
+  For NIN slip reprinting, select your slip type before verification.
+  The slip PDF will be generated together with the verification result
+  using one NINSLIP request.
+</div>
+
+<label for="verificationType">
+  Verification Method
+</label>
+
+<select id="verificationType" onchange="changeMethod()">
+  <option value="by_nin">
+    Verify by NIN
+  </option>
+
+  <option value="by_phone">
+    Verify by Phone
+  </option>
+
+  <option value="by_demo">
+    Verify by Personal Details
+  </option>
+</select>
+
+<label for="verificationSlipType">
+  NIN Slip Type
+</label>
+
+<select id="verificationSlipType">
+  <option value="Regular Slip">
+    Regular Slip — Loading price...
+  </option>
+
+  <option value="Standard Slip">
+    Standard Slip — Loading price...
+  </option>
+
+  <option value="Long Slip">
+    Long / Lost Slip — Loading price...
+  </option>
+
+  <option value="Premium Slip">
+    Premium / Foreigner Slip — Loading price...
+  </option>
+</select>
+
+<div class="small">
+  Prices are controlled by GRACIOUSTEC Admin and updated from the
+  service pricing database.
+</div>
+
+<div id="priceErrorBox" class="price-error hidden">
+  Unable to load service prices.
+  Please refresh the page or contact GRACIOUSTEC support.
+</div>
+
+<!-- NIN -->
+<div id="ninBox">
+
+  <label for="nin">
+    NIN Number
+  </label>
+
+  <input
+    id="nin"
+    type="text"
+    inputmode="numeric"
+    maxlength="11"
+    placeholder="Enter 11-digit NIN"
+  >
+
+</div>
+
+<!-- PHONE -->
+<div id="phoneBox" class="hidden">
+
+  <label for="phone">
+    Phone Number
+  </label>
+
+  <input
+    id="phone"
+    type="text"
+    inputmode="numeric"
+    placeholder="Enter phone number"
+  >
+
+</div>
+
+<!-- DEMO -->
+<div id="demoBox" class="hidden">
+
+  <label for="firstname">
+    First Name
+  </label>
+
+  <input
+    id="firstname"
+    type="text"
+    placeholder="First name"
+  >
+
+  <label for="surname">
+    Surname
+  </label>
+
+  <input
+    id="surname"
+    type="text"
+    placeholder="Surname"
+  >
+
+  <label for="gender">
+    Gender
+  </label>
+
+  <select id="gender">
+    <option value="">
+      Select gender
+    </option>
+
+    <option value="M">
+      Male
+    </option>
+
+    <option value="F">
+      Female
+    </option>
+  </select>
+
+  <label for="birthdate">
+    Date of Birth
+  </label>
+
+  <input
+    id="birthdate"
+    type="date"
+  >
+
+</div>
+
+<button
+  id="verifyButton"
+  onclick="verifyNIN()"
+>
+  Verify NIN
+</button>
+
+<div
+  id="verificationMessage"
+  class="message"
+></div>
+
+  </div>  <!-- VERIFICATION RESULT -->  <div
+    id="verificationResult"
+    class="card hidden"
+  ><h3>Verified NIN Details</h3>
+
+<div
+  id="photoBox"
+  class="photo hidden"
+>
+
+  <img
+    id="ninPhoto"
+    alt="Verified Photo"
+  >
+
+</div>
+
+<div class="result-row">
+  <strong>First Name:</strong>
+  <span id="resultFirstname">-</span>
+</div>
+
+<div class="result-row">
+  <strong>Middle Name:</strong>
+  <span id="resultMiddlename">-</span>
+</div>
+
+<div class="result-row">
+  <strong>Surname:</strong>
+  <span id="resultSurname">-</span>
+</div>
+
+<div class="result-row">
+  <strong>Gender:</strong>
+  <span id="resultGender">-</span>
+</div>
+
+<div class="result-row">
+  <strong>Date of Birth:</strong>
+  <span id="resultBirthdate">-</span>
+</div>
+
+<div class="result-row">
+  <strong>NIN:</strong>
+  <span id="resultNIN">-</span>
+</div>
+
+<div class="result-row">
+  <strong>State:</strong>
+  <span id="resultState">-</span>
+</div>
+
+<div class="result-row">
+  <strong>LGA:</strong>
+  <span id="resultLGA">-</span>
+</div>
+
+<div class="result-row">
+  <strong>Address:</strong>
+  <span id="resultAddress">-</span>
+</div>
+
+  </div>  <!-- REPRINT -->  <div
+    id="reprintSection"
+    class="card hidden"
+  ><h3>NIN Slip Reprint</h3>
+
+<div class="notice">
+  Your NIN has been verified and the slip PDF has already been
+  generated by NINSLIP.
+
+  <br><br>
+
+  <b>Pay to unlock the slip.</b>
+
+  <br><br>
+
+  Opening the slip after payment will NOT make another
+  NINSLIP API request.
+</div>
+
+<div class="price-box">
+
+  <label>
+
+    <input
+      type="radio"
+      name="slip"
+      value=""
+      data-slip-type="Regular Slip"
+    >
+
+    <span id="regularPriceLabel">
+      Regular Slip — Loading price...
+    </span>
+
+  </label>
+
+  <label>
+
+    <input
+      type="radio"
+      name="slip"
+      value=""
+      data-slip-type="Standard Slip"
+    >
+
+    <span id="standardPriceLabel">
+      Standard Slip — Loading price...
+    </span>
+
+  </label>
+
+  <label>
+
+    <input
+      type="radio"
+      name="slip"
+      value=""
+      data-slip-type="Long Slip"
+    >
+
+    <span id="longPriceLabel">
+      Long / Lost Slip — Loading price...
+    </span>
+
+  </label>
+
+  <label>
+
+    <input
+      type="radio"
+      name="slip"
+      value=""
+      data-slip-type="Premium Slip"
+    >
+
+    <span id="premiumPriceLabel">
+      Premium / Foreigner Slip — Loading price...
+    </span>
+
+  </label>
+
+</div>
+
+<button
+  id="payButton"
+  onclick="payNow()"
+>
+  Pay & Continue
+</button>
+
+<button
+  id="openSlipButton"
+  class="open-slip hidden"
+  onclick="openPaidSlip()"
+>
+  Open NIN Slip
+</button>
+
+<div
+  id="paymentMessage"
+  class="message"
+></div>
+
+<div
+  id="slipMessage"
+  class="message"
+></div>
+
+<div class="small">
+  The actual payment amount is controlled by GRACIOUSTEC Admin.
+  The same database price is used when your wallet is debited.
+</div>
+
+  </div>  <!-- FINAL SLIP -->  <div
+    id="slipResult"
+    class="card slip-success hidden"
+  ><div class="slip-icon">
+  ✓
+</div>
+
+<h3>
+  NIN Slip Ready
+</h3>
+
+<p>
+  Your NIN slip has already been generated.
+  You can open, print, or download the PDF.
+</p>
+
+<div
+  id="slipInfo"
+  class="slip-info"
+>
+
+  <div class="slip-info-row">
+    <strong>Slip Type:</strong>
+    <span id="generatedSlipType">-</span>
+  </div>
+
+  <div class="slip-info-row">
+    <strong>File:</strong>
+    <span id="generatedFileName">-</span>
+  </div>
+
+  <div
+    id="trackingRow"
+    class="slip-info-row hidden"
+  >
+    <strong>Tracking ID:</strong>
+    <span id="trackingId">-</span>
+  </div>
+
+</div>
+
+<div class="slip-actions">
+
+  <button
+    id="viewPdfButton"
+    class="slip-action"
+    onclick="openGeneratedPDF()"
+  >
+    Open PDF
+  </button>
+
+  <a
+    id="downloadPdfButton"
+    class="slip-action secondary"
+    href="#"
+    download
+  >
+    Download PDF
+  </a>
+
+  <button
+    id="printPdfButton"
+    class="slip-action light"
+    onclick="printGeneratedPDF()"
+  >
+    Print PDF
+  </button>
+
+</div>
+
+  </div></div><script>
+
+/* =========================================================
+   SUPABASE
+========================================================= */
+
+const SUPABASE_URL =
+  "https://iknhifndgpwibkfidggq.supabase.co";
+
+/*
+  IMPORTANT:
+  This key is case-sensitive.
+  The previous version had "mrw" instead of "Mrw".
+*/
+const SUPABASE_KEY =
+  "sb_publishable_xELauxOMm7eMkNrPz55Mrw_LVkRoASn";
+
+const supabaseClient =
+  window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+  );
+
+
+/* =========================================================
+   NIN VERIFICATION FUNCTION
+========================================================= */
+
+const NIN_VERIFICATION_FUNCTION =
+  SUPABASE_URL +
+  "/functions/v1/nin-verification";
+
+
+/* =========================================================
+   GLOBAL VARIABLES
+========================================================= */
+
+let userAuthenticated = false;
+
+let verifiedNINData = null;
+
+let generatedPDFUrl = null;
+
+let generatedPDFBlob = null;
+
+let generatedPDFBase64 = null;
+
+let generatedPDFFileName = null;
+
+let generatedPDFMimeType =
+  "application/pdf";
+
+let generatedSlipType = null;
+
+let generatedTrackingId = null;
+
+
+/* =========================================================
+   SERVICE PRICES
+========================================================= */
+
+let servicePrices = {
+
+  nin_standard: {
+    price: null,
+    active: false
+  },
+
+  nin_lost: {
+    price: null,
+    active: false
+  },
+
+  nin_premium: {
+    price: null,
+    active: false
+  }
+
+};
+
+
+/* =========================================================
+   FORMAT NAIRA
+========================================================= */
+
+function formatNaira(amount){
+
+  if(
+    amount === null ||
+    amount === undefined ||
+    amount === "" ||
+    isNaN(Number(amount))
+  ){
+
+    return "Price unavailable";
+
+  }
+
+  return "₦" +
+    Number(amount).toLocaleString(
+      "en-NG",
+      {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 2
+      }
+    );
+
+}
+
+
+/* =========================================================
+   AUTHENTICATION
+========================================================= */
+
+async function checkAuthentication(){
+
+  try{
+
+    const {
+      data,
+      error
+    } =
+    await supabaseClient.auth.getSession();
+
+    if(error){
+
+      console.error(
+        "Session check error:",
+        error
+      );
+
+      window.location.replace(
+        "register.html"
+      );
+
+      return false;
+
+    }
+
+    const session =
+      data?.session || null;
+
+    if(!session){
+
+      window.location.replace(
+        "register.html"
+      );
+
+      return false;
+
+    }
+
+    userAuthenticated = true;
+
+    const authScreen =
+      document.getElementById(
+        "authScreen"
+      );
+
+    if(authScreen){
+
+      authScreen.style.display =
+        "none";
+
+    }
+
+    return true;
+
+  }catch(error){
+
+    console.error(
+      "Authentication check failed:",
+      error
+    );
+
+    window.location.replace(
+      "register.html"
+    );
+
+    return false;
+
+  }
+
+}
+
+
+/* =========================================================
+   SHOW PRICE ERROR
+========================================================= */
+
+function showPriceError(){
+
+  const box =
+    document.getElementById(
+      "priceErrorBox"
+    );
+
+  if(box){
+
+    box.classList.remove(
+      "hidden"
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   HIDE PRICE ERROR
+========================================================= */
+
+function hidePriceError(){
+
+  const box =
+    document.getElementById(
+      "priceErrorBox"
+    );
+
+  if(box){
+
+    box.classList.add(
+      "hidden"
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   LOAD SERVICE PRICES
+========================================================= */
+
+async function loadServicePrices(){
+
+  try{
+
+    hidePriceError();
+
+    const {
+      data,
+      error
+    } =
+    await supabaseClient
+      .from("service_settings")
+      .select(
+        "service_code, service_name, price, is_active"
+      )
+      .in(
+        "service_code",
+        [
+          "nin_standard",
+          "nin_lost",
+          "nin_premium"
+        ]
+      );
+
+
+    /* -----------------------------------------
+       DATABASE ERROR
+    ----------------------------------------- */
+
+    if(error){
+
+      console.error(
+        "SERVICE SETTINGS ERROR:",
+        error
+      );
+
+      showPriceError();
+
+      updatePriceDisplays();
+
+      return false;
+
+    }
+
+
+    /* -----------------------------------------
+       RESET PRICES
+    ----------------------------------------- */
+
+    servicePrices = {
+
+      nin_standard: {
+        price: null,
+        active: false
+      },
+
+      nin_lost: {
+        price: null,
+        active: false
+      },
+
+      nin_premium: {
+        price: null,
+        active: false
+      }
+
+    };
+
+
+    /* -----------------------------------------
+       PROCESS DATABASE RESULTS
+    ----------------------------------------- */
+
+    (data || []).forEach(
+      service => {
+
+        const code =
+          String(
+            service.service_code || ""
+          ).trim();
+
+        if(
+          Object.prototype.hasOwnProperty.call(
+            servicePrices,
+            code
+          )
+        ){
+
+          const price =
+            Number(
+              service.price
+            );
+
+          servicePrices[code] = {
+
+            price:
+              Number.isFinite(price)
+              ? price
+              : null,
+
+            active:
+              service.is_active === true
+
+          };
+
+        }
+
+      }
+    );
+
+
+    console.log(
+      "GRACIOUSTEC service prices loaded:",
+      servicePrices
+    );
+
+
+    updatePriceDisplays();
+
+
+    /* -----------------------------------------
+       CHECK WHETHER ANY PRICE WAS FOUND
+    ----------------------------------------- */
+
+    const anyPriceLoaded =
+      Object.values(
+        servicePrices
+      ).some(
+        service =>
+          service.price !== null
+      );
+
+    if(!anyPriceLoaded){
+
+      console.warn(
+        "No NIN prices were found in service_settings."
+      );
+
+      showPriceError();
+
+      return false;
+
+    }
+
+    return true;
+
+  }catch(error){
+
+    console.error(
+      "Unexpected price loading error:",
+      error
+    );
+
+    showPriceError();
+
+    updatePriceDisplays();
+
+    return false;
+
+  }
+
+}
+
+
+/* =========================================================
+   UPDATE PRICE DISPLAYS
+========================================================= */
+
+function updatePriceDisplays(){
+
+  const standard =
+    servicePrices.nin_standard;
+
+  const lost =
+    servicePrices.nin_lost;
+
+  const premium =
+    servicePrices.nin_premium;
+
+
+  /* -----------------------------------------
+     VERIFICATION SELECT
+  ----------------------------------------- */
+
+  const verificationSelect =
+    document.getElementById(
+      "verificationSlipType"
+    );
+
+  if(verificationSelect){
+
+    const regularOption =
+      verificationSelect.querySelector(
+        'option[value="Regular Slip"]'
+      );
+
+    const standardOption =
+      verificationSelect.querySelector(
+        'option[value="Standard Slip"]'
+      );
+
+    const longOption =
+      verificationSelect.querySelector(
+        'option[value="Long Slip"]'
+      );
+
+    const premiumOption =
+      verificationSelect.querySelector(
+        'option[value="Premium Slip"]'
+      );
+
+
+    if(regularOption){
+
+      regularOption.textContent =
+        "Regular Slip — " +
+        (
+          standard.active &&
+          standard.price !== null
+          ?
+          formatNaira(
+            standard.price
+          )
+          :
+          "Unavailable"
+        );
+
+      regularOption.disabled =
+        !(
+          standard.active &&
+          standard.price !== null
+        );
+
+    }
+
+
+    if(standardOption){
+
+      standardOption.textContent =
+        "Standard Slip — " +
+        (
+          standard.active &&
+          standard.price !== null
+          ?
+          formatNaira(
+            standard.price
+          )
+          :
+          "Unavailable"
+        );
+
+      standardOption.disabled =
+        !(
+          standard.active &&
+          standard.price !== null
+        );
+
+    }
+
+
+    if(longOption){
+
+      longOption.textContent =
+        "Long / Lost Slip — " +
+        (
+          lost.active &&
+          lost.price !== null
+          ?
+          formatNaira(
+            lost.price
+          )
+          :
+          "Unavailable"
+        );
+
+      longOption.disabled =
+        !(
+          lost.active &&
+          lost.price !== null
+        );
+
+    }
+
+
+    if(premiumOption){
+
+      premiumOption.textContent =
+        "Premium / Foreigner Slip — " +
+        (
+          premium.active &&
+          premium.price !== null
+          ?
+          formatNaira(
+            premium.price
+          )
+          :
+          "Unavailable"
+        );
+
+      premiumOption.disabled =
+        !(
+          premium.active &&
+          premium.price !== null
+        );
+
+    }
+
+  }
+
+
+  /* -----------------------------------------
+     RADIO BUTTONS
+  ----------------------------------------- */
+
+  const regularRadio =
+    document.querySelector(
+      'input[name="slip"][data-slip-type="Regular Slip"]'
+    );
+
+  const standardRadio =
+    document.querySelector(
+      'input[name="slip"][data-slip-type="Standard Slip"]'
+    );
+
+  const longRadio =
+    document.querySelector(
+      'input[name="slip"][data-slip-type="Long Slip"]'
+    );
+
+  const premiumRadio =
+    document.querySelector(
+      'input[name="slip"][data-slip-type="Premium Slip"]'
+    );
+
+
+  if(regularRadio){
+
+    regularRadio.value =
+      standard.price !== null
+      ? standard.price
+      : "";
+
+    regularRadio.disabled =
+      !(
+        standard.active &&
+        standard.price !== null
+      );
+
+  }
+
+
+  if(standardRadio){
+
+    standardRadio.value =
+      standard.price !== null
+      ? standard.price
+      : "";
+
+    standardRadio.disabled =
+      !(
+        standard.active &&
+        standard.price !== null
+      );
+
+  }
+
+
+  if(longRadio){
+
+    longRadio.value =
+      lost.price !== null
+      ? lost.price
+      : "";
+
+    longRadio.disabled =
+      !(
+        lost.active &&
+        lost.price !== null
+      );
+
+  }
+
+
+  if(premiumRadio){
+
+    premiumRadio.value =
+      premium.price !== null
+      ? premium.price
+      : "";
+
+    premiumRadio.disabled =
+      !(
+        premium.active &&
+        premium.price !== null
+      );
+
+  }
+
+
+  /* -----------------------------------------
+     PRICE LABELS
+  ----------------------------------------- */
+
+  const regularLabel =
+    document.getElementById(
+      "regularPriceLabel"
+    );
+
+  const standardLabel =
+    document.getElementById(
+      "standardPriceLabel"
+    );
+
+  const longLabel =
+    document.getElementById(
+      "longPriceLabel"
+    );
+
+  const premiumLabel =
+    document.getElementById(
+      "premiumPriceLabel"
+    );
+
+
+  if(regularLabel){
+
+    regularLabel.textContent =
+      "Regular Slip — " +
+      (
+        standard.active &&
+        standard.price !== null
+        ?
+        formatNaira(
+          standard.price
+        )
+        :
+        "Unavailable"
+      );
+
+  }
+
+
+  if(standardLabel){
+
+    standardLabel.textContent =
+      "Standard Slip — " +
+      (
+        standard.active &&
+        standard.price !== null
+        ?
+        formatNaira(
+          standard.price
+        )
+        :
+        "Unavailable"
+      );
+
+  }
+
+
+  if(longLabel){
+
+    longLabel.textContent =
+      "Long / Lost Slip — " +
+      (
+        lost.active &&
+        lost.price !== null
+        ?
+        formatNaira(
+          lost.price
+        )
+        :
+        "Unavailable"
+      );
+
+  }
+
+
+  if(premiumLabel){
+
+    premiumLabel.textContent =
+      "Premium / Foreigner Slip — " +
+      (
+        premium.active &&
+        premium.price !== null
+        ?
+        formatNaira(
+          premium.price
+        )
+        :
+        "Unavailable"
+      );
+
+  }
+
+}
+
+
+/* =========================================================
+   SERVICE AVAILABILITY
+========================================================= */
+
+function isServiceAvailable(
+  serviceCode
+){
+
+  const service =
+    servicePrices[
+      serviceCode
+    ];
+
+  if(!service){
+
+    return false;
+
+  }
+
+  return (
+    service.active === true &&
+    service.price !== null &&
+    Number(service.price) > 0
+  );
+
+}
+
+
+/* =========================================================
+   GET SERVICE PRICE
+========================================================= */
+
+function getServicePrice(
+  serviceCode
+){
+
+  const service =
+    servicePrices[
+      serviceCode
+    ];
+
+  if(!service){
+
+    return null;
+
+  }
+
+  if(
+    service.price === null ||
+    service.price === undefined
+  ){
+
+    return null;
+
+  }
+
+  return Number(
+    service.price
+  );
+
+}
+
+
+/* =========================================================
+   CHANGE VERIFICATION METHOD
+========================================================= */
+
+function changeMethod(){
+
+  const type =
+    document.getElementById(
+      "verificationType"
+    ).value;
+
+
+  document
+    .getElementById("ninBox")
+    .classList.toggle(
+      "hidden",
+      type !== "by_nin"
+    );
+
+
+  document
+    .getElementById("phoneBox")
+    .classList.toggle(
+      "hidden",
+      type !== "by_phone"
+    );
+
+
+  document
+    .getElementById("demoBox")
+    .classList.toggle(
+      "hidden",
+      type !== "by_demo"
+    );
+
+
+  const slipSelect =
+    document.getElementById(
+      "verificationSlipType"
+    );
+
+
+  if(slipSelect){
+
+    slipSelect.disabled =
+      type !== "by_nin";
+
+  }
+
+}
+
+
+/* =========================================================
+   MESSAGES
+========================================================= */
+
+function showMessage(
+  text,
+  type="error"
+){
+
+  const box =
+    document.getElementById(
+      "verificationMessage"
+    );
+
+  box.textContent =
+    text;
+
+  box.className =
+    "message " + type;
+
+  box.style.display =
+    "block";
+
+}
+
+
+function showPaymentMessage(
+  text,
+  type="error"
+){
+
+  const box =
+    document.getElementById(
+      "paymentMessage"
+    );
+
+  box.textContent =
+    text;
+
+  box.className =
+    "message " + type;
+
+  box.style.display =
+    "block";
+
+}
+
+
+function showSlipMessage(
+  text,
+  type="error"
+){
+
+  const box =
+    document.getElementById(
+      "slipMessage"
+    );
+
+  box.textContent =
+    text;
+
+  box.className =
+    "message " + type;
+
+  box.style.display =
+    "block";
+
+}
+
+
+/* =========================================================
+   NORMALIZE SLIP TYPE
+========================================================= */
+
+function normalizeSlipType(
+  slipType
+){
+
+  const value =
+    String(
+      slipType || ""
+    )
+    .toLowerCase()
+    .trim();
+
+
+  if(
+    value === "regular" ||
+    value === "regular slip"
+  ){
+
+    return "Regular Slip";
+
+  }
+
+
+  if(
+    value === "standard" ||
+    value === "standard slip"
+  ){
+
+    return "Standard Slip";
+
+  }
+
+
+  if(
+    value === "long" ||
+    value === "long slip" ||
+    value === "lost" ||
+    value === "lost slip"
+  ){
+
+    return "Long Slip";
+
+  }
+
+
+  if(
+    value === "premium" ||
+    value === "premium slip"
+  ){
+
+    return "Premium Slip";
+
+  }
+
+
+  if(
+    value === "foreigner" ||
+    value === "foreigner slip" ||
+    value === "premium / foreigner slip"
+  ){
+
+    return "Premium Slip";
+
+  }
+
+
+  return slipType ||
+    "Regular Slip";
+
+}
+
+
+/* =========================================================
+   GET SELECTED SLIP
+========================================================= */
+
+function getSelectedSlipType(){
+
+  const select =
+    document.getElementById(
+      "verificationSlipType"
+    );
+
+  return normalizeSlipType(
+    select.value
+  );
+
+}
+
+
+/* =========================================================
+   SYNC RADIO
+========================================================= */
+
+function syncSlipRadio(
+  slipType
+){
+
+  const normalized =
+    normalizeSlipType(
+      slipType
+    );
+
+
+  const radio =
+    document.querySelector(
+      'input[name="slip"][data-slip-type="' +
+      normalized +
+      '"]'
+    );
+
+
+  if(
+    radio &&
+    !radio.disabled
+  ){
+
+    radio.checked =
+      true;
+
+  }
+
+}
+
+
+/* =========================================================
+   SERVICE CODE FOR SLIP
+========================================================= */
+
+function getServiceCodeForSlip(
+  slipType
+){
+
+  const normalized =
+    normalizeSlipType(
+      slipType
+    );
+
+
+  if(
+    normalized === "Regular Slip" ||
+    normalized === "Standard Slip"
+  ){
+
+    return "nin_standard";
+
+  }
+
+
+  if(
+    normalized === "Long Slip"
+  ){
+
+    return "nin_lost";
+
+  }
+
+
+  if(
+    normalized === "Premium Slip"
+  ){
+
+    return "nin_premium";
+
+  }
+
+
+  return null;
+
+}
+
+
+/* =========================================================
+   VERIFY NIN
+========================================================= */
+
+async function verifyNIN(){
+
+  if(!userAuthenticated){
+
+    window.location.replace(
+      "register.html"
+    );
+
+    return;
+
+  }
+
+
+  const button =
+    document.getElementById(
+      "verifyButton"
+    );
+
+
+  button.disabled =
+    true;
+
+  button.textContent =
+    "Verifying...";
+
+
+  try{
+
+    /* Make sure latest admin price is loaded */
+    await loadServicePrices();
+
+
+    const {
+      data:{
+        session
+      }
+    } =
+    await supabaseClient.auth.getSession();
+
+
+    if(!session){
+
+      window.location.replace(
+        "register.html"
+      );
+
+      return;
+
+    }
+
+
+    const type =
+      document.getElementById(
+        "verificationType"
+      ).value;
+
+
+    const slipType =
+      getSelectedSlipType();
+
+
+    if(type === "by_nin"){
+
+      const serviceCode =
+        getServiceCodeForSlip(
+          slipType
+        );
+
+
+      if(!serviceCode){
+
+        throw new Error(
+          "Invalid NIN slip type."
+        );
+
+      }
+
+
+      if(
+        !isServiceAvailable(
+          serviceCode
+        )
+      ){
+
+        throw new Error(
+          "This NIN slip service is currently unavailable."
+        );
+
+      }
+
+    }
+
+
+    let requestBody = {
+
+      verification_type:
+        type
+
+    };
+
+
+    if(type === "by_nin"){
+
+      const nin =
+        document
+          .getElementById("nin")
+          .value
+          .trim();
+
+
+      if(
+        !/^[0-9]{11}$/.test(nin)
+      ){
+
+        throw new Error(
+          "Please enter a valid 11-digit NIN."
+        );
+
+      }
+
+
+      requestBody.nin =
+        nin;
+
+      requestBody.slip_type =
+        slipType;
+
+    }
+
+
+    if(type === "by_phone"){
+
+      const phone =
+        document
+          .getElementById("phone")
+          .value
+          .trim();
+
+
+      if(!phone){
+
+        throw new Error(
+          "Please enter your phone number."
+        );
+
+      }
+
+
+      requestBody.phone =
+        phone;
+
+    }
+
+
+    if(type === "by_demo"){
+
+      const firstname =
+        document
+          .getElementById("firstname")
+          .value
+          .trim();
+
+
+      const surname =
+        document
+          .getElementById("surname")
+          .value
+          .trim();
+
+
+      const gender =
+        document
+          .getElementById("gender")
+          .value;
+
+
+      const birthdate =
+        document
+          .getElementById("birthdate")
+          .value;
+
+
+      if(
+        !firstname ||
+        !surname ||
+        !gender ||
+        !birthdate
+      ){
+
+        throw new Error(
+          "Please complete all personal details."
+        );
+
+      }
+
+
+      requestBody.firstname =
+        firstname;
+
+      requestBody.surname =
+        surname;
+
+      requestBody.gender =
+        gender;
+
+      requestBody.birthdate =
+        birthdate;
+
+    }
+
+
+    const response =
+      await fetch(
+        NIN_VERIFICATION_FUNCTION,
+        {
+
+          method:"POST",
+
+          headers:{
+
+            "Content-Type":
+              "application/json",
+
+            "apikey":
+              SUPABASE_KEY,
+
+            "Authorization":
+              "Bearer " +
+              session.access_token
+
+          },
+
+          body:
+            JSON.stringify(
+              requestBody
+            )
+
+        }
+      );
+
+
+    const result =
+      await response.json();
+
+
+    if(
+      !response.ok ||
+      !result.success
+    ){
+
+      throw new Error(
+        result.message ||
+        "NIN verification failed."
+      );
+
+    }
+
+
+    verifiedNINData =
+      result.data ||
+      result;
+
+
+    sessionStorage.setItem(
+      "gracioustech_nin_data",
+      JSON.stringify(
+        verifiedNINData
+      )
+    );
+
+
+    if(type === "by_nin"){
+
+      const returnedSlipType =
+        normalizeSlipType(
+          result.slip_type ||
+          result.requested_slip_type ||
+          result.provider_slip_type ||
+          slipType
+        );
+
+
+      generatedSlipType =
+        returnedSlipType;
+
+
+      sessionStorage.setItem(
+        "gracioustech_slip_type",
+        returnedSlipType
+      );
+
+
+      const pdfBase64 =
+        result?.slip?.pdf_base64;
+
+
+      if(!pdfBase64){
+
+        throw new Error(
+          "NIN verification succeeded, but the NINSLIP API did not return the PDF."
+        );
+
+      }
+
+
+      generatedPDFBase64 =
+        pdfBase64;
+
+
+      generatedPDFMimeType =
+        result?.slip?.mime_type ||
+        "application/pdf";
+
+
+      generatedPDFFileName =
+        result?.slip?.file_name ||
+        "NIN_" +
+        returnedSlipType
+          .replace(/\s+/g,"_") +
+        ".pdf";
+
+
+      generatedTrackingId =
+        result?.trackingId ||
+        result?.reportID ||
+        result?.data?.trackingId ||
+        result?.data?.tracking_id ||
+        null;
+
+
+      try{
+
+        sessionStorage.setItem(
+          "gracioustech_nin_pdf",
+          pdfBase64
+        );
+
+
+        sessionStorage.setItem(
+          "gracioustech_nin_pdf_mime",
+          generatedPDFMimeType
+        );
+
+
+        sessionStorage.setItem(
+          "gracioustech_nin_pdf_name",
+          generatedPDFFileName
+        );
+
+
+        if(generatedTrackingId){
+
+          sessionStorage.setItem(
+            "gracioustech_nin_tracking",
+            generatedTrackingId
+          );
+
+        }
+
+      }catch(storageError){
+
+        console.warn(
+          "PDF could not be saved:",
+          storageError
+        );
+
+      }
+
+
+      createPDFFromBase64(
+        generatedPDFBase64,
+        generatedPDFMimeType
+      );
+
+    }
+
+
+    sessionStorage.removeItem(
+      "gracioustech_nin_paid"
+    );
+
+
+    displayNINData(
+      verifiedNINData
+    );
+
+
+    document
+      .getElementById(
+        "verificationResult"
+      )
+      .classList.remove(
+        "hidden"
+      );
+
+
+    if(type === "by_nin"){
+
+      document
+        .getElementById(
+          "reprintSection"
+        )
+        .classList.remove(
+          "hidden"
+        );
+
+
+      syncSlipRadio(
+        generatedSlipType
+      );
+
+
+      showSlipMessage(
+        "NIN slip generated successfully. Complete payment to unlock it.",
+        "success"
+      );
+
+    }else{
+
+      document
+        .getElementById(
+          "reprintSection"
+        )
+        .classList.add(
+          "hidden"
+        );
+
+    }
+
+
+    showMessage(
+      type === "by_nin"
+      ?
+      "NIN verification successful. Your slip has also been generated."
+      :
+      "NIN verification successful.",
+      "success"
+    );
+
+
+  }catch(error){
+
+    console.error(
+      "NIN verification error:",
+      error
+    );
+
+
+    showMessage(
+      error.message ||
+      "Verification failed.",
+      "error"
+    );
+
+
+  }finally{
+
+    button.disabled =
+      false;
+
+    button.textContent =
+      "Verify NIN";
+
+  }
+
+}
+
+
+/* =========================================================
+   DISPLAY NIN DATA
+========================================================= */
+
+function displayNINData(
+  data
+){
+
+  document.getElementById(
+    "resultFirstname"
+  ).textContent =
+    data.firstname ||
+    data.first_name ||
+    "-";
+
+
+  document.getElementById(
+    "resultMiddlename"
+  ).textContent =
+    data.middlename ||
+    data.middle_name ||
+    "-";
+
+
+  document.getElementById(
+    "resultSurname"
+  ).textContent =
+    data.surname ||
+    data.last_name ||
+    "-";
+
+
+  document.getElementById(
+    "resultGender"
+  ).textContent =
+    data.gender ||
+    "-";
+
+
+  document.getElementById(
+    "resultBirthdate"
+  ).textContent =
+    data.birthdate ||
+    data.birth_date ||
+    "-";
+
+
+  document.getElementById(
+    "resultNIN"
+  ).textContent =
+    data.nin ||
+    data.NIN ||
+    data.number ||
+    data.nin_number ||
+    "-";
+
+
+  document.getElementById(
+    "resultState"
+  ).textContent =
+    data.residence_state ||
+    data.state ||
+    "-";
+
+
+  document.getElementById(
+    "resultLGA"
+  ).textContent =
+    data.residence_lga ||
+    data.lga ||
+    "-";
+
+
+  document.getElementById(
+    "resultAddress"
+  ).textContent =
+    data.residence_address ||
+    data.address ||
+    "-";
+
+
+  const photo =
+    data.photo ||
+    data.image ||
+    data.passport;
+
+
+  if(photo){
+
+    const image =
+      document.getElementById(
+        "ninPhoto"
+      );
+
+
+    if(
+      typeof photo === "string" &&
+      photo.startsWith("data:")
+    ){
+
+      image.src =
+        photo;
+
+    }else{
+
+      image.src =
+        "data:image/jpeg;base64," +
+        photo;
+
+    }
+
+
+    document
+      .getElementById(
+        "photoBox"
+      )
+      .classList.remove(
+        "hidden"
+      );
+
+  }
+
+}
+
+
+/* =========================================================
+   CREATE PDF
+========================================================= */
+
+function createPDFFromBase64(
+  base64,
+  mimeType="application/pdf"
+){
+
+  if(!base64){
+
+    return false;
+
+  }
+
+
+  try{
+
+    const byteCharacters =
+      atob(base64);
+
+
+    const byteNumbers =
+      new Array(
+        byteCharacters.length
+      );
+
+
+    for(
+      let i=0;
+      i<byteCharacters.length;
+      i++
+    ){
+
+      byteNumbers[i] =
+        byteCharacters.charCodeAt(i);
+
+    }
+
+
+    const byteArray =
+      new Uint8Array(
+        byteNumbers
+      );
+
+
+    generatedPDFBlob =
+      new Blob(
+        [byteArray],
+        {
+          type:mimeType
+        }
+      );
+
+
+    if(generatedPDFUrl){
+
+      URL.revokeObjectURL(
+        generatedPDFUrl
+      );
+
+    }
+
+
+    generatedPDFUrl =
+      URL.createObjectURL(
+        generatedPDFBlob
+      );
+
+
+    return true;
+
+
+  }catch(error){
+
+    console.error(
+      "PDF creation error:",
+      error
+    );
+
+    return false;
+
+  }
+
+}
+
+
+/* =========================================================
+   PAY NOW
+========================================================= */
+
+async function payNow(){
+
+  if(!userAuthenticated){
+
+    window.location.replace(
+      "register.html"
+    );
+
+    return;
+
+  }
+
+
+  if(!verifiedNINData){
+
+    showPaymentMessage(
+      "Please verify the NIN first."
+    );
+
+    return;
+
+  }
+
+
+  if(!generatedPDFBase64){
+
+    showPaymentMessage(
+      "Your NIN slip has not been generated yet. Please verify the NIN again."
+    );
+
+    return;
+
+  }
+
+
+  const selected =
+    document.querySelector(
+      'input[name="slip"]:checked'
+    );
+
+
+  if(!selected){
+
+    showPaymentMessage(
+      "Please select the slip type."
+    );
+
+    return;
+
+  }
+
+
+  const selectedSlipType =
+    normalizeSlipType(
+      selected.dataset.slipType
+    );
+
+
+  const pricesLoaded =
+    await loadServicePrices();
+
+
+  if(!pricesLoaded){
+
+    showPaymentMessage(
+      "Unable to load the current service price. Please try again."
+    );
+
+    return;
+
+  }
+
+
+  const serviceCode =
+    getServiceCodeForSlip(
+      selectedSlipType
+    );
+
+
+  if(!serviceCode){
+
+    showPaymentMessage(
+      "Invalid NIN slip type."
+    );
+
+    return;
+
+  }
+
+
+  if(
+    !isServiceAvailable(
+      serviceCode
+    )
+  ){
+
+    showPaymentMessage(
+      "This NIN service is currently unavailable."
+    );
+
+    return;
+
+  }
+
+
+  if(
+    generatedSlipType &&
+    getServiceCodeForSlip(
+      selectedSlipType
+    ) !==
+    getServiceCodeForSlip(
+      generatedSlipType
+    )
+  ){
+
+    showPaymentMessage(
+      "Please select the same slip type that was generated: " +
+      generatedSlipType +
+      ".",
+      "error"
+    );
+
+
+    syncSlipRadio(
+      generatedSlipType
+    );
+
+
+    return;
+
+  }
+
+
+  const currentDisplayPrice =
+    getServicePrice(
+      serviceCode
+    );
+
+
+  updatePriceDisplays();
+
+
+  const button =
+    document.getElementById(
+      "payButton"
+    );
+
+
+  button.disabled =
+    true;
+
+  button.textContent =
+    "Processing Payment...";
+
+
+  try{
+
+    const {
+      data:{
+        session
+      }
+    } =
+    await supabaseClient.auth.getSession();
+
+
+    if(!session){
+
+      window.location.replace(
+        "register.html"
+      );
+
+      return;
+
+    }
+
+
+    const {
+      data,
+      error
+    } =
+    await supabaseClient.rpc(
+      "pay_nin_reprint",
+      {
+        p_service_code:
+          serviceCode
+      }
+    );
+
+
+    if(error){
+
+      throw error;
+
+    }
+
+
+    if(
+      !data ||
+      data.success !== true
+    ){
+
+      throw new Error(
+        data?.message ||
+        "Payment failed."
+      );
+
+    }
+
+
+    sessionStorage.setItem(
+      "gracioustech_nin_data",
+      JSON.stringify(
+        verifiedNINData
+      )
+    );
+
+
+    sessionStorage.setItem(
+      "gracioustech_nin_paid",
+      "true"
+    );
+
+
+    sessionStorage.setItem(
+      "gracioustech_slip_type",
+      selectedSlipType
+    );
+
+
+    const chargedAmount =
+      data.amount !== undefined &&
+      data.amount !== null
+      ?
+      Number(data.amount)
+      :
+      currentDisplayPrice;
+
+
+    showPaymentMessage(
+      "Payment successful. " +
+      selectedSlipType +
+      " — " +
+      formatNaira(
+        chargedAmount
+      ) +
+      ". Your slip is ready.",
+      "success"
+    );
+
+
+    button.classList.add(
+      "hidden"
+    );
+
+
+    document
+      .getElementById(
+        "openSlipButton"
+      )
+      .classList.remove(
+        "hidden"
+      );
+
+
+  }catch(error){
+
+    console.error(
+      "Payment error:",
+      error
+    );
+
+
+    showPaymentMessage(
+      error.message ||
+      "Payment failed.",
+      "error"
+    );
+
+
+    button.disabled =
+      false;
+
+    button.textContent =
+      "Pay & Continue";
+
+  }
+
+}
+
+
+/* =========================================================
+   OPEN PAID SLIP
+========================================================= */
+
+function openPaidSlip(){
+
+  if(!userAuthenticated){
+
+    window.location.replace(
+      "register.html"
+    );
+
+    return;
+
+  }
+
+
+  const paid =
+    sessionStorage.getItem(
+      "gracioustech_nin_paid"
+    );
+
+
+  if(paid !== "true"){
+
+    showSlipMessage(
+      "Please complete payment first.",
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  if(!generatedPDFUrl){
+
+    restoreSavedPDF();
+
+  }
+
+
+  if(!generatedPDFUrl){
+
+    showSlipMessage(
+      "The generated PDF could not be found. Please verify the NIN again.",
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  displaySlipResult();
+
+}
+
+
+/* =========================================================
+   DISPLAY SLIP RESULT
+========================================================= */
+
+function displaySlipResult(){
+
+  document.getElementById(
+    "generatedSlipType"
+  ).textContent =
+    generatedSlipType ||
+    sessionStorage.getItem(
+      "gracioustech_slip_type"
+    ) ||
+    "Regular Slip";
+
+
+  document.getElementById(
+    "generatedFileName"
+  ).textContent =
+    generatedPDFFileName ||
+    "NIN_Slip.pdf";
+
+
+  if(generatedTrackingId){
+
+    document.getElementById(
+      "trackingId"
+    ).textContent =
+      generatedTrackingId;
+
+
+    document
+      .getElementById(
+        "trackingRow"
+      )
+      .classList.remove(
+        "hidden"
+      );
+
+  }
+
+
+  const downloadButton =
+    document.getElementById(
+      "downloadPdfButton"
+    );
+
+
+  downloadButton.href =
+    generatedPDFUrl;
+
+
+  downloadButton.download =
+    generatedPDFFileName ||
+    "NIN_Slip.pdf";
+
+
+  document
+    .getElementById(
+      "slipResult"
+    )
+    .classList.remove(
+      "hidden"
+    );
+
+
+  showSlipMessage(
+    "NIN slip is ready.",
+    "success"
+  );
+
+
+  document
+    .getElementById(
+      "slipResult"
+    )
+    .scrollIntoView({
+      behavior:"smooth",
+      block:"start"
+    });
+
+}
+
+
+/* =========================================================
+   RESTORE SAVED PDF
+========================================================= */
+
+function restoreSavedPDF(){
+
+  const savedPDF =
+    sessionStorage.getItem(
+      "gracioustech_nin_pdf"
+    );
+
+
+  if(!savedPDF){
+
+    return false;
+
+  }
+
+
+  generatedPDFBase64 =
+    savedPDF;
+
+
+  generatedPDFMimeType =
+    sessionStorage.getItem(
+      "gracioustech_nin_pdf_mime"
+    ) ||
+    "application/pdf";
+
+
+  generatedPDFFileName =
+    sessionStorage.getItem(
+      "gracioustech_nin_pdf_name"
+    ) ||
+    "NIN_Slip.pdf";
+
+
+  generatedSlipType =
+    sessionStorage.getItem(
+      "gracioustech_slip_type"
+    ) ||
+    "Regular Slip";
+
+
+  generatedTrackingId =
+    sessionStorage.getItem(
+      "gracioustech_nin_tracking"
+    ) ||
+    null;
+
+
+  return createPDFFromBase64(
+    generatedPDFBase64,
+    generatedPDFMimeType
+  );
+
+}
+
+
+/* =========================================================
+   OPEN PDF
+========================================================= */
+
+function openGeneratedPDF(){
+
+  if(!userAuthenticated){
+
+    window.location.replace(
+      "register.html"
+    );
+
+    return;
+
+  }
+
+
+  if(!generatedPDFUrl){
+
+    restoreSavedPDF();
+
+  }
+
+
+  if(!generatedPDFUrl){
+
+    showSlipMessage(
+      "Please generate the NIN slip first."
+    );
+
+    return;
+
+  }
+
+
+  window.open(
+    generatedPDFUrl,
+    "_blank"
+  );
+
+}
+
+
+/* =========================================================
+   PRINT PDF
+========================================================= */
+
+function printGeneratedPDF(){
+
+  if(!userAuthenticated){
+
+    window.location.replace(
+      "register.html"
+    );
+
+    return;
+
+  }
+
+
+  if(!generatedPDFUrl){
+
+    restoreSavedPDF();
+
+  }
+
+
+  if(!generatedPDFUrl){
+
+    showSlipMessage(
+      "Please generate the NIN slip first."
+    );
+
+    return;
+
+  }
+
+
+  const printWindow =
+    window.open(
+      generatedPDFUrl,
+      "_blank"
+    );
+
+
+  if(!printWindow){
+
+    showSlipMessage(
+      "Please allow pop-ups to print the PDF."
+    );
+
+    return;
+
+  }
+
+}
+
+
+/* =========================================================
+   PAGE START
+========================================================= */
+
+window.addEventListener(
+  "DOMContentLoaded",
+  async function(){
+
+    const authenticated =
+      await checkAuthentication();
+
+
+    if(!authenticated){
+
+      return;
+
+    }
+
+
+    changeMethod();
+
+
+    /*
+      Load prices immediately after
+      authentication.
+    */
+    await loadServicePrices();
+
+
+    const saved =
+      sessionStorage.getItem(
+        "gracioustech_nin_data"
+      );
+
+
+    const paid =
+      sessionStorage.getItem(
+        "gracioustech_nin_paid"
+      );
+
+
+    const savedSlipType =
+      sessionStorage.getItem(
+        "gracioustech_slip_type"
+      );
+
+
+    const savedPDF =
+      sessionStorage.getItem(
+        "gracioustech_nin_pdf"
+      );
+
+
+    if(saved){
+
+      try{
+
+        verifiedNINData =
+          JSON.parse(saved);
+
+
+        displayNINData(
+          verifiedNINData
+        );
+
+
+        document
+          .getElementById(
+            "verificationResult"
+          )
+          .classList.remove(
+            "hidden"
+          );
+
+
+      }catch(error){
+
+        console.warn(
+          "Saved NIN data could not be restored:",
+          error
+        );
+
+      }
+
+    }
+
+
+    if(savedPDF){
+
+      restoreSavedPDF();
+
+    }
+
+
+    if(savedSlipType){
+
+      generatedSlipType =
+        normalizeSlipType(
+          savedSlipType
+        );
+
+    }
+
+
+    if(paid === "true"){
+
+      if(
+        generatedPDFUrl &&
+        verifiedNINData
+      ){
+
+        document
+          .getElementById(
+            "reprintSection"
+          )
+          .classList.remove(
+            "hidden"
+          );
+
+
+        syncSlipRadio(
+          generatedSlipType
+        );
+
+
+        document
+          .getElementById(
+            "payButton"
+          )
+          .classList.add(
+            "hidden"
+          );
+
+
+        document
+          .getElementById(
+            "openSlipButton"
+          )
+          .classList.remove(
+            "hidden"
+          );
+
+
+        displaySlipResult();
+
+      }
+
+    }
+
+  }
+);
+
+</script></body>
+</html>

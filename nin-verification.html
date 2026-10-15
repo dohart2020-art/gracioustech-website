@@ -1,0 +1,758 @@
+<!DOCTYPE html><html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">  <title>NIN Verification - Gracioustec</title>  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background: #f4f7f6;
+      color: #222;
+    }
+
+    header {
+      background: #075e3b;
+      color: white;
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    header h2 {
+      font-size: 20px;
+    }
+
+    .back-btn {
+      background: white;
+      color: #075e3b;
+      border: none;
+      padding: 9px 14px;
+      border-radius: 7px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: 25px auto;
+      padding: 15px;
+    }
+
+    .card {
+      background: white;
+      padding: 25px;
+      border-radius: 15px;
+      box-shadow: 0 3px 15px rgba(0,0,0,0.08);
+    }
+
+    .icon {
+      width: 70px;
+      height: 70px;
+      margin: 0 auto 15px;
+      border-radius: 50%;
+      background: #075e3b;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      font-weight: bold;
+    }
+
+    h3 {
+      text-align: center;
+      color: #075e3b;
+      margin-bottom: 8px;
+    }
+
+    .description {
+      text-align: center;
+      color: #666;
+      font-size: 14px;
+      line-height: 1.5;
+      margin-bottom: 20px;
+    }
+
+    .price {
+      text-align: center;
+      background: #e8f5e9;
+      color: #075e3b;
+      padding: 13px;
+      border-radius: 9px;
+      margin-bottom: 22px;
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    label {
+      display: block;
+      font-weight: bold;
+      font-size: 14px;
+      margin-bottom: 7px;
+    }
+
+    input {
+      width: 100%;
+      padding: 14px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 16px;
+      outline: none;
+      margin-bottom: 15px;
+    }
+
+    input:focus {
+      border-color: #075e3b;
+    }
+
+    .verify-btn {
+      width: 100%;
+      background: #075e3b;
+      color: white;
+      border: none;
+      padding: 15px;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .verify-btn:disabled {
+      background: #999;
+      cursor: not-allowed;
+    }
+
+    .message {
+      display: none;
+      margin-top: 18px;
+      padding: 13px;
+      border-radius: 8px;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .info {
+      background: #e3f2fd;
+      color: #0d47a1;
+    }
+
+    .success {
+      background: #e8f5e9;
+      color: #1b5e20;
+    }
+
+    .error {
+      background: #ffebee;
+      color: #b71c1c;
+    }
+
+    .balance-box {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #555;
+      font-size: 14px;
+    }
+
+    .balance-box strong {
+      color: #075e3b;
+    }
+
+    .result {
+      display: none;
+      margin-top: 25px;
+    }
+
+    .result-title {
+      color: #075e3b;
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 15px;
+      text-align: center;
+    }
+
+    .verified-badge {
+      text-align: center;
+      background: #e8f5e9;
+      color: #1b5e20;
+      padding: 10px;
+      border-radius: 8px;
+      margin-bottom: 15px;
+      font-weight: bold;
+    }
+
+    .detail {
+      border-bottom: 1px solid #e5e5e5;
+      padding: 12px 5px;
+    }
+
+    .detail-label {
+      display: block;
+      font-size: 12px;
+      color: #777;
+      margin-bottom: 4px;
+    }
+
+    .detail-value {
+      display: block;
+      font-size: 15px;
+      font-weight: bold;
+      color: #222;
+      word-break: break-word;
+    }
+
+    .note {
+      margin-top: 18px;
+      background: #f5f7f6;
+      padding: 12px;
+      border-radius: 8px;
+      color: #666;
+      font-size: 12px;
+      line-height: 1.5;
+      text-align: center;
+    }
+
+    .fund-btn {
+      display: none;
+      width: 100%;
+      margin-top: 10px;
+      background: #ff9800;
+      color: white;
+      border: none;
+      padding: 13px;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+  </style></head><body><header>
+  <h2>NIN Verification</h2><button
+class="back-btn"
+onclick="location.href='dashboard.html'">
+Dashboard
+</button>
+
+</header><div class="container">  <div class="card"><div class="icon">N</div>
+
+<h3>Verify NIN</h3>
+
+<p class="description">
+  Verify a NIN and view the identity details.
+  No NIN slip or PDF will be generated.
+</p>
+
+<div class="price">
+  Verification Fee: ₦250
+</div>
+
+<div class="balance-box">
+  Wallet Balance:
+  <strong id="balance">Loading...</strong>
+</div>
+
+<form id="verificationForm">
+
+  <label for="nin">
+    NIN Number
+  </label>
+
+  <input
+    id="nin"
+    type="text"
+    maxlength="11"
+    inputmode="numeric"
+    autocomplete="off"
+    placeholder="Enter 11-digit NIN"
+    required
+  >
+
+  <button
+    id="verifyBtn"
+    class="verify-btn"
+    type="submit">
+    Verify Now — ₦250
+  </button>
+
+</form>
+
+<button
+  id="fundBtn"
+  class="fund-btn"
+  onclick="location.href='fund-wallet.html'">
+  Fund Wallet
+</button>
+
+<div id="message" class="message"></div>
+
+<div id="result" class="result">
+
+  <div class="result-title">
+    NIN Verification Result
+  </div>
+
+  <div class="verified-badge">
+    ✓ Identity Record Verified
+  </div>
+
+  <div id="details"></div>
+
+  <div class="note">
+    Verification result only.
+    No NIN slip or PDF is generated from this page.
+  </div>
+
+</div>
+
+  </div></div><script>
+
+const SUPABASE_URL =
+  "https://iknhifndgpwibkfidggq.supabase.co";
+
+const SUPABASE_KEY =
+  "sb_publishable_xELauxOMm7eMkNrPz55Mrw_LVkRoASn";
+
+const supabaseClient =
+  supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+  );
+
+const VERIFICATION_FEE = 250;
+
+const form =
+  document.getElementById("verificationForm");
+
+const ninInput =
+  document.getElementById("nin");
+
+const verifyBtn =
+  document.getElementById("verifyBtn");
+
+const message =
+  document.getElementById("message");
+
+const balanceDisplay =
+  document.getElementById("balance");
+
+const result =
+  document.getElementById("result");
+
+const details =
+  document.getElementById("details");
+
+const fundBtn =
+  document.getElementById("fundBtn");
+
+
+// Check logged-in user
+async function getUser() {
+
+  const {
+    data: { user },
+    error
+  } =
+  await supabaseClient.auth.getUser();
+
+  if (error || !user) {
+
+    window.location.href =
+      "login.html";
+
+    return null;
+  }
+
+  return user;
+}
+
+
+// Load wallet balance
+async function loadBalance() {
+
+  const user =
+    await getUser();
+
+  if (!user) return;
+
+  const {
+    data,
+    error
+  } =
+  await supabaseClient
+    .from("wallets")
+    .select("balance")
+    .eq("user_id", user.id)
+    .maybeSingle();
+
+  if (error) {
+
+    console.error(
+      "Wallet error:",
+      error
+    );
+
+    balanceDisplay.textContent =
+      "Unable to load";
+
+    return;
+  }
+
+  const balance =
+    Number(data?.balance || 0);
+
+  balanceDisplay.textContent =
+    "₦" + balance.toLocaleString(
+      "en-NG",
+      {
+        minimumFractionDigits: 2
+      }
+    );
+}
+
+
+// Initial balance
+loadBalance();
+
+
+// Verify
+form.addEventListener(
+  "submit",
+  async function(event) {
+
+    event.preventDefault();
+
+    const nin =
+      ninInput.value.trim();
+
+    if (!/^\d{11}$/.test(nin)) {
+
+      showMessage(
+        "Please enter a valid 11-digit NIN.",
+        "error"
+      );
+
+      return;
+    }
+
+    result.style.display =
+      "none";
+
+    fundBtn.style.display =
+      "none";
+
+    verifyBtn.disabled =
+      true;
+
+    verifyBtn.textContent =
+      "Checking wallet...";
+
+    showMessage(
+      "Checking your wallet balance...",
+      "info"
+    );
+
+    try {
+
+      /*
+       * STEP 1
+       * Securely charge ₦250.
+       */
+
+      const {
+        data: chargeData,
+        error: chargeError
+      } =
+      await supabaseClient.rpc(
+        "charge_nin_verification",
+        {
+          p_amount: VERIFICATION_FEE
+        }
+      );
+
+      if (chargeError) {
+        throw chargeError;
+      }
+
+      console.log(
+        "Charge response:",
+        chargeData
+      );
+
+      if (
+        !chargeData ||
+        chargeData.success !== true
+      ) {
+
+        if (
+          chargeData &&
+          chargeData.message &&
+          chargeData.message.toLowerCase()
+            .includes("insufficient")
+        ) {
+
+          fundBtn.style.display =
+            "block";
+
+        }
+
+        throw new Error(
+          chargeData?.message ||
+          "Unable to charge wallet."
+        );
+      }
+
+      /*
+       * STEP 2
+       * ₦250 was successfully deducted.
+       */
+
+      showMessage(
+        "₦250 charged successfully. Verifying NIN...",
+        "info"
+      );
+
+      /*
+       * STEP 3
+       * Call existing NIN verification
+       */
+
+      verifyBtn.textContent =
+        "Verifying NIN...";
+
+      const {
+        data,
+        error
+      } =
+      await supabaseClient.functions.invoke(
+        "nin-verification",
+        {
+          body: {
+            verification_type: "by_nin",
+            nin: nin
+          }
+        }
+      );
+
+      if (error) {
+        throw error;
+      }
+
+      console.log(
+        "Verification response:",
+        data
+      );
+
+      if (
+        !data ||
+        data.success === false
+      ) {
+
+        throw new Error(
+          data?.message ||
+          "NIN verification failed."
+        );
+      }
+
+      /*
+       * STEP 4
+       * Display verification details only.
+       */
+
+      displayDetails(
+        data.data ||
+        data.result ||
+        data.response ||
+        data
+      );
+
+      result.style.display =
+        "block";
+
+      showMessage(
+        "NIN verification completed successfully.",
+        "success"
+      );
+
+      /*
+       * Update displayed balance
+       */
+
+      if (
+        chargeData.balance !== undefined
+      ) {
+
+        balanceDisplay.textContent =
+          "₦" +
+          Number(
+            chargeData.balance
+          ).toLocaleString(
+            "en-NG",
+            {
+              minimumFractionDigits: 2
+            }
+          );
+
+      } else {
+
+        loadBalance();
+
+      }
+
+    } catch (error) {
+
+      console.error(
+        "Verification error:",
+        error
+      );
+
+      showMessage(
+        error.message ||
+        "Unable to complete verification.",
+        "error"
+      );
+
+    } finally {
+
+      verifyBtn.disabled =
+        false;
+
+      verifyBtn.textContent =
+        "Verify Now — ₦250";
+
+    }
+
+  }
+);
+
+
+// Display returned identity details
+function displayDetails(record) {
+
+  details.innerHTML = "";
+
+  if (
+    !record ||
+    typeof record !== "object"
+  ) {
+
+    addDetail(
+      "Verification",
+      String(record)
+    );
+
+    return;
+  }
+
+  const hiddenFields = [
+    "success",
+    "status",
+    "message",
+    "pdf",
+    "pdf_url",
+    "download_url",
+    "slip",
+    "slip_url"
+  ];
+
+  Object.entries(record).forEach(
+    ([key, value]) => {
+
+      if (
+        hiddenFields.includes(
+          key.toLowerCase()
+        )
+      ) {
+        return;
+      }
+
+      if (
+        value === null ||
+        value === undefined ||
+        value === ""
+      ) {
+        return;
+      }
+
+      if (
+        typeof value === "object"
+      ) {
+
+        value =
+          JSON.stringify(value);
+
+      }
+
+      addDetail(
+        formatLabel(key),
+        String(value)
+      );
+
+    }
+  );
+
+}
+
+
+function addDetail(label, value) {
+
+  const item =
+    document.createElement("div");
+
+  item.className =
+    "detail";
+
+  item.innerHTML = `
+    <span class="detail-label">
+      ${escapeHtml(label)}
+    </span>
+
+    <span class="detail-value">
+      ${escapeHtml(value)}
+    </span>
+  `;
+
+  details.appendChild(item);
+}
+
+
+function formatLabel(key) {
+
+  return key
+    .replace(/_/g, " ")
+    .replace(/-/g, " ")
+    .replace(
+      /\b\w/g,
+      function(char) {
+        return char.toUpperCase();
+      }
+    );
+}
+
+
+function escapeHtml(value) {
+
+  return String(value)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+
+function showMessage(text, type) {
+
+  message.textContent =
+    text;
+
+  message.className =
+    "message " + type;
+
+  message.style.display =
+    "block";
+}
+
+</script></body>
+</html>
