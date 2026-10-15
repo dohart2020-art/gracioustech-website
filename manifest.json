@@ -2,7 +2,7 @@
   "id": "/",
   "name": "GRACIOUSTEC - NIN and BVN Services",
   "short_name": "GRACIOUSTEC",
-  "description": "NIN and BVN reprinting and verification services in Nigeria.",
+  "description": "NIN and BVN reprinting and verification services.",
   "start_url": "/index.html",
   "scope": "/",
   "display": "standalone",
@@ -29,3 +29,6 @@
     }
   ]
 }
+
+
+
