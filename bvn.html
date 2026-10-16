@@ -231,7 +231,7 @@
 
 
 <header>
-  <h1>FLOWTECH</h1>
+  <h1>GRACIOUSTEC</h1>
   <p>NIN & BVN Services</p>
 </header>
 
@@ -381,7 +381,7 @@
 
 
 <footer>
-  © 2026 FLOWTECH. All rights reserved.
+  © 2026 GRACIOUSTEC. All rights reserved.
 </footer>
 
 
@@ -908,7 +908,7 @@
 
 
       sessionStorage.setItem(
-        "gracioustech_bvn_data",
+        "gracioustec_bvn_data",
         JSON.stringify(
           verifiedBVNData
         )
@@ -916,24 +916,24 @@
 
 
       sessionStorage.setItem(
-        "gracioustech_bvn_pdf",
+        "gracioustec_bvn_pdf",
         cachedPDFBase64
       );
 
 
       sessionStorage.setItem(
-        "gracioustech_bvn_filename",
+        "gracioustec_bvn_filename",
         cachedFileName
       );
 
 
       sessionStorage.removeItem(
-        "gracioustech_bvn_paid"
+        "gracioustec_bvn_paid"
       );
 
 
       sessionStorage.removeItem(
-        "gracioustech_bvn_payment"
+        "gracioustec_bvn_payment"
       );
 
 
@@ -1106,7 +1106,7 @@
 
     if (
       sessionStorage.getItem(
-        "gracioustech_bvn_paid"
+        "gracioustec_bvn_paid"
       ) !== "true"
     ) {
 
@@ -1181,7 +1181,7 @@
 
     if (
       sessionStorage.getItem(
-        "gracioustech_bvn_paid"
+        "gracioustec_bvn_paid"
       ) !== "true"
     ) {
 
@@ -1227,7 +1227,7 @@
 
     link.download =
       sessionStorage.getItem(
-        "gracioustech_bvn_filename"
+        "gracioustec_bvn_filename"
       ) ||
       cachedFileName ||
       "BVN_Slip.pdf";
@@ -1277,7 +1277,7 @@
 
     if (
       sessionStorage.getItem(
-        "gracioustech_bvn_paid"
+        "gracioustec_bvn_paid"
       ) !== "true"
     ) {
 
@@ -1520,7 +1520,7 @@
 
 
       sessionStorage.setItem(
-        "gracioustech_bvn_payment",
+        "gracioustec_bvn_payment",
         JSON.stringify({
 
           amount:
@@ -1591,25 +1591,25 @@
 
     const savedData =
       sessionStorage.getItem(
-        "gracioustech_bvn_data"
+        "gracioustec_bvn_data"
       );
 
 
     const savedPDF =
       sessionStorage.getItem(
-        "gracioustech_bvn_pdf"
+        "gracioustec_bvn_pdf"
       );
 
 
     const savedFileName =
       sessionStorage.getItem(
-        "gracioustech_bvn_filename"
+        "gracioustec_bvn_filename"
       );
 
 
     const paid =
       sessionStorage.getItem(
-        "gracioustech_bvn_paid"
+        "gracioustec_bvn_paid"
       ) === "true";
 
 
