@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>GRACIOUSTEC API - Developer Keys</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      padding: 20px;
+      background: #f1f7f3;
+      color: #183126;
+      font-family: Arial, sans-serif;
+    }
+
+    .card {
+      max-width: 520px;
+      margin: 40px auto;
+      padding: 25px;
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 5px 25px #00000010;
+    }
+
+    h1 { color: #087f45; }
+
+    label {
+      display: block;
+      margin-top: 20px;
+      font-weight: bold;
+    }
+
+    input {
+      width: 100%;
+      padding: 13px;
+      margin-top: 8px;
+      border: 1px solid #ccd5ce;
+      border-radius: 8px;
+      font-size: 16px;
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      margin-top: 18px;
+      border: 0;
+      border-radius: 8px;
+      background: #087f45;
+      color: white;
+      font-weight: bold;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    button:disabled {
+      opacity: .55;
+      cursor: not-allowed;
+    }
+
+    #message {
+      margin-top: 18px;
+      line-height: 1.6;
+      overflow-wrap: anywhere;
+    }
+
+    #keyBox {
+      display: none;
+      margin-top: 20px;
+      padding: 15px;
+      background: #eaf8ef;
+      border: 1px solid #a7d8b7;
+      border-radius: 8px;
+    }
+
+    #apiKey {
+      overflow-wrap: anywhere;
+      font-family: monospace;
+    }
+
+    .warning { color: #a33b20; }
+  </style>
+</head>
+
+<body>
+  <main class="card">
+    <h1>GRACIOUSTEC API</h1>
+    <p>Manage your developer API key.</p>
+
+    <p id="accountStatus">Checking login...</p>
+
+    <label for="keyName">API key name</label>
+    <input id="keyName" maxlength="80"
+           value="GRACIOUSTEC Test Key"
+           placeholder="Enter a name">
+
+    <button id="generateBtn" disabled>Generate API Key</button>
+
+    <div id="message" role="status" aria-live="polite"></div>
+
+    <section id="keyBox">
+      <h3>Your new API key</h3>
+      <p id="apiKey"></p>
+      <p class="warning">
+        Copy and save this key now. It cannot be retrieved later.
+      </p>
+      <button id="copyBtn">Copy API Key</button>
+    </section>
+  </main>
+
+  <script>
+    // Use the same values already present in dashboard.html.
+    const SUPABASE_URL = "https://iknhifndgpwibkfidggq.supabase.co";
+    const SUPABASE_KEY = "sb_publishable_xELauxOMm7eMkNrPz55Mrw_LVkRoASn";
+
+    const supabaseClient = window.supabase.createClient(
+      SUPABASE_URL,
+      SUPABASE_KEY
+    );
+
+    const accountStatus = document.getElementById("accountStatus");
+    const generateBtn = document.getElementById("generateBtn");
+    const message = document.getElementById("message");
+    const keyBox = document.getElementById("keyBox");
+    const apiKeyElement = document.getElementById("apiKey");
+
+    async function checkSession() {
+      generateBtn.disabled = true;
+
+      try {
+        const { data, error } = await supabaseClient.auth.getSession();
+
+        if (error) throw error;
+
+        if (!data.session) {
+          accountStatus.textContent = "You are not logged in.";
+          message.textContent =
+            "Log in through your website, then return to this page.";
+          return;
+        }
+
+        accountStatus.textContent =
+          "Logged in as " + data.session.user.email;
+
+        message.textContent = "Your login session is ready.";
+        generateBtn.disabled = false;
+      } catch (error) {
+        accountStatus.textContent = "Could not check login.";
+        message.textContent = error.message;
+      }
+    }
+
+    generateBtn.addEventListener("click", async () => {
+      const keyName = document.getElementById("keyName").value.trim();
+
+      if (!keyName) {
+        message.textContent = "Enter a name for your API key.";
+        return;
+      }
+
+      generateBtn.disabled = true;
+      message.textContent = "Generating API key...";
+      keyBox.style.display = "none";
+
+      try {
+        const { data: sessionData, error: sessionError } =
+          await supabaseClient.auth.getSession();
+
+        if (sessionError) throw sessionError;
+        if (!sessionData.session) {
+          throw new Error("Your session has expired. Please log in again.");
+        }
+
+        const { data, error } =
+          await supabaseClient.functions.invoke("api-key-create", {
+            body: { key_name: keyName }
+          });
+
+        if (error) throw error;
+
+        if (!data || data.success !== true || !data.api_key) {
+          throw new Error(data?.error || "The server did not return an API key.");
+        }
+
+        apiKeyElement.textContent = data.api_key;
+        keyBox.style.display = "block";
+        message.textContent = data.message || "API key created successfully.";
+      } catch (error) {
+        message.textContent =
+          "Error: " + (error.message || "Could not create API key.");
+      } finally {
+        generateBtn.disabled = false;
+      }
+    });
+
+    document.getElementById("copyBtn").addEventListener("click", async () => {
+      try {
+        await navigator.clipboard.writeText(apiKeyElement.textContent);
+        message.textContent = "API key copied.";
+      } catch {
+        message.textContent =
+          "Copy failed. Select the displayed key and copy it manually.";
+      }
+    });
+
+    checkSession();
+  </script>
+</body>
+</html>
