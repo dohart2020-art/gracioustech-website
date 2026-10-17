@@ -993,11 +993,29 @@ console.log(result);</pre>
       await loadApiKeys();
 
     } catch (error) {
-      showMessage(
-        newKeyMessage,
-        "Could not create API key: " + getErrorMessage(error),
-        "error"
-      );
+  let details = getErrorMessage(error);
+
+  if (error.context) {
+    try {
+      const response = error.context.clone();
+      const body = await response.json();
+
+      details =
+        body.message ||
+        body.error ||
+        body.msg ||
+        JSON.stringify(body);
+    } catch (e) {
+      // Keep the original error if the response is not readable.
+    }
+  }
+
+  showMessage(
+    newKeyMessage,
+    "API key creation failed: " + details,
+    "error"
+  );
+    }
     } finally {
       createKeyButton.disabled = false;
       createKeyButton.textContent = "Generate API Key";
