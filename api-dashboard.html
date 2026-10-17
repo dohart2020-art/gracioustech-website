@@ -1,47 +1,83 @@
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">  <title>GRACIOUSTECH API Developer Dashboard</title>
-  <meta name="theme-color" content="#087f5b">  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>  <style>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>GRACIOUSTECH API Dashboard</title>
+
+  <meta name="theme-color" content="#087f5b">
+  <meta name="description" content="GRACIOUSTECH API Developer Dashboard">
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    :root {
+      --green: #087f5b;
+      --dark-green: #065f46;
+      --light-green: #e8f7ef;
+      --background: #f4f7f6;
+      --text: #172b24;
+      --muted: #65736d;
+      --border: #dce5e0;
+      --white: #ffffff;
+      --red: #c62828;
+    }
+
     * {
       box-sizing: border-box;
     }
 
     body {
       margin: 0;
-      font-family: Arial, sans-serif;
-      background: #f3f7f5;
-      color: #18332a;
+      font-family: Arial, Helvetica, sans-serif;
+      background: var(--background);
+      color: var(--text);
+      line-height: 1.6;
     }
 
     header {
-      background: #087f5b;
+      background: var(--green);
       color: white;
-      padding: 18px 20px;
+      padding: 20px;
+    }
+
+    .header-content {
+      max-width: 1100px;
+      margin: auto;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      gap: 12px;
+      gap: 15px;
       flex-wrap: wrap;
     }
 
-    header h1 {
-      margin: 0;
-      font-size: 21px;
+    .brand {
+      font-size: 22px;
+      font-weight: bold;
+      letter-spacing: 0.5px;
     }
 
-    header p {
-      margin: 5px 0 0;
-      font-size: 13px;
+    .brand small {
+      display: block;
+      font-size: 12px;
+      font-weight: normal;
+      opacity: 0.9;
     }
 
     button {
       border: none;
-      padding: 12px 16px;
       border-radius: 8px;
-      cursor: pointer;
-      font-weight: bold;
+      padding: 12px 16px;
+      background: var(--green);
+      color: white;
       font-size: 14px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: var(--dark-green);
     }
 
     button:disabled {
@@ -49,889 +85,1146 @@
       cursor: not-allowed;
     }
 
-    .logout {
-      background: white;
-      color: #087f5b;
+    .secondary-button {
+      background: #e8eeeb;
+      color: #24382f;
+    }
+
+    .secondary-button:hover {
+      background: #d7e2dc;
+    }
+
+    .danger-button {
+      background: var(--red);
+    }
+
+    .danger-button:hover {
+      background: #9e1b1b;
     }
 
     main {
-      width: min(1100px, 94%);
+      max-width: 1100px;
       margin: 25px auto;
+      padding: 0 16px 40px;
     }
 
     .card {
-      background: white;
-      border-radius: 12px;
-      padding: 22px;
-      margin-bottom: 20px;
-      box-shadow: 0 3px 15px rgba(0, 0, 0, 0.05);
+      background: var(--white);
+      padding: 24px;
+      margin-bottom: 22px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.035);
+    }
+
+    h1, h2, h3 {
+      margin-top: 0;
+    }
+
+    h1 {
+      font-size: 27px;
     }
 
     h2 {
-      margin-top: 0;
-      font-size: 20px;
+      font-size: 21px;
+    }
+
+    p {
+      overflow-wrap: anywhere;
     }
 
     .muted {
-      color: #64756d;
-      line-height: 1.6;
-      font-size: 14px;
+      color: var(--muted);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 20px;
     }
 
     label {
       display: block;
-      margin: 14px 0 7px;
+      margin: 14px 0 6px;
       font-weight: bold;
       font-size: 14px;
     }
 
-    input {
+    input, select, textarea {
       width: 100%;
       padding: 13px;
-      border: 1px solid #d4ded8;
+      border: 1px solid #cbd7d0;
       border-radius: 8px;
       font-size: 15px;
+      background: white;
+      color: var(--text);
     }
 
-    input:focus {
-      outline: 2px solid #a5e4ce;
-      border-color: #087f5b;
+    input:focus, select:focus, textarea:focus {
+      outline: 2px solid #9ad8bd;
+      border-color: var(--green);
     }
 
-    .primary {
-      background: #087f5b;
-      color: white;
-      margin-top: 15px;
+    .form-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 18px;
     }
 
-    .secondary {
-      background: #e6f5ee;
-      color: #087f5b;
-      margin-top: 10px;
+    .message {
+      display: none;
+      padding: 13px;
+      margin: 15px 0;
+      border-radius: 8px;
+      overflow-wrap: anywhere;
     }
 
-    .danger {
-      background: #fff0f0;
-      color: #b42318;
+    .message.success {
+      display: block;
+      background: #e6f6eb;
+      color: #14532d;
     }
 
-    .full {
-      width: 100%;
+    .message.error {
+      display: block;
+      background: #fdecec;
+      color: #991b1b;
+    }
+
+    .message.info {
+      display: block;
+      background: #e8f1ff;
+      color: #16447d;
     }
 
     .hidden {
       display: none !important;
     }
 
-    .message {
-      padding: 12px;
-      border-radius: 8px;
-      margin: 15px 0;
-      font-size: 14px;
-      line-height: 1.5;
-      overflow-wrap: anywhere;
-    }
-
-    .success {
-      background: #e6f7ed;
-      color: #126b3c;
-    }
-
-    .error {
-      background: #fff0f0;
-      color: #b42318;
-    }
-
-    .info {
-      background: #eaf3ff;
-      color: #174ea6;
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
-      gap: 15px;
-    }
-
-    .service {
-      padding: 17px;
-      border: 1px solid #e1eae5;
+    .service-card {
+      border: 1px solid var(--border);
       border-radius: 10px;
+      padding: 18px;
+      background: white;
     }
 
-    .service h3 {
-      margin: 0 0 9px;
-      font-size: 16px;
+    .service-card h3 {
+      margin-bottom: 8px;
     }
 
     .badge {
       display: inline-block;
-      background: #e6f7ed;
-      color: #126b3c;
-      padding: 5px 9px;
       border-radius: 20px;
+      padding: 4px 10px;
       font-size: 12px;
       font-weight: bold;
+      background: var(--light-green);
+      color: var(--dark-green);
     }
 
-    .pending {
-      background: #fff3d8;
-      color: #875900;
+    .badge.revoked {
+      background: #fdecec;
+      color: #991b1b;
     }
 
-    .key-item {
-      border: 1px solid #e1eae5;
+    .api-key-card {
+      border: 1px solid var(--border);
       border-radius: 10px;
-      padding: 15px;
-      margin-top: 12px;
+      padding: 18px;
+      margin: 15px 0;
+      background: #fff;
+    }
+
+    .api-key-card h3 {
+      margin-bottom: 5px;
       overflow-wrap: anywhere;
     }
 
-    .key-item p {
-      font-size: 13px;
-      line-height: 1.7;
+    .key-prefix {
+      background: #edf2ef;
+      padding: 3px 7px;
+      border-radius: 5px;
+      overflow-wrap: anywhere;
+    }
+
+    .key-output {
+      background: #f0f7f3;
+      border: 1px solid #b9ddc9;
+      border-radius: 10px;
+      padding: 16px;
+      margin-top: 18px;
+    }
+
+    .key-output textarea {
+      min-height: 90px;
+      font-family: monospace;
       margin: 8px 0;
     }
 
-    .key-actions {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      margin-top: 10px;
-    }
-
-    .key-actions button {
-      padding: 9px 12px;
-    }
-
-    .one-time-key {
-      background: #fff8e7;
-      border: 1px solid #f1d48b;
-      padding: 15px;
-      border-radius: 10px;
-      overflow-wrap: anywhere;
-    }
-
-    .one-time-key code {
-      display: block;
-      margin: 12px 0;
-      padding: 12px;
-      background: white;
-      border-radius: 6px;
-      user-select: all;
-      word-break: break-all;
-    }
-
-    .docs {
-      background: #15251e;
-      color: #d7f8e7;
-      padding: 15px;
+    .warning {
+      background: #fff5db;
+      border: 1px solid #f0d48b;
+      color: #704b00;
       border-radius: 8px;
+      padding: 13px;
+      margin-top: 12px;
+    }
+
+    pre {
+      background: #14231c;
+      color: #e7f6ec;
+      border-radius: 10px;
+      padding: 16px;
       overflow-x: auto;
-      white-space: pre-wrap;
-      word-break: break-word;
+      white-space: pre;
       font-size: 13px;
-      line-height: 1.6;
+    }
+
+    code {
+      font-family: Consolas, Monaco, monospace;
     }
 
     footer {
       text-align: center;
-      padding: 25px;
-      color: #64756d;
+      color: var(--muted);
+      padding: 25px 15px;
       font-size: 13px;
     }
 
-    a {
-      color: #087f5b;
-    }
-
-    @media (max-width: 500px) {
-      header h1 {
-        font-size: 18px;
+    @media (max-width: 700px) {
+      .grid {
+        grid-template-columns: 1fr;
       }
 
       .card {
-        padding: 17px;
+        padding: 18px;
+      }
+
+      h1 {
+        font-size: 23px;
+      }
+
+      .header-content {
+        align-items: flex-start;
+      }
+
+      .form-actions button {
+        flex: 1 1 100%;
       }
     }
-  </style></head><body><header>
-  <div>
-    <h1>GRACIOUSTECH API</h1>
-    <p>Developer Dashboard</p>
-  </div>  <button id="logoutButton" class="logout hidden" type="button">
-    Log Out
-  </button>
-</header><main>  <div id="globalMessage" class="message hidden" role="status"></div>  <!-- LOGIN AND REGISTRATION -->  <section id="authSection" class="card">
-    <h2 id="authTitle">Developer Login</h2><p class="muted">
-  Sign in to manage your API keys and integrate GRACIOUSTECH
-  services with your website.
-</p>
+  </style>
+</head>
 
-<form id="authForm">
-  <label for="email">Email Address</label>
-  <input
-    id="email"
-    type="email"
-    autocomplete="email"
-    placeholder="you@example.com"
-    required
-  >
+<body>
 
-  <label for="password">Password</label>
-  <input
-    id="password"
-    type="password"
-    autocomplete="current-password"
-    minlength="8"
-    placeholder="At least 8 characters"
-    required
-  >
+<header>
+  <div class="header-content">
+    <div class="brand">
+      GRACIOUSTECH
+      <small>API Developer Portal</small>
+    </div>
 
-  <button id="authSubmit" class="primary full" type="submit">
-    Sign In
-  </button>
-</form>
-
-<button id="toggleAuth" class="secondary full" type="button">
-  Create a Developer Account
-</button>
-
-<p class="muted">
-  Registration may require email confirmation. Follow the instructions
-  sent to your email if confirmation is enabled in Supabase.
-</p>
-
-  </section>  <!-- DASHBOARD -->  <section id="dashboardSection" class="hidden"><div class="card">
-  <h2>Welcome, Developer!</h2>
-  <p class="muted">
-    Manage your developer account and API credentials here.
-  </p>
-
-  <p>
-    <strong>Signed in as:</strong>
-    <span id="developerEmail"></span>
-  </p>
-
-  <p class="muted">
-    API keys are private credentials. Never put them in public
-    JavaScript, GitHub repositories, or browser-based frontend code.
-    Store them on your own server.
-  </p>
-</div>
-
-<!-- API KEY CREATION -->
-<div class="card">
-  <h2>Generate an API Key</h2>
-
-  <p class="muted">
-    Create a named key for your website or application. The complete
-    key will be displayed only when it is first generated.
-  </p>
-
-  <form id="createKeyForm">
-    <label for="keyName">API Key Name</label>
-    <input
-      id="keyName"
-      type="text"
-      maxlength="60"
-      placeholder="e.g. My Business Website"
-      required
-    >
-
-    <button id="createKeyButton" class="primary" type="submit">
-      Generate API Key
+    <button id="logoutButton"
+            class="secondary-button hidden"
+            type="button">
+      Log Out
     </button>
-  </form>
-
-  <div id="newKeyMessage" class="message hidden"></div>
-</div>
-
-<!-- EXISTING API KEYS -->
-<div class="card">
-  <h2>My API Keys</h2>
-
-  <p class="muted">
-    View your key prefixes, creation dates, last usage, and status.
-    The complete secret is not stored or displayed again.
-  </p>
-
-  <button id="refreshKeysButton" class="secondary" type="button">
-    Refresh API Keys
-  </button>
-
-  <div id="keysMessage" class="message hidden"></div>
-  <div id="keysList"></div>
-</div>
-
-<!-- SERVICES -->
-<div class="card">
-  <h2>Available API Services</h2>
-
-  <p class="muted">
-    Service access depends on what has been implemented and enabled
-    for your developer account.
-  </p>
-
-  <div class="grid">
-
-    <div class="service">
-      <h3>NIN Verification</h3>
-      <p class="muted">Verify NIN details through an authorized request.</p>
-      <span class="badge">Initial integration available</span>
-    </div>
-
-    <div class="service">
-      <h3>BVN Verification</h3>
-      <p class="muted">BVN verification integration.</p>
-      <span class="badge pending">Not connected yet</span>
-    </div>
-
-    <div class="service">
-      <h3>NIN Slip Reprinting</h3>
-      <p class="muted">NIN slip reprinting integration.</p>
-      <span class="badge pending">Not connected yet</span>
-    </div>
-
-    <div class="service">
-      <h3>BVN Slip Reprinting</h3>
-      <p class="muted">BVN slip reprinting integration.</p>
-      <span class="badge pending">Not connected yet</span>
-    </div>
-
   </div>
-</div>
+</header>
 
-<!-- DOCUMENTATION -->
-<div class="card">
-  <h2>API Documentation</h2>
+<main>
 
-  <p class="muted">
-    API requests should be sent from your website's backend server,
-    not directly from browser JavaScript.
-  </p>
+  <section class="card">
+    <h1>API Developer Dashboard</h1>
+    <p class="muted">
+      Create and manage your GRACIOUSTECH API keys and integrate
+      supported services into your applications.
+    </p>
+    <div id="globalMessage" class="message" role="status"></div>
+  </section>
 
-  <h3>Endpoint</h3>
+  <!-- Authentication -->
 
-  <div class="docs">POST https://iknhifndgpwibkfidggq.supabase.co/functions/v1/gracioustech-api</div>
+  <section id="authSection" class="card">
+    <h2>Developer Login</h2>
 
-  <h3>Required Headers</h3>
+    <p class="muted">
+      Sign in to access your API keys, or create a developer account.
+    </p>
 
-  <div class="docs">Content-Type: application/json
+    <form id="authForm">
+      <label for="email">Email Address</label>
+      <input
+        id="email"
+        type="email"
+        autocomplete="email"
+        placeholder="you@example.com"
+        required
+      >
 
-x-api-key: YOUR_API_KEY</div>
+      <label for="password">Password</label>
+      <input
+        id="password"
+        type="password"
+        autocomplete="current-password"
+        placeholder="Enter your password"
+        minlength="6"
+        required
+      >
 
-  <h3>NIN Verification Request</h3>
+      <div class="form-actions">
+        <button id="loginButton" type="submit">
+          Sign In
+        </button>
 
-  <div class="docs">{
+        <button id="signupButton"
+                class="secondary-button"
+                type="button">
+          Create Account
+        </button>
+      </div>
+    </form>
 
-"service": "nin_verification",
-"verification_type": "by_nin",
-"nin": "AUTHORIZED_TEST_NIN"
-}</div>
+    <p class="muted">
+      If email confirmation is enabled for new accounts, check your
+      email and confirm your account before signing in.
+    </p>
+  </section>
 
-  <p class="muted">
-    Use only identity information you are legally authorized to process.
-    Obtain any required consent, follow applicable Nigerian data
-    protection requirements, and never share real NIN or BVN details
-    in public support messages.
-  </p>
-</div>
+  <!-- Developer area -->
 
-  </section></main><footer>
-  &copy; <span id="year"></span> GRACIOUSTECH API.
-  Developer services portal.
-</footer><script>
-(() => {
-  "use strict";
+  <section id="dashboardSection" class="hidden">
 
-  // Supabase project configuration
-  const SUPABASE_URL = "https://iknhifndgpwibkfidggq.supabase.co";
+    <section class="card">
+      <h2>Welcome, Developer!</h2>
+      <p class="muted">
+        Signed in as:
+        <strong id="developerEmail"></strong>
+      </p>
+      <p>
+        Keep your API keys private. Do not share them in public
+        repositories, frontend JavaScript, screenshots, or chat messages.
+      </p>
+    </section>
 
-  // Replace this placeholder with your Supabase project's PUBLIC anon key.
-  // Never put your service_role key or provider API token in this file.
-  const SUPABASE_ANON_KEY ="sb_publishable_xELauxOMm7eMkNrPz55Mrw_LVkRoASn";
+    <!-- Create API key -->
 
-  const $ = (id) => document.getElementById(id);
+    <section class="card">
+      <h2>Create an API Key</h2>
 
-  $("year").textContent = new Date().getFullYear();
+      <p class="muted">
+        Give your key a name so you can identify where you use it.
+      </p>
 
-  const authSection = $("authSection");
-  const dashboardSection = $("dashboardSection");
-  const logoutButton = $("logoutButton");
-  const authForm = $("authForm");
-  const authTitle = $("authTitle");
-  const authSubmit = $("authSubmit");
-  const toggleAuth = $("toggleAuth");
-  const globalMessage = $("globalMessage");
-  const createKeyForm = $("createKeyForm");
-  const createKeyButton = $("createKeyButton");
-  const newKeyMessage = $("newKeyMessage");
-  const keysMessage = $("keysMessage");
-  const keysList = $("keysList");
+      <form id="createKeyForm">
+        <label for="keyName">API Key Name</label>
 
-  let isRegistrationMode = false;
+        <input
+          id="keyName"
+          type="text"
+          maxlength="80"
+          placeholder="e.g. My First Website"
+          required
+        >
+
+        <div class="form-actions">
+          <button id="createKeyButton" type="submit">
+            Generate API Key
+          </button>
+        </div>
+      </form>
+
+      <div id="newKeyOutput" class="key-output hidden">
+        <h3>Your New API Key</h3>
+
+        <p>
+          Copy this key now and save it somewhere secure.
+          It may not be shown again.
+        </p>
+
+        <textarea id="newApiKey"
+                  readonly
+                  aria-label="New API key"></textarea>
+
+        <div class="form-actions">
+          <button id="copyKeyButton" type="button">
+            Copy API Key
+          </button>
+
+          <button id="hideKeyButton"
+                  class="secondary-button"
+                  type="button">
+            Hide Key
+          </button>
+        </div>
+
+        <div class="warning">
+          Never put this secret API key in public HTML or browser
+          JavaScript. A public website can expose it to visitors.
+        </div>
+      </div>
+    </section>
+
+    <!-- Existing API keys -->
+
+    <section class="card">
+      <h2>My API Keys</h2>
+
+      <p class="muted">
+        Your API key list is retrieved securely through the
+        api-key-list Edge Function.
+      </p>
+
+      <div class="form-actions">
+        <button id="refreshKeysButton"
+                class="secondary-button"
+                type="button">
+          Refresh API Keys
+        </button>
+      </div>
+
+      <div id="keysList" aria-live="polite">
+        Your API keys will appear here after loading.
+      </div>
+    </section>
+
+    <!-- Available services -->
+
+    <section class="card">
+      <h2>API Services</h2>
+
+      <div class="grid">
+
+        <div class="service-card">
+          <h3>NIN Verification</h3>
+          <span class="badge">Integration available</span>
+          <p class="muted">
+            Verify NIN information using the supported verification
+            options configured on your API server.
+          </p>
+        </div>
+
+        <div class="service-card">
+          <h3>BVN Verification</h3>
+          <span class="badge">Not connected yet</span>
+          <p class="muted">
+            This service must be integrated and tested before
+            it can be used through the public API.
+          </p>
+        </div>
+
+        <div class="service-card">
+          <h3>NIN Slip Reprinting</h3>
+          <span class="badge">Not connected yet</span>
+          <p class="muted">
+            Requires a separate, tested integration in the API gateway.
+          </p>
+        </div>
+
+        <div class="service-card">
+          <h3>BVN Slip Reprinting</h3>
+          <span class="badge">Not connected yet</span>
+          <p class="muted">
+            Requires a separate, tested integration in the API gateway.
+          </p>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- API usage guide -->
+
+    <section class="card">
+      <h2>How to Use the API</h2>
+
+      <p>
+        Send requests to your deployed GRACIOUSTECH API Edge Function.
+        The example below demonstrates the request format for NIN
+        verification.
+      </p>
+
+      <p><strong>Request method:</strong> POST</p>
+
+      <p><strong>Request headers:</strong></p>
+
+      <pre><code>Content-Type: application/json
+x-api-key: YOUR_API_KEY</code></pre>
+
+      <p><strong>Request body:</strong></p>
+
+      <pre><code>{
+  "service": "nin_verification",
+  "verification_type": "by_nin",
+  "nin": "CUSTOMER_NIN"
+}</code></pre>
+
+      <p><strong>Endpoint:</strong></p>
+
+      <pre><code>https://iknhifndgpwibkfidggq.supabase.co/functions/v1/gracioustech-api</code></pre>
+
+      <div class="warning">
+        Replace the example values with valid data only when you are
+        authorized to perform the verification. Do not use real
+        identity numbers in public demonstrations or screenshots.
+      </div>
+
+      <p class="muted">
+        The request fields and service names must match the deployed
+        API gateway. Do not assume a service is available merely
+        because it appears on this dashboard.
+      </p>
+    </section>
+
+  </section>
+
+</main>
+
+<footer>
+  GRACIOUSTECH API Developer Portal
+</footer>
+
+<script>
+  // ==========================================
+  // 1. SUPABASE CONFIGURATION
+  // ==========================================
+
+  const SUPABASE_URL =
+    "https://iknhifndgpwibkfidggq.supabase.co";
+
+  // Replace this placeholder with your existing Supabase
+  // PUBLIC/ANON key. Never use your SERVICE_ROLE_KEY here.
+  const SUPABASE_ANON_KEY =
+    "sb_publishable_xELauxOMm7eMkNrPz55Mrw_LVkRoASn";
+
+  const supabaseClient = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_ANON_KEY,
+    {
+      auth: {
+        persistSession: true,
+        autoRefreshToken: true,
+        detectSessionInUrl: true
+      }
+    }
+  );
+
+  // ==========================================
+  // 2. ELEMENTS
+  // ==========================================
+
+  const authSection = document.getElementById("authSection");
+  const dashboardSection =
+    document.getElementById("dashboardSection");
+
+  const logoutButton =
+    document.getElementById("logoutButton");
+
+  const globalMessage =
+    document.getElementById("globalMessage");
+
+  const authForm = document.getElementById("authForm");
+  const loginButton = document.getElementById("loginButton");
+  const signupButton = document.getElementById("signupButton");
+
+  const createKeyForm =
+    document.getElementById("createKeyForm");
+
+  const createKeyButton =
+    document.getElementById("createKeyButton");
+
+  const keysList = document.getElementById("keysList");
+
   let currentUser = null;
-  let supabaseClient = null;
+  let loadingKeys = false;
 
-  function showMessage(element, message, type = "info") {
-    element.textContent = message;
-    element.className = "message " + type;
+  // ==========================================
+  // 3. MESSAGE HELPERS
+  // ==========================================
+
+  function showMessage(message, type = "info") {
+    globalMessage.textContent = message;
+    globalMessage.className = "message " + type;
   }
 
-  function hideMessage(element) {
-    element.textContent = "";
-    element.className = "message hidden";
+  function clearMessage() {
+    globalMessage.textContent = "";
+    globalMessage.className = "message";
   }
 
-  function showGlobal(message, type = "info") {
-    showMessage(globalMessage, message, type);
+  function readableError(error) {
+    if (!error) {
+      return "An unexpected error occurred.";
+    }
+
+    return error.message || String(error);
   }
 
-  function clearGlobal() {
-    hideMessage(globalMessage);
-  }
-
-  function setBusy(button, busy, busyText, normalText) {
-    button.disabled = busy;
-    button.textContent = busy ? busyText : normalText;
-  }
-
-  function friendlyError(error) {
-    const message = error && error.message
-      ? error.message
-      : "An unexpected error occurred.";
-
-    return message.length > 350
-      ? message.slice(0, 350) + "..."
-      : message;
-  }
+  // ==========================================
+  // 4. HTML ESCAPING
+  // ==========================================
 
   function escapeHtml(value) {
-    return String(value ?? "").replace(/[&<>"']/g, (character) => ({
-      "&": "&amp;",
-      "<": "&lt;",
-      ">": "&gt;",
-      '"': "&quot;",
-      "'": "&#39;"
-    })[character]);
+    return String(value).replace(/[&<>"']/g, function(character) {
+      const entities = {
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;"
+      };
+
+      return entities[character];
+    });
   }
 
-  function setAuthMode(registration) {
-    isRegistrationMode = registration;
+  // ==========================================
+  // 5. AUTHENTICATION UI
+  // ==========================================
 
-    authTitle.textContent = registration
-      ? "Create Developer Account"
-      : "Developer Login";
-
-    authSubmit.textContent = registration
-      ? "Create Account"
-      : "Sign In";
-
-    toggleAuth.textContent = registration
-      ? "Already registered? Sign In"
-      : "Create a Developer Account";
-
-    $("password").autocomplete = registration
-      ? "new-password"
-      : "current-password";
-
-    clearGlobal();
-  }
-
-  function displaySignedOut() {
+  function showSignedOut() {
     currentUser = null;
+
     authSection.classList.remove("hidden");
     dashboardSection.classList.add("hidden");
     logoutButton.classList.add("hidden");
-    $("developerEmail").textContent = "";
-    keysList.replaceChildren();
+
+    document.getElementById("developerEmail").textContent = "";
+    keysList.textContent = "Sign in to load your API keys.";
   }
 
-  async function displaySignedIn(user) {
+  async function showSignedIn(user) {
     currentUser = user;
 
     authSection.classList.add("hidden");
     dashboardSection.classList.remove("hidden");
     logoutButton.classList.remove("hidden");
 
-    $("developerEmail").textContent = user.email || user.id;
+    document.getElementById("developerEmail").textContent =
+      user.email || "Signed-in developer";
 
-    clearGlobal();
     await loadApiKeys();
   }
 
-  async function loadApiKeys() {
-    if (!currentUser) return;
+  // ==========================================
+  // 6. DEVELOPER LOGIN
+  // ==========================================
 
-    keysList.replaceChildren();
-    hideMessage(keysMessage);
-    showMessage(keysMessage, "Loading your API keys...", "info");
+  authForm.addEventListener("submit", async function(event) {
+    event.preventDefault();
+    clearMessage();
+
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value;
+
+    loginButton.disabled = true;
+    signupButton.disabled = true;
+    loginButton.textContent = "Signing In...";
 
     try {
-      const { data, error } = await supabaseClient
-        .from("api_keys")
-        .select("id, key_name, key_prefix, created_at, last_used_at, revoked_at")
-        .eq("user_id", currentUser.id)
-        .order("created_at", { ascending: false });
+      const { data, error } =
+        await supabaseClient.auth.signInWithPassword({
+          email: email,
+          password: password
+        });
 
-      if (error) throw error;
-
-      hideMessage(keysMessage);
-
-      if (!data || data.length === 0) {
-        showMessage(
-          keysMessage,
-          "No API keys were found for this account. Generate a key above. If you already created one, confirm that your database permissions allow you to view your own keys.",
-          "info"
-        );
-        return;
+      if (error) {
+        throw error;
       }
 
-      data.forEach((key) => {
-        const revoked = Boolean(key.revoked_at);
-
-        const item = document.createElement("div");
-        item.className = "key-item";
-
-        item.innerHTML = `
-          <strong>${escapeHtml(key.key_name || "Unnamed API Key")}</strong>
-          <p>Key prefix: <code>${escapeHtml(key.key_prefix || "Unavailable")}</code></p>
-          <p>Created: ${escapeHtml(formatDate(key.created_at))}</p>
-          <p>Last used: ${escapeHtml(formatDate(key.last_used_at))}</p>
-          <p>Status:
-            <span class="badge ${revoked ? "pending" : ""}">
-              ${revoked ? "Revoked" : "Active"}
-            </span>
-          </p>
-          ${revoked ? "" : `
-            <div class="key-actions">
-              <button
-                type="button"
-                class="danger"
-                data-revoke-id="${escapeHtml(key.id)}"
-                data-key-name="${escapeHtml(key.key_name || "API Key")}"
-              >Revoke Key</button>
-            </div>
-          `}
-        `;
-
-        keysList.appendChild(item);
-      });
+      showMessage("Login successful.", "success");
+      await showSignedIn(data.user);
 
     } catch (error) {
       showMessage(
-        keysMessage,
-        "Could not load API keys. " + friendlyError(error) +
-        " Check your api_keys table permissions and Row Level Security policies.",
+        "Login failed: " + readableError(error),
         "error"
       );
+    } finally {
+      loginButton.disabled = false;
+      signupButton.disabled = false;
+      loginButton.textContent = "Sign In";
     }
-  }
+  });
 
-  function formatDate(value) {
-    if (!value) return "Never";
-    const date = new Date(value);
-    if (Number.isNaN(date.getTime())) return "Unavailable";
-    return date.toLocaleString();
-  }
+  // ==========================================
+  // 7. DEVELOPER REGISTRATION
+  // ==========================================
 
-  async function generateApiKey(event) {
-    event.preventDefault();
-    clearGlobal();
-    hideMessage(newKeyMessage);
+  signupButton.addEventListener("click", async function() {
+    clearMessage();
 
-    if (!currentUser) {
-      showGlobal("Please sign in again before generating an API key.", "error");
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value;
+
+    if (!email || !password) {
+      showMessage(
+        "Enter your email address and password first.",
+        "error"
+      );
       return;
     }
 
-    const keyName = $("keyName").value.trim();
-
-    if (!keyName) {
-      showMessage(newKeyMessage, "Enter a name for your API key.", "error");
+    if (password.length < 6) {
+      showMessage(
+        "Your password must contain at least 6 characters.",
+        "error"
+      );
       return;
     }
 
-    setBusy(createKeyButton, true, "Generating...", "Generate API Key");
+    signupButton.disabled = true;
+    loginButton.disabled = true;
+    signupButton.textContent = "Creating Account...";
 
     try {
-      const { data, error } = await supabaseClient.functions.invoke(
-        "api-key-create",
-        {
-          body: { key_name: keyName }
-        }
-      );
+      const { data, error } =
+        await supabaseClient.auth.signUp({
+          email: email,
+          password: password
+        });
 
       if (error) {
-        let detail = friendlyError(error);
+        throw error;
+      }
 
-        if (error.context && typeof error.context.json === "function") {
-          try {
-            const body = await error.context.json();
-            if (body && body.message) detail = body.message;
-          } catch (_) {}
-        }
+      if (data.session && data.user) {
+        showMessage(
+          "Account created successfully.",
+          "success"
+        );
 
-        throw new Error(detail);
+        await showSignedIn(data.user);
+      } else {
+        showMessage(
+          "Registration received. Check your email to confirm " +
+          "your account, then sign in.",
+          "success"
+        );
+      }
+
+    } catch (error) {
+      showMessage(
+        "Registration failed: " + readableError(error),
+        "error"
+      );
+    } finally {
+      signupButton.disabled = false;
+      loginButton.disabled = false;
+      signupButton.textContent = "Create Account";
+    }
+  });
+
+  // ==========================================
+  // 8. LOG OUT
+  // ==========================================
+
+  logoutButton.addEventListener("click", async function() {
+    logoutButton.disabled = true;
+
+    try {
+      const { error } = await supabaseClient.auth.signOut();
+
+      if (error) {
+        throw error;
+      }
+
+      showSignedOut();
+      showMessage("You have signed out.", "success");
+
+    } catch (error) {
+      showMessage(
+        "Unable to sign out: " + readableError(error),
+        "error"
+      );
+    } finally {
+      logoutButton.disabled = false;
+    }
+  });
+
+  // ==========================================
+  // 9. GENERATE API KEY
+  // ==========================================
+
+  createKeyForm.addEventListener("submit", async function(event) {
+    event.preventDefault();
+    clearMessage();
+
+    if (!currentUser) {
+      showMessage("Please sign in first.", "error");
+      return;
+    }
+
+    const keyName =
+      document.getElementById("keyName").value.trim();
+
+    if (!keyName) {
+      showMessage("Enter a name for your API key.", "error");
+      return;
+    }
+
+    createKeyButton.disabled = true;
+    createKeyButton.textContent = "Generating...";
+
+    document.getElementById("newKeyOutput")
+      .classList.add("hidden");
+
+    try {
+      const { data, error } =
+        await supabaseClient.functions.invoke("api-key-create", {
+          body: {
+            key_name: keyName
+          }
+        });
+
+      if (error) {
+        throw error;
       }
 
       if (!data || data.success === false) {
         throw new Error(
-          data && data.message
-            ? data.message
-            : "The server did not confirm that the API key was created."
+          data?.message || "The API key could not be created."
         );
       }
 
-      const secret = data.api_key || data.apiKey || data.key || data.secret;
+      // The Edge Function may return the newly generated key
+      // under one of these field names.
+      const newKey =
+        data.api_key ||
+        data.apiKey ||
+        data.key ||
+        data.secret;
 
-      if (!secret) {
-        showMessage(
-          newKeyMessage,
-          "The function responded, but no complete API key was returned. Do not generate another key yet. Check the api-key-create function's response format.",
-          "error"
+      if (!newKey) {
+        throw new Error(
+          "The server did not return the new API key. " +
+          "Check the api-key-create function response."
         );
+      }
+
+      document.getElementById("newApiKey").value = newKey;
+
+      document.getElementById("newKeyOutput")
+        .classList.remove("hidden");
+
+      document.getElementById("keyName").value = "";
+
+      showMessage(
+        "API key created. Copy and store it securely now.",
+        "success"
+      );
+
+      await loadApiKeys();
+
+    } catch (error) {
+      console.error("API key creation failed:", error);
+
+      showMessage(
+        "Unable to create API key: " + readableError(error),
+        "error"
+      );
+    } finally {
+      createKeyButton.disabled = false;
+      createKeyButton.textContent = "Generate API Key";
+    }
+  });
+
+  // ==========================================
+  // 10. LOAD API KEYS FROM EDGE FUNCTION
+  // ==========================================
+
+  async function loadApiKeys() {
+    if (loadingKeys) {
+      return;
+    }
+
+    if (!currentUser) {
+      keysList.textContent = "Please sign in to view your API keys.";
+      return;
+    }
+
+    loadingKeys = true;
+    keysList.innerHTML = "<p>Loading your API keys...</p>";
+
+    try {
+      const { data, error } =
+        await supabaseClient.functions.invoke("api-key-list", {
+          body: {}
+        });
+
+      if (error) {
+        console.error("API key loading error:", error);
+
+        keysList.textContent =
+          "Unable to load API keys. Check your login session " +
+          "and the api-key-list Edge Function.";
+
         return;
       }
 
-      const resultBox = document.createElement("div");
-      resultBox.className = "one-time-key";
+      if (!data || data.success !== true) {
+        keysList.textContent =
+          data?.message || "Unable to retrieve API keys.";
 
-      const title = document.createElement("strong");
-      title.textContent = "Your new API key";
+        return;
+      }
 
-      const warning = document.createElement("p");
-      warning.textContent =
-        "Copy and save this key securely now. For security, this page will not save the full key or display it again.";
+      const keys = Array.isArray(data.keys) ? data.keys : [];
 
-      const code = document.createElement("code");
-      code.textContent = secret;
+      if (keys.length === 0) {
+        keysList.innerHTML = "<p>No API keys found.</p>";
+        return;
+      }
 
-      const copyButton = document.createElement("button");
-      copyButton.type = "button";
-      copyButton.className = "primary";
-      copyButton.textContent = "Copy API Key";
+      keysList.innerHTML = keys.map(function(key) {
+        const name = escapeHtml(
+          key.key_name || "Unnamed API key"
+        );
 
-      copyButton.addEventListener("click", async () => {
-        try {
-          await navigator.clipboard.writeText(secret);
-          copyButton.textContent = "Copied!";
-        } catch (_) {
-          const range = document.createRange();
-          range.selectNodeContents(code);
-          const selection = window.getSelection();
-          selection.removeAllRanges();
-          selection.addRange(range);
-          copyButton.textContent = "Select and copy the key";
-        }
-      });
+        const prefix = escapeHtml(
+          key.key_prefix || "Hidden"
+        );
 
-      resultBox.append(title, warning, code, copyButton);
+        const created = key.created_at
+          ? new Date(key.created_at).toLocaleString()
+          : "Unknown";
 
-      newKeyMessage.replaceChildren(resultBox);
-      newKeyMessage.className = "message success";
+        const lastUsed = key.last_used_at
+          ? new Date(key.last_used_at).toLocaleString()
+          : "Never";
 
-      $("keyName").value = "";
+        const revoked = Boolean(key.revoked_at);
 
-      await loadApiKeys();
+        return `
+          <div class="api-key-card">
+            <h3>${name}</h3>
+
+            <p>
+              Key prefix:
+              <code class="key-prefix">${prefix}</code>
+            </p>
+
+            <p>
+              Created:
+              ${escapeHtml(created)}
+            </p>
+
+            <p>
+              Last used:
+              ${escapeHtml(lastUsed)}
+            </p>
+
+            <p>
+              Status:
+              <span class="badge ${revoked ? "revoked" : ""}">
+                ${revoked ? "Revoked" : "Active"}
+              </span>
+            </p>
+
+            ${
+              revoked
+                ? ""
+                : `<button type="button"
+                     class="danger-button"
+                     onclick="revokeApiKey('${escapeHtml(key.id)}')">
+                     Revoke Key
+                   </button>`
+            }
+          </div>
+        `;
+      }).join("");
 
     } catch (error) {
-      showMessage(
-        newKeyMessage,
-        "Could not generate the API key: " + friendlyError(error),
-        "error"
-      );
+      console.error("Unexpected API key loading error:", error);
+
+      keysList.textContent =
+        "An unexpected error occurred while loading API keys.";
+
     } finally {
-      setBusy(createKeyButton, false, "Generating...", "Generate API Key");
+      loadingKeys = false;
     }
   }
 
-  async function revokeApiKey(id, name) {
-    if (!currentUser) return;
+  // ==========================================
+  // 11. REFRESH API KEYS
+  // ==========================================
 
-    const confirmed = window.confirm(
-      `Revoke "${name}"? Any application using this key will stop authenticating. This action should be treated as permanent.`
+  document.getElementById("refreshKeysButton")
+    .addEventListener("click", async function() {
+      await loadApiKeys();
+    });
+
+  // ==========================================
+  // 12. COPY NEW API KEY
+  // ==========================================
+
+  document.getElementById("copyKeyButton")
+    .addEventListener("click", async function() {
+      const keyField = document.getElementById("newApiKey");
+      const key = keyField.value;
+
+      if (!key) {
+        showMessage("There is no new API key to copy.", "error");
+        return;
+      }
+
+      try {
+        await navigator.clipboard.writeText(key);
+
+        showMessage(
+          "API key copied. Store it somewhere secure.",
+          "success"
+        );
+
+      } catch (error) {
+        keyField.focus();
+        keyField.select();
+
+        showMessage(
+          "Automatic copying failed. The key is selected; " +
+          "copy it manually.",
+          "info"
+        );
+      }
+    });
+
+  // ==========================================
+  // 13. HIDE NEW API KEY
+  // ==========================================
+
+  document.getElementById("hideKeyButton")
+    .addEventListener("click", function() {
+      document.getElementById("newApiKey").value = "";
+
+      document.getElementById("newKeyOutput")
+        .classList.add("hidden");
+
+      showMessage(
+        "The displayed key has been hidden. Make sure you saved it.",
+        "info"
+      );
+    });
+
+  // ==========================================
+  // 14. REVOKE API KEY
+  // ==========================================
+
+  async function revokeApiKey(keyId) {
+    if (!currentUser) {
+      showMessage("Please sign in first.", "error");
+      return;
+    }
+
+    const confirmed = confirm(
+      "Are you sure you want to revoke this API key? " +
+      "Applications using it may stop working."
     );
 
-    if (!confirmed) return;
+    if (!confirmed) {
+      return;
+    }
 
-    clearGlobal();
-    showGlobal("Revoking API key...", "info");
+    showMessage(
+      "Requesting API key revocation...",
+      "info"
+    );
 
     try {
-      // This invokes a server-side function. The function must verify
-      // ownership before updating the api_keys row.
-      const { data, error } = await supabaseClient.functions.invoke(
-        "api-key-revoke",
-        {
-          body: { key_id: id }
-        }
-      );
+      // This requires a separately deployed api-key-revoke
+      // Edge Function. That function must verify the user's
+      // identity and ownership of the key before revoking it.
+      const { data, error } =
+        await supabaseClient.functions.invoke("api-key-revoke", {
+          body: {
+            key_id: keyId
+          }
+        });
 
-      if (error) throw error;
+      if (error) {
+        throw error;
+      }
 
       if (!data || data.success !== true) {
         throw new Error(
-          data && data.message
-            ? data.message
-            : "The server did not confirm revocation."
+          data?.message ||
+          "The server did not confirm that the key was revoked."
         );
       }
 
-      showGlobal("API key revoked successfully.", "success");
+      showMessage("API key revoked successfully.", "success");
+
       await loadApiKeys();
 
     } catch (error) {
-      showGlobal(
-        "Could not revoke this key. " + friendlyError(error) +
-        " This dashboard expects a secure api-key-revoke Edge Function that checks key ownership. Do not revoke keys by directly updating the table from browser code.",
+      console.error("API key revocation failed:", error);
+
+      showMessage(
+        "Could not revoke the key. The api-key-revoke function " +
+        "may not have been created or deployed yet. " +
+        readableError(error),
         "error"
       );
     }
   }
 
-  async function initialize() {
+  // Make the function available to the button in each key card.
+  window.revokeApiKey = revokeApiKey;
+
+  // ==========================================
+  // 15. RESTORE EXISTING SESSION
+  // ==========================================
+
+  async function initializeDashboard() {
+    const placeholder =
+      "PASTE_YOUR_SUPABASE_ANON_KEY_HERE";
+
     if (
       !SUPABASE_ANON_KEY ||
-      SUPABASE_ANON_KEY === "PASTE_YOUR_SUPABASE_ANON_KEY_HERE"
+      SUPABASE_ANON_KEY === placeholder
     ) {
-      showGlobal(
-        "Setup required: replace SUPABASE_ANON_KEY in this file with your Supabase project's public anon key. Never use the service_role key here.",
+      showMessage(
+        "Setup required: replace the public-key placeholder " +
+        "with your Supabase anon/public key.",
         "error"
       );
+
       return;
     }
-
-    if (!window.supabase || !window.supabase.createClient) {
-      showGlobal(
-        "Supabase library did not load. Check your internet connection and reload this page.",
-        "error"
-      );
-      return;
-    }
-
-    supabaseClient = window.supabase.createClient(
-      SUPABASE_URL,
-      SUPABASE_ANON_KEY
-    );
 
     try {
-      const { data, error } = await supabaseClient.auth.getSession();
-      if (error) throw error;
+      const { data, error } =
+        await supabaseClient.auth.getSession();
 
-      if (data.session && data.session.user) {
-        await displaySignedIn(data.session.user);
-      } else {
-        displaySignedOut();
+      if (error) {
+        throw error;
       }
 
-      supabaseClient.auth.onAuthStateChange((event, session) => {
-        // Defer UI work to avoid blocking the auth callback.
-        setTimeout(() => {
-          if (session && session.user) {
-            displaySignedIn(session.user);
-          } else {
-            displaySignedOut();
-          }
-        }, 0);
-      });
+      if (data.session && data.session.user) {
+        await showSignedIn(data.session.user);
+      } else {
+        showSignedOut();
+      }
 
     } catch (error) {
-      showGlobal(
-        "Could not check your login session. " + friendlyError(error),
+      console.error("Session initialization failed:", error);
+
+      showSignedOut();
+
+      showMessage(
+        "Unable to check your login session. Please sign in again.",
         "error"
       );
     }
   }
 
-  authForm.addEventListener("submit", async (event) => {
-    event.preventDefault();
-    clearGlobal();
-
-    const email = $("email").value.trim();
-    const password = $("password").value;
-
-    setBusy(authSubmit, true, "Please wait...", isRegistrationMode
-      ? "Create Account"
-      : "Sign In"
-    );
-
-    try {
-      if (isRegistrationMode) {
-        const { data, error } = await supabaseClient.auth.signUp({
-          email,
-          password
-        });
-
-        if (error) throw error;
-
-        if (data.session && data.user) {
-          showGlobal("Account created successfully.", "success");
-          await displaySignedIn(data.user);
-        } else {
-          showGlobal(
-            "Registration submitted. Check your email to confirm your account, then sign in.",
-            "success"
-          );
-          setAuthMode(false);
-        }
-
-      } else {
-        const { data, error } = await supabaseClient.auth.signInWithPassword({
-          email,
-          password
-        });
-
-        if (error) throw error;
-
-        showGlobal("Login successful.", "success");
-        await displaySignedIn(data.user);
-      }
-
-    } catch (error) {
-      showGlobal(friendlyError(error), "error");
-    } finally {
-      setBusy(
-        authSubmit,
-        false,
-        "Please wait...",
-        isRegistrationMode ? "Create Account" : "Sign In"
-      );
+  supabaseClient.auth.onAuthStateChange(function(event, session) {
+    if (event === "SIGNED_OUT") {
+      showSignedOut();
     }
   });
 
-  toggleAuth.addEventListener("click", () => {
-    setAuthMode(!isRegistrationMode);
-  });
+  initializeDashboard();
+</script>
 
-  logoutButton.addEventListener("click", async () => {
-    if (!supabaseClient) return;
-
-    try {
-      const { error } = await supabaseClient.auth.signOut();
-      if (error) throw error;
-      displaySignedOut();
-      showGlobal("You have signed out.", "success");
-    } catch (error) {
-      showGlobal("Logout failed: " + friendlyError(error), "error");
-    }
-  });
-
-  createKeyForm.addEventListener("submit", generateApiKey);
-
-  $("refreshKeysButton").addEventListener("click", loadApiKeys);
-
-  keysList.addEventListener("click", async (event) => {
-    const button = event.target.closest("[data-revoke-id]");
-    if (!button) return;
-
-    await revokeApiKey(
-      button.dataset.revokeId,
-      button.dataset.keyName || "API Key"
-    );
-  });
-
-  initialize();
-})();
-</script></body>
-    </html>
+</body>
+</html>
