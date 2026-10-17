@@ -1,17 +1,9 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html><html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <title>GRACIOUSTECH Developer API</title>
-
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">  <title>GRACIOUSTECH Developer API</title>
   <meta name="theme-color" content="#087f5b">
-  <meta name="description" content="GRACIOUSTECH Developer API Dashboard">
-
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-  <style>
+  <meta name="description" content="GRACIOUSTECH Developer API Dashboard">  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>  <style>
     :root {
       --primary: #087f5b;
       --primary-dark: #066849;
@@ -21,13 +13,9 @@
       --muted: #64736e;
       --border: #dce5e1;
       --danger: #c62828;
-      --success: #147d43;
-      --warning: #986500;
     }
 
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     body {
       margin: 0;
@@ -56,18 +44,15 @@
     .brand {
       font-size: 21px;
       font-weight: 800;
-      letter-spacing: 0.3px;
     }
 
     .brand small {
       display: block;
       font-size: 12px;
       font-weight: normal;
-      opacity: 0.9;
     }
 
-    button,
-    .button {
+    button, .button {
       border: none;
       border-radius: 7px;
       padding: 11px 15px;
@@ -83,30 +68,10 @@
       cursor: not-allowed;
     }
 
-    .button-primary {
-      background: var(--primary);
-      color: white;
-    }
-
-    .button-primary:hover {
-      background: var(--primary-dark);
-    }
-
-    .button-light {
-      background: white;
-      color: var(--primary);
-    }
-
-    .button-danger {
-      background: #fff0f0;
-      color: var(--danger);
-      border: 1px solid #f1caca;
-    }
-
-    .button-secondary {
-      background: #edf2ef;
-      color: var(--text);
-    }
+    .button-primary { background: var(--primary); color: white; }
+    .button-light { background: white; color: var(--primary); }
+    .button-danger { background: #fff0f0; color: var(--danger); border: 1px solid #f1caca; }
+    .button-secondary { background: #edf2ef; color: var(--text); }
 
     main {
       max-width: 1100px;
@@ -122,15 +87,8 @@
       margin-bottom: 20px;
     }
 
-    .hero h1 {
-      margin: 0 0 8px;
-      font-size: 27px;
-    }
-
-    .hero p {
-      margin: 0;
-      opacity: 0.95;
-    }
+    .hero h1 { margin: 0 0 8px; font-size: 27px; }
+    .hero p { margin: 0; }
 
     .card {
       background: var(--card);
@@ -141,20 +99,9 @@
       box-shadow: 0 3px 12px rgba(0, 0, 0, 0.035);
     }
 
-    .card h2 {
-      font-size: 20px;
-      margin: 0 0 15px;
-    }
-
-    .card h3 {
-      font-size: 17px;
-      margin: 0 0 9px;
-    }
-
-    .muted {
-      color: var(--muted);
-      font-size: 14px;
-    }
+    .card h2 { font-size: 20px; margin: 0 0 15px; }
+    .card h3 { font-size: 17px; margin: 0 0 9px; }
+    .muted { color: var(--muted); font-size: 14px; }
 
     .grid {
       display: grid;
@@ -166,14 +113,10 @@
       border: 1px solid var(--border);
       padding: 16px;
       border-radius: 10px;
-      background: #fff;
+      background: white;
     }
 
-    .service-card p {
-      font-size: 14px;
-      color: var(--muted);
-      margin-bottom: 0;
-    }
+    .service-card p { font-size: 14px; color: var(--muted); }
 
     .badge {
       display: inline-block;
@@ -184,20 +127,9 @@
       margin-top: 4px;
     }
 
-    .badge-success {
-      background: #e4f7eb;
-      color: #126b37;
-    }
-
-    .badge-warning {
-      background: #fff4d6;
-      color: #865900;
-    }
-
-    .badge-neutral {
-      background: #edf0f2;
-      color: #46545a;
-    }
+    .badge-success { background: #e4f7eb; color: #126b37; }
+    .badge-warning { background: #fff4d6; color: #865900; }
+    .badge-neutral { background: #edf0f2; color: #46545a; }
 
     label {
       display: block;
@@ -236,28 +168,11 @@
       overflow-wrap: anywhere;
     }
 
-    .message.show {
-      display: block;
-    }
-
-    .message.success {
-      background: #e4f7eb;
-      color: #126b37;
-    }
-
-    .message.error {
-      background: #fff0f0;
-      color: #a11b1b;
-    }
-
-    .message.info {
-      background: #eaf3ff;
-      color: #174b83;
-    }
-
-    .hidden {
-      display: none !important;
-    }
+    .message.show { display: block; }
+    .message.success { background: #e4f7eb; color: #126b37; }
+    .message.error { background: #fff0f0; color: #a11b1b; }
+    .message.info { background: #eaf3ff; color: #174b83; }
+    .hidden { display: none !important; }
 
     .account-row {
       display: flex;
@@ -275,10 +190,7 @@
       overflow-wrap: anywhere;
     }
 
-    .key-item p {
-      margin: 5px 0;
-      font-size: 14px;
-    }
+    .key-item p { margin: 5px 0; font-size: 14px; }
 
     .key-value {
       display: block;
@@ -301,9 +213,7 @@
       overflow-x: auto;
     }
 
-    code {
-      overflow-wrap: anywhere;
-    }
+    code { overflow-wrap: anywhere; }
 
     .notice {
       padding: 13px;
@@ -323,360 +233,186 @@
     }
 
     @media (max-width: 600px) {
-      .hero h1 {
-        font-size: 23px;
-      }
-
-      .card {
-        padding: 16px;
-      }
-
-      .header-inner {
-        align-items: flex-start;
-      }
+      .hero h1 { font-size: 23px; }
+      .card { padding: 16px; }
+      .header-inner { align-items: flex-start; }
     }
-  </style>
-</head>
-
-<body>
-
+  </style></head><body>
 <header>
   <div class="header-inner">
     <div class="brand">
       GRACIOUSTECH
       <small>Developer API Portal</small>
-    </div>
+    </div><div id="headerActions">
+  <a href="index.html" class="button button-light">Home</a>
+</div>
 
-    <div id="headerActions">
-      <a href="index.html" class="button button-light">Home</a>
-    </div>
   </div>
-</header>
-
-<main>
-
+</header><main>
   <section class="hero">
     <h1>Developer API Dashboard</h1>
-    <p>
-      Integrate GRACIOUSTECH verification services into your
-      applications using your developer API key.
-    </p>
-  </section>
-
-  <!-- Authentication -->
-
-  <section class="card" id="authSection">
+    <p>Integrate GRACIOUSTECH verification services into your applications using your developer API key.</p>
+  </section>  <section class="card" id="authSection">
     <h2>Developer Account</h2>
+    <p class="muted">Register a developer account or log in to manage your API keys.</p><div id="authMessage" class="message" role="status" aria-live="polite"></div>
 
-    <p class="muted">
-      Register a developer account or log in to manage your API keys.
-    </p>
+<form id="authForm">
+  <label for="email">Email address</label>
+  <input type="email" id="email" autocomplete="email" placeholder="you@example.com" required>
 
-    <div id="authMessage" class="message"></div>
+  <label for="password">Password</label>
+  <input type="password" id="password" autocomplete="current-password" minlength="6" placeholder="Enter your password" required>
 
-    <form id="authForm">
+  <div class="form-actions">
+    <button type="submit" class="button-primary" id="loginButton">Login</button>
+    <button type="button" class="button-secondary" id="registerButton">Create Account</button>
+  </div>
+</form>
 
-      <label for="email">Email address</label>
-      <input
-        type="email"
-        id="email"
-        autocomplete="email"
-        placeholder="you@example.com"
-        required
-      >
+<p class="muted">If registration requires email confirmation, check your inbox before logging in.</p>
 
-      <label for="password">Password</label>
-      <input
-        type="password"
-        id="password"
-        autocomplete="current-password"
-        minlength="6"
-        placeholder="Enter your password"
-        required
-      >
-
-      <div class="form-actions">
-        <button
-          type="submit"
-          class="button-primary"
-          id="loginButton"
-        >
-          Login
-        </button>
-
-        <button
-          type="button"
-          class="button-secondary"
-          id="registerButton"
-        >
-          Create Account
-        </button>
-      </div>
-    </form>
-
-    <p class="muted">
-      If registration requires email confirmation, check your inbox
-      before attempting to log in.
-    </p>
-  </section>
-
-  <!-- Logged-in dashboard -->
-
-  <div id="dashboardSection" class="hidden">
-
+  </section>  <div id="dashboardSection" class="hidden">
     <section class="card">
       <div class="account-row">
         <div>
           <h2>Welcome, Developer</h2>
           <p id="loggedInEmail" class="muted"></p>
         </div>
-
-        <button
-          type="button"
-          class="button-danger"
-          id="logoutButton"
-        >
-          Logout
-        </button>
+        <button type="button" class="button-danger" id="logoutButton">Logout</button>
       </div>
+      <div id="dashboardMessage" class="message" role="status" aria-live="polite"></div>
+    </section><section class="card">
+  <h2>Available API Services</h2>
+  <div class="grid">
+    <div class="service-card">
+      <h3>NIN Verification</h3>
+      <span class="badge badge-success">Previously tested</span>
+      <p>Verify NIN information through the configured verification provider.</p>
+    </div>
 
-      <div id="dashboardMessage" class="message"></div>
-    </section>
+    <div class="service-card">
+      <h3>BVN Verification</h3>
+      <span class="badge badge-success">Previously tested</span>
+      <p>Verify BVN information through the configured verification provider.</p>
+    </div>
 
-    <!-- API Services -->
+    <div class="service-card">
+      <h3>NIN Slip Reprinting</h3>
+      <span class="badge badge-warning">Needs API testing</span>
+      <p>Public API access must be connected and tested separately.</p>
+    </div>
 
-    <section class="card">
-      <h2>Available API Services</h2>
+    <div class="service-card">
+      <h3>BVN Slip Reprinting</h3>
+      <span class="badge badge-warning">Needs API testing</span>
+      <p>Public API access must be connected and tested separately.</p>
+    </div>
+  </div>
+</section>
 
-      <div class="grid">
+<section class="card">
+  <h2>Generate API Key</h2>
+  <p class="muted">Create a key for your application. Keep the complete key private.</p>
 
-        <div class="service-card">
-          <h3>NIN Verification</h3>
-          <span class="badge badge-success">Previously tested</span>
-          <p>
-            Verify NIN information through the configured verification
-            provider.
-          </p>
-        </div>
+  <form id="createKeyForm">
+    <label for="keyName">API key name</label>
+    <input type="text" id="keyName" maxlength="60" placeholder="e.g. My Website" required>
+    <div class="form-actions">
+      <button type="submit" class="button-primary" id="createKeyButton">Generate API Key</button>
+    </div>
+  </form>
 
-        <div class="service-card">
-          <h3>BVN Verification</h3>
-          <span class="badge badge-success">Previously tested</span>
-          <p>
-            Verify BVN information through the configured verification
-            provider.
-          </p>
-        </div>
+  <div id="newKeyMessage" class="message" role="status" aria-live="polite"></div>
 
-        <div class="service-card">
-          <h3>NIN Slip Reprinting</h3>
-          <span class="badge badge-warning">
-            Public API needs testing
-          </span>
-          <p>
-            NIN slip reprinting is available on the website.
-            Public API access must be connected and tested separately.
-          </p>
-        </div>
+  <div id="newKeyContainer" class="hidden">
+    <h3>Your New API Key</h3>
+    <p class="muted">Copy and save this key securely. The complete key may not be available again after leaving this page.</p>
+    <code id="newKeyValue" class="key-value"></code>
+    <button type="button" class="button-primary" id="copyKeyButton">Copy API Key</button>
+  </div>
+</section>
 
-        <div class="service-card">
-          <h3>BVN Slip Reprinting</h3>
-          <span class="badge badge-warning">
-            Public API needs testing
-          </span>
-          <p>
-            BVN slip reprinting is available on the website.
-            Public API access must be connected and tested separately.
-          </p>
-        </div>
+<section class="card">
+  <div class="account-row">
+    <h2>Your API Keys</h2>
+    <button type="button" class="button-secondary" id="refreshKeysButton">Refresh</button>
+  </div>
 
-      </div>
-    </section>
+  <p class="muted">Revoke a key if it is no longer needed or has been exposed.</p>
+  <div id="keysMessage" class="message" role="status" aria-live="polite"></div>
+  <div id="keysList"></div>
+</section>
 
-    <!-- Create API Key -->
+<section class="card">
+  <h2>API Documentation</h2>
+  <h3>API endpoint</h3>
 
-    <section class="card">
-      <h2>Generate API Key</h2>
+  <pre id="endpointText">https://iknhifndgpwibkfidggq.supabase.co/functions/v1/gracioustech-api</pre>
+  <button type="button" class="button-secondary" id="copyEndpointButton">Copy Endpoint</button>
 
-      <p class="muted">
-        Create a key for your application. Keep the complete key private.
-      </p>
+  <h3 style="margin-top:24px;">Request headers</h3>
+  <pre>Content-Type: application/json
 
-      <form id="createKeyForm">
-        <label for="keyName">API key name</label>
-
-        <input
-          type="text"
-          id="keyName"
-          maxlength="60"
-          placeholder="e.g. My Website"
-          required
-        >
-
-        <div class="form-actions">
-          <button type="submit" class="button-primary" id="createKeyButton">
-            Generate API Key
-          </button>
-        </div>
-      </form>
-
-      <div id="newKeyMessage" class="message"></div>
-
-      <div id="newKeyContainer" class="hidden">
-        <h3>Your New API Key</h3>
-
-        <p class="muted">
-          Copy and save this key now. For security, the complete key
-          may not be available again after you leave this page.
-        </p>
-
-        <code id="newKeyValue" class="key-value"></code>
-
-        <button
-          type="button"
-          class="button-primary"
-          id="copyKeyButton"
-        >
-          Copy API Key
-        </button>
-      </div>
-    </section>
-
-    <!-- Existing API Keys -->
-
-    <section class="card">
-      <div class="account-row">
-        <h2>Your API Keys</h2>
-
-        <button
-          type="button"
-          class="button-secondary"
-          id="refreshKeysButton"
-        >
-          Refresh
-        </button>
-      </div>
-
-      <p class="muted">
-        Revoke a key if it is no longer needed or has been exposed.
-      </p>
-
-      <div id="keysMessage" class="message"></div>
-      <div id="keysList"></div>
-    </section>
-
-    <!-- API Documentation -->
-
-    <section class="card">
-      <h2>API Documentation</h2>
-
-      <h3>API endpoint</h3>
-
-      <pre id="endpointText">https://iknhifndgpwibkfidggq.supabase.co/functions/v1/gracioustech-api</pre>
-
-      <button
-        type="button"
-        class="button-secondary"
-        id="copyEndpointButton"
-      >
-        Copy Endpoint
-      </button>
-
-      <h3 style="margin-top: 24px;">Request headers</h3>
-
-      <pre>Content-Type: application/json
 x-api-key: YOUR_API_KEY</pre>
 
-      <h3>Example 1: NIN Verification</h3>
+  <h3>Example: NIN Verification</h3>
+  <pre>{
 
-      <pre>{
-  "service": "nin_verification",
-  "verification_type": "by_nin",
-  "nin": "CUSTOMER_NIN"
+"service": "nin_verification",
+"verification_type": "by_nin",
+"nin": "CUSTOMER_NIN"
 }</pre>
 
-      <h3>Example 2: BVN Verification</h3>
+  <h3>Example: BVN Verification</h3>
+  <pre>{
 
-      <pre>{
-  "service": "bvn_verification",
-  "bvn": "CUSTOMER_BVN"
+"service": "bvn_verification",
+"bvn": "CUSTOMER_BVN"
 }</pre>
 
-      <div class="notice">
-        These are example request formats. Replace the placeholder
-        values with authorized test data. Never publish real customer
-        NIN or BVN information.
-      </div>
+  <div class="notice">
+    These are example request formats. Use only authorized test data. Never publish real customer NIN or BVN information.
+  </div>
 
-      <h3 style="margin-top: 24px;">
-        Example JavaScript request
-      </h3>
+  <h3 style="margin-top:24px;">Example JavaScript request</h3>
+  <pre>const response = await fetch(
 
-      <pre>const response = await fetch(
-  "https://iknhifndgpwibkfidggq.supabase.co/functions/v1/gracioustech-api",
-  {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "x-api-key": "YOUR_API_KEY"
-    },
-    body: JSON.stringify({
-      service: "nin_verification",
-      verification_type: "by_nin",
-      nin: "CUSTOMER_NIN"
-    })
-  }
+"https://iknhifndgpwibkfidggq.supabase.co/functions/v1/gracioustech-api",
+{
+method: "POST",
+headers: {
+"Content-Type": "application/json",
+"x-api-key": "YOUR_API_KEY"
+},
+body: JSON.stringify({
+service: "nin_verification",
+verification_type: "by_nin",
+nin: "CUSTOMER_NIN"
+})
+}
 );
 
 const result = await response.json();
 console.log(result);</pre>
 
-      <div class="notice">
-        Do not put a private provider API token or Supabase
-        service-role key in this page. Only use your developer API key
-        in requests from your application.
-      </div>
-
-      <h3 style="margin-top: 24px;">Slip Reprinting Integration</h3>
-
-      <p class="muted">
-        Your website already supports NIN and BVN slip reprinting.
-        Before these services are offered through the public developer
-        API, the server-side API function must be connected to the
-        existing reprinting provider and tested with authorized test
-        requests.
-      </p>
-
-    </section>
-
+  <div class="notice">
+    Never put a private provider API token or Supabase service-role key in this page.
   </div>
 
-</main>
+  <h3 style="margin-top:24px;">Slip Reprinting Integration</h3>
+  <p class="muted">NIN and BVN slip reprinting on the website is separate from the public developer API. The server-side API function must be connected to the reprinting provider and tested before this feature is offered through the public API.</p>
+</section>
 
-<footer>
-  &copy; <span id="currentYear"></span>
-  GRACIOUSTECH. All rights reserved.
-</footer>
+  </div>
+</main><footer>
+  &copy; <span id="currentYear"></span> GRACIOUSTECH. All rights reserved.
+</footer><script>
+(() => {
+  "use strict";
 
-<script>
-  // ------------------------------------------
   // SUPABASE CONFIGURATION
-  // ------------------------------------------
-
-  const SUPABASE_URL =
-    "https://iknhifndgpwibkfidggq.supabase.co";
-
-  const SUPABASE_PUBLISHABLE_KEY =
-    "sb_publishable_xELauxOMm7eMkNrPz55Mrw_LVkRoASn";
-
-  const supabaseClient = window.supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_PUBLISHABLE_KEY
-  );
-
-  // ------------------------------------------
-  // ELEMENTS
-  // ------------------------------------------
+  const SUPABASE_URL = "https://iknhifndgpwibkfidggq.supabase.co";
+  const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_xELauxOMm7eMkNrPz55Mrw_LVkRoASn";
 
   const authSection = document.getElementById("authSection");
   const dashboardSection = document.getElementById("dashboardSection");
@@ -699,13 +435,9 @@ console.log(result);</pre>
   const newKeyValue = document.getElementById("newKeyValue");
 
   let currentSession = null;
+  let authBusy = false;
 
-  document.getElementById("currentYear").textContent =
-    new Date().getFullYear();
-
-  // ------------------------------------------
-  // MESSAGE HELPER
-  // ------------------------------------------
+  document.getElementById("currentYear").textContent = new Date().getFullYear();
 
   function showMessage(element, message, type = "info") {
     element.textContent = message;
@@ -717,37 +449,43 @@ console.log(result);</pre>
     element.className = "message";
   }
 
-  // ------------------------------------------
-  // ERROR HELPER
-  // ------------------------------------------
-
   function getErrorMessage(error) {
-    if (!error) {
-      return "An unexpected error occurred.";
-    }
-
+    if (!error) return "An unexpected error occurred.";
     return error.message || String(error);
   }
 
-  // ------------------------------------------
-  // AUTHENTICATION UI
-  // ------------------------------------------
+  async function getFunctionError(error) {
+    let message = getErrorMessage(error);
+
+    if (error && error.context) {
+      try {
+        const response = error.context.clone();
+        const body = await response.json();
+        message = body.message || body.error || body.msg || JSON.stringify(body);
+      } catch (_) {
+        // Use the original error message if no response body is available.
+      }
+    }
+
+    return message;
+  }
 
   function showLoggedOut() {
     currentSession = null;
-
     authSection.classList.remove("hidden");
     dashboardSection.classList.add("hidden");
-
     document.getElementById("loggedInEmail").textContent = "";
-
     document.getElementById("headerActions").innerHTML =
       '<a href="index.html" class="button button-light">Home</a>';
   }
 
   async function showLoggedIn(session) {
-    currentSession = session;
+    if (!session || !session.user) {
+      showLoggedOut();
+      return;
+    }
 
+    currentSession = session;
     authSection.classList.add("hidden");
     dashboardSection.classList.remove("hidden");
 
@@ -763,12 +501,12 @@ console.log(result);</pre>
     await loadApiKeys();
   }
 
-  // ------------------------------------------
   // LOGIN
-  // ------------------------------------------
-
   authForm.addEventListener("submit", async function(event) {
     event.preventDefault();
+
+    if (authBusy) return;
+    authBusy = true;
 
     clearMessage(authMessage);
 
@@ -780,56 +518,46 @@ console.log(result);</pre>
     loginButton.textContent = "Logging in...";
 
     try {
-      const { data, error } =
-        await supabaseClient.auth.signInWithPassword({
-          email,
-          password
-        });
+      const { data, error } = await supabaseClient.auth.signInWithPassword({
+        email,
+        password
+      });
 
-      if (error) {
-        throw error;
+      if (error) throw error;
+      if (!data || !data.session) {
+        throw new Error("Login succeeded but no session was returned. Check whether email confirmation is required.");
       }
 
       await showLoggedIn(data.session);
-
     } catch (error) {
-      showMessage(
-        authMessage,
-        "Login failed: " + getErrorMessage(error),
-        "error"
-      );
+      showMessage(authMessage, "Login failed: " + getErrorMessage(error), "error");
     } finally {
+      authBusy = false;
       loginButton.disabled = false;
       registerButton.disabled = false;
       loginButton.textContent = "Login";
     }
   });
 
-  // ------------------------------------------
   // REGISTER
-  // ------------------------------------------
-
   registerButton.addEventListener("click", async function() {
+    if (authBusy) return;
+    authBusy = true;
+
     clearMessage(authMessage);
 
     const email = document.getElementById("email").value.trim();
     const password = document.getElementById("password").value;
 
     if (!email || !password) {
-      showMessage(
-        authMessage,
-        "Enter your email address and password first.",
-        "error"
-      );
+      showMessage(authMessage, "Enter your email address and password first.", "error");
+      authBusy = false;
       return;
     }
 
     if (password.length < 6) {
-      showMessage(
-        authMessage,
-        "Your password must contain at least 6 characters.",
-        "error"
-      );
+      showMessage(authMessage, "Your password must contain at least 6 characters.", "error");
+      authBusy = false;
       return;
     }
 
@@ -838,23 +566,15 @@ console.log(result);</pre>
     registerButton.textContent = "Creating account...";
 
     try {
-      const { data, error } =
-        await supabaseClient.auth.signUp({
-          email,
-          password
-        });
+      const { data, error } = await supabaseClient.auth.signUp({
+        email,
+        password
+      });
 
-      if (error) {
-        throw error;
-      }
+      if (error) throw error;
 
       if (data.session) {
-        showMessage(
-          authMessage,
-          "Account created successfully.",
-          "success"
-        );
-
+        showMessage(authMessage, "Account created successfully.", "success");
         await showLoggedIn(data.session);
       } else {
         showMessage(
@@ -863,57 +583,34 @@ console.log(result);</pre>
           "success"
         );
       }
-
     } catch (error) {
-      showMessage(
-        authMessage,
-        "Registration failed: " + getErrorMessage(error),
-        "error"
-      );
+      showMessage(authMessage, "Registration failed: " + getErrorMessage(error), "error");
     } finally {
+      authBusy = false;
       registerButton.disabled = false;
       loginButton.disabled = false;
       registerButton.textContent = "Create Account";
     }
   });
 
-  // ------------------------------------------
   // LOGOUT
-  // ------------------------------------------
-
   logoutButton.addEventListener("click", async function() {
     logoutButton.disabled = true;
 
     try {
       const { error } = await supabaseClient.auth.signOut();
-
-      if (error) {
-        throw error;
-      }
+      if (error) throw error;
 
       showLoggedOut();
-
-      showMessage(
-        authMessage,
-        "You have logged out successfully.",
-        "success"
-      );
-
+      showMessage(authMessage, "You have logged out successfully.", "success");
     } catch (error) {
-      showMessage(
-        dashboardMessage,
-        "Logout failed: " + getErrorMessage(error),
-        "error"
-      );
+      showMessage(dashboardMessage, "Logout failed: " + getErrorMessage(error), "error");
     } finally {
       logoutButton.disabled = false;
     }
   });
 
-  // ------------------------------------------
   // CREATE API KEY
-  // ------------------------------------------
-
   createKeyForm.addEventListener("submit", async function(event) {
     event.preventDefault();
 
@@ -921,22 +618,14 @@ console.log(result);</pre>
     newKeyContainer.classList.add("hidden");
 
     if (!currentSession) {
-      showMessage(
-        newKeyMessage,
-        "Please log in first.",
-        "error"
-      );
+      showMessage(newKeyMessage, "Please log in first.", "error");
       return;
     }
 
     const keyName = document.getElementById("keyName").value.trim();
 
     if (!keyName) {
-      showMessage(
-        newKeyMessage,
-        "Enter a name for your API key.",
-        "error"
-      );
+      showMessage(newKeyMessage, "Enter a name for your API key.", "error");
       return;
     }
 
@@ -944,26 +633,16 @@ console.log(result);</pre>
     createKeyButton.textContent = "Generating...";
 
     try {
-      const { data, error } =
-        await supabaseClient.functions.invoke("api-key-create", {
-          body: {
-            key_name: keyName
-          }
-        });
+      const { data, error } = await supabaseClient.functions.invoke("api-key-create", {
+        body: { key_name: keyName }
+      });
 
-      if (error) {
-        throw error;
-      }
+      if (error) throw new Error(await getFunctionError(error));
 
       if (!data || data.success !== true) {
-        throw new Error(
-          data && data.error
-            ? data.error
-            : "The server did not confirm API key creation."
-        );
+        throw new Error(data && data.error ? data.error : "The server did not confirm API key creation.");
       }
 
-      // Support common response property names.
       const generatedKey =
         data.api_key ||
         data.apiKey ||
@@ -974,108 +653,26 @@ console.log(result);</pre>
       if (!generatedKey) {
         showMessage(
           newKeyMessage,
-          "The server reported success, but did not return the complete API key. Check the api-key-create function response.",
+          "The server reported success but did not return the complete API key. The api-key-create function response needs checking.",
           "error"
         );
       } else {
         newKeyValue.textContent = generatedKey;
         newKeyContainer.classList.remove("hidden");
-
-        showMessage(
-          newKeyMessage,
-          "API key created. Copy and save it securely now.",
-          "success"
-        );
+        showMessage(newKeyMessage, "API key created. Copy and save it securely now.", "success");
       }
 
       document.getElementById("keyName").value = "";
-
       await loadApiKeys();
-
     } catch (error) {
-  let details = getErrorMessage(error);
-
-  if (error.context) {
-    try {
-      const response = error.context.clone();
-      const body = await response.json();
-
-      details =
-        body.message ||
-        body.error ||
-        body.msg ||
-        JSON.stringify(body);
-    } catch (e) {
-      // Keep the original error if the response is not readable.
-    }
-  }
-
-  showMessage(
-    newKeyMessage,
-    "API key creation failed: " + details,
-    "error"
-  );
-    }
+      showMessage(newKeyMessage, "API key creation failed: " + getErrorMessage(error), "error");
     } finally {
       createKeyButton.disabled = false;
       createKeyButton.textContent = "Generate API Key";
     }
   });
 
-  // ------------------------------------------
-  // COPY NEW API KEY
-  // ------------------------------------------
-
-  document.getElementById("copyKeyButton")
-    .addEventListener("click", async function() {
-      const value = newKeyValue.textContent;
-
-      if (!value) {
-        return;
-      }
-
-      try {
-        await copyText(value);
-
-        showMessage(
-          newKeyMessage,
-          "API key copied.",
-          "success"
-        );
-      } catch (error) {
-        showMessage(
-          newKeyMessage,
-          "Copy failed. Select and copy the displayed key manually.",
-          "error"
-        );
-      }
-    });
-
-  // ------------------------------------------
-  // COPY ENDPOINT
-  // ------------------------------------------
-
-  document.getElementById("copyEndpointButton")
-    .addEventListener("click", async function() {
-      try {
-        await copyText(
-          document.getElementById("endpointText").textContent
-        );
-
-        showMessage(
-          dashboardMessage,
-          "API endpoint copied.",
-          "success"
-        );
-      } catch (error) {
-        showMessage(
-          dashboardMessage,
-          "Could not copy the endpoint automatically.",
-          "error"
-        );
-      }
-    });
-
+  // COPY HELPER
   async function copyText(value) {
     if (navigator.clipboard && window.isSecureContext) {
       await navigator.clipboard.writeText(value);
@@ -1083,58 +680,58 @@ console.log(result);</pre>
     }
 
     const temporaryInput = document.createElement("textarea");
-
     temporaryInput.value = value;
     temporaryInput.style.position = "fixed";
     temporaryInput.style.opacity = "0";
-
     document.body.appendChild(temporaryInput);
-
     temporaryInput.focus();
     temporaryInput.select();
 
     const successful = document.execCommand("copy");
-
     temporaryInput.remove();
 
-    if (!successful) {
-      throw new Error("Clipboard access was unsuccessful.");
-    }
+    if (!successful) throw new Error("Clipboard access was unsuccessful.");
   }
 
-  // ------------------------------------------
-  // LOAD API KEYS
-  // ------------------------------------------
+  document.getElementById("copyKeyButton").addEventListener("click", async function() {
+    const value = newKeyValue.textContent;
+    if (!value) return;
 
+    try {
+      await copyText(value);
+      showMessage(newKeyMessage, "API key copied.", "success");
+    } catch (_) {
+      showMessage(newKeyMessage, "Copy failed. Select and copy the displayed key manually.", "error");
+    }
+  });
+
+  document.getElementById("copyEndpointButton").addEventListener("click", async function() {
+    try {
+      await copyText(document.getElementById("endpointText").textContent);
+      showMessage(dashboardMessage, "API endpoint copied.", "success");
+    } catch (_) {
+      showMessage(dashboardMessage, "Could not copy the endpoint automatically.", "error");
+    }
+  });
+
+  // LOAD API KEYS
   async function loadApiKeys() {
     clearMessage(keysMessage);
-
     keysList.replaceChildren();
 
-    if (!currentSession) {
-      return;
-    }
+    if (!currentSession) return;
 
     const loading = document.createElement("p");
     loading.className = "muted";
     loading.textContent = "Loading your API keys...";
-
     keysList.appendChild(loading);
 
     try {
-      const { data, error } =
-        await supabaseClient.functions.invoke("api-key-list");
-
-      if (error) {
-        throw error;
-      }
+      const { data, error } = await supabaseClient.functions.invoke("api-key-list");
+      if (error) throw new Error(await getFunctionError(error));
 
       if (!data || data.success !== true) {
-        throw new Error(
-          data && data.error
-            ? data.error
-            : "The server did not return your API keys."
-        );
+        throw new Error(data && data.error ? data.error : "The server did not return your API keys.");
       }
 
       keysList.replaceChildren();
@@ -1143,11 +740,8 @@ console.log(result);</pre>
 
       if (keys.length === 0) {
         const empty = document.createElement("p");
-
         empty.className = "muted";
-        empty.textContent =
-          "You have not created any API keys yet.";
-
+        empty.textContent = "You have not created any API keys yet.";
         keysList.appendChild(empty);
         return;
       }
@@ -1160,185 +754,129 @@ console.log(result);</pre>
         title.textContent = key.key_name || "Unnamed API Key";
 
         const prefix = document.createElement("p");
-        prefix.textContent =
-          "Key prefix: " + (key.key_prefix || "Not provided");
+        prefix.textContent = "Key prefix: " + (key.key_prefix || "Not provided");
 
         const created = document.createElement("p");
-        created.textContent =
-          "Created: " + formatDate(key.created_at);
+        created.textContent = "Created: " + formatDate(key.created_at);
 
         const lastUsed = document.createElement("p");
-        lastUsed.textContent =
-          "Last used: " + formatDate(key.last_used_at);
+        lastUsed.textContent = "Last used: " + formatDate(key.last_used_at);
 
         const status = document.createElement("p");
 
         if (key.revoked_at) {
-          status.textContent =
-            "Status: Revoked (" + formatDate(key.revoked_at) + ")";
-
+          status.textContent = "Status: Revoked (" + formatDate(key.revoked_at) + ")";
           status.className = "badge badge-neutral";
         } else {
           status.textContent = "Status: Active";
           status.className = "badge badge-success";
         }
 
-        item.appendChild(title);
-        item.appendChild(prefix);
-        item.appendChild(created);
-        item.appendChild(lastUsed);
-        item.appendChild(status);
+        item.append(title, prefix, created, lastUsed, status);
 
         if (!key.revoked_at) {
           const revokeButton = document.createElement("button");
-
           revokeButton.type = "button";
           revokeButton.className = "button-danger";
           revokeButton.textContent = "Revoke Key";
           revokeButton.style.marginTop = "12px";
-
           revokeButton.addEventListener("click", function() {
             revokeApiKey(key.id, revokeButton);
           });
-
           item.appendChild(document.createElement("br"));
           item.appendChild(revokeButton);
         }
 
         keysList.appendChild(item);
       });
-
     } catch (error) {
       keysList.replaceChildren();
-
-      showMessage(
-        keysMessage,
-        "Could not load API keys: " + getErrorMessage(error),
-        "error"
-      );
+      showMessage(keysMessage, "Could not load API keys: " + getErrorMessage(error), "error");
     }
   }
 
   function formatDate(value) {
-    if (!value) {
-      return "Never";
-    }
+    if (!value) return "Never";
 
     const date = new Date(value);
-
-    if (Number.isNaN(date.getTime())) {
-      return "Unavailable";
-    }
+    if (Number.isNaN(date.getTime())) return "Unavailable";
 
     return date.toLocaleString();
   }
 
-  // ------------------------------------------
   // REVOKE API KEY
-  // ------------------------------------------
-
   async function revokeApiKey(keyId, button) {
     if (!keyId) {
-      showMessage(
-        keysMessage,
-        "This API key has no valid ID.",
-        "error"
-      );
+      showMessage(keysMessage, "This API key has no valid ID.", "error");
       return;
     }
 
-    const confirmed = window.confirm(
-      "Are you sure you want to revoke this API key? Applications using it may stop working."
-    );
-
-    if (!confirmed) {
+    if (!window.confirm("Are you sure you want to revoke this API key? Applications using it may stop working.")) {
       return;
     }
 
     clearMessage(keysMessage);
-
     button.disabled = true;
     button.textContent = "Revoking...";
 
     try {
-      const { data, error } =
-        await supabaseClient.functions.invoke("api-key-revoke", {
-          body: {
-            key_id: keyId
-          }
-        });
+      const { data, error } = await supabaseClient.functions.invoke("api-key-revoke", {
+        body: { key_id: keyId }
+      });
 
-      if (error) {
-        throw error;
-      }
+      if (error) throw new Error(await getFunctionError(error));
 
       if (!data || data.success !== true) {
-        throw new Error(
-          data && data.error
-            ? data.error
-            : "The server did not confirm revocation."
-        );
+        throw new Error(data && data.error ? data.error : "The server did not confirm revocation.");
       }
 
-      showMessage(
-        keysMessage,
-        "API key revoked successfully.",
-        "success"
-      );
-
+      showMessage(keysMessage, "API key revoked successfully.", "success");
       await loadApiKeys();
-
     } catch (error) {
-      showMessage(
-        keysMessage,
-        "Could not revoke API key: " + getErrorMessage(error),
-        "error"
-      );
-
+      showMessage(keysMessage, "Could not revoke API key: " + getErrorMessage(error), "error");
       button.disabled = false;
       button.textContent = "Revoke Key";
     }
   }
 
-  // ------------------------------------------
-  // REFRESH API KEYS
-  // ------------------------------------------
+  document.getElementById("refreshKeysButton").addEventListener("click", loadApiKeys);
 
-  document.getElementById("refreshKeysButton")
-    .addEventListener("click", loadApiKeys);
-
-  // ------------------------------------------
   // RESTORE LOGIN SESSION
-  // ------------------------------------------
-
   async function initializeDashboard() {
     try {
-      const { data, error } =
-        await supabaseClient.auth.getSession();
-
-      if (error) {
-        throw error;
-      }
+      const { data, error } = await supabaseClient.auth.getSession();
+      if (error) throw error;
 
       if (data.session) {
         await showLoggedIn(data.session);
       } else {
         showLoggedOut();
       }
-
     } catch (error) {
       showLoggedOut();
-
       showMessage(
         authMessage,
-        "Could not restore your login session: " +
-          getErrorMessage(error),
+        "Could not restore your login session: " + getErrorMessage(error),
         "error"
       );
     }
   }
 
-  // Keep the dashboard synchronized with authentication changes.
+  // SUPABASE CLIENT
+  if (!window.supabase || !window.supabase.createClient) {
+    showMessage(
+      authMessage,
+      "The Supabase library did not load. Check your internet connection and refresh this page.",
+      "error"
+    );
+    return;
+  }
+
+  const supabaseClient = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_PUBLISHABLE_KEY
+  );
+
   supabaseClient.auth.onAuthStateChange(function(event, session) {
     if (event === "SIGNED_OUT") {
       showLoggedOut();
@@ -1346,7 +884,6 @@ console.log(result);</pre>
   });
 
   initializeDashboard();
-</script>
-
-</body>
+})();
+</script></body>
 </html>
