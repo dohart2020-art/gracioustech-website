@@ -1,8 +1,12 @@
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dashboard - Gracioustec</title>  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>  <style>
+  <title>Dashboard - Gracioustec</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
     * {
       box-sizing: border-box;
       margin: 0;
@@ -290,6 +294,62 @@
       margin-top: 10px;
     }
 
+    /* REFERRAL CARD */
+
+    .referral-description {
+      color: #666;
+      line-height: 1.6;
+      margin-bottom: 14px;
+      font-size: 14px;
+    }
+
+    .referral-label {
+      display: block;
+      margin-bottom: 7px;
+      font-weight: bold;
+      font-size: 14px;
+    }
+
+    .referral-input {
+      display: block;
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      margin-bottom: 10px;
+      font-size: 14px;
+      color: #333;
+      background: #f9fbfa;
+    }
+
+    .referral-button {
+      width: 100%;
+      padding: 12px;
+      background: #063b2b;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      font-size: 15px;
+    }
+
+    .referral-button:hover {
+      opacity: .9;
+    }
+
+    .referral-button:disabled {
+      opacity: .55;
+      cursor: not-allowed;
+    }
+
+    #referralMessage {
+      margin-top: 10px;
+      font-size: 14px;
+      line-height: 1.5;
+      overflow-wrap: anywhere;
+    }
+
     /* ANNOUNCEMENT */
 
     .announcement-overlay {
@@ -325,7 +385,6 @@
         opacity: 0;
         transform: translateY(-25px) scale(.96);
       }
-
       to {
         opacity: 1;
         transform: translateY(0) scale(1);
@@ -427,492 +486,790 @@
         font-size: 14px;
       }
     }
-  </style></head><body><!-- ANNOUNCEMENT POPUP --><div id="announcementOverlay" class="announcement-overlay">
-  <div class="announcement-box"><div class="announcement-header">
-  <div class="announcement-icon">!</div>
-  <h2>Gracioustec Announcement</h2>
-</div>
+  </style>
+</head>
 
-<div class="announcement-body">
-  <div id="announcementTitle" class="announcement-title">
-    Announcement
-  </div>
+<body>
 
-  <div id="announcementMessage" class="announcement-message"></div>
-</div>
+  <!-- ANNOUNCEMENT POPUP -->
 
-<div class="announcement-footer">
-  <button id="announcementCloseBtn" class="announcement-close" type="button">
-    Continue to Dashboard
-  </button>
-</div>
+  <div id="announcementOverlay" class="announcement-overlay">
+    <div class="announcement-box">
 
-  </div>
-</div><!-- HEADER --><header>
-  <div class="logo">GRACIOUSTEC</div>  <button class="menu-btn" id="menuBtn" type="button" aria-label="Open menu">
-    ☰
-  </button>  <div class="menu" id="menu">
-    <a href="dashboard.html">Dashboard</a>
-    <a href="transactions.html">Transaction History</a>
-    <a href="fund-wallet.html">Fund Wallet</a>
-    <a href="profile.html">Profile</a><button type="button" id="logoutBtn">Logout</button>
+      <div class="announcement-header">
+        <div class="announcement-icon">!</div>
+        <h2>Gracioustec Announcement</h2>
+      </div>
 
-  </div>
-</header><div class="container">  <!-- WELCOME -->  <div class="welcome">
-    <h2>Welcome to Gracioustec</h2>
-    <p id="userEmail">Loading account...</p>
-  </div>  <!-- WALLET -->  <div class="wallet">
-    <div class="wallet-title">Wallet Balance</div><div class="wallet-balance" id="walletBalance">₦0.00</div>
+      <div class="announcement-body">
+        <div id="announcementTitle" class="announcement-title">
+          Announcement
+        </div>
+        <div id="announcementMessage" class="announcement-message"></div>
+      </div>
 
-<div class="wallet-actions">
-  <a href="fund-wallet.html" class="fund-btn">Fund Wallet</a>
+      <div class="announcement-footer">
+        <button
+          id="announcementCloseBtn"
+          class="announcement-close"
+          type="button">
+          Continue to Dashboard
+        </button>
+      </div>
 
-  <button type="button" class="refresh-btn" id="refreshBtn">
-    ↻ Refresh
-  </button>
-</div>
-
-<div id="refreshMessage" style="font-size:13px;margin-top:10px;opacity:.9;"></div>
-
-  </div>  <!-- DEDICATED ACCOUNT -->  <div class="account-card" id="paymentPointCard">
-    <h3>My Dedicated Account</h3><div id="accountLoading" class="loading">Checking account...</div>
-
-<div id="accountDetails" style="display:none;">
-
-  <div class="account-row">
-    <span class="account-label">Account Name</span>
-    <span class="account-value" id="accountName">---</span>
-  </div>
-
-  <div class="account-row">
-    <span class="account-label">Bank</span>
-    <span class="account-value" id="bankName">---</span>
-  </div>
-
-  <div class="account-row">
-    <span class="account-label">Account Number</span>
-    <span class="account-value" id="accountNumber">---</span>
-  </div>
-
-  <div class="account-note">
-    Transfer money to this dedicated account to fund your Gracioustec wallet.
-  </div>
-</div>
-
-<div id="accountError" class="error"></div>
-
-  </div>  <!-- NIN SERVICES -->  <h2 class="section-title">NIN Services</h2>  <div class="services"><div class="service-card" id="ninStandardCard">
-  <h3>NIN Reprinting</h3>
-  <p>Get your NIN slip reprinted quickly.</p>
-  <div class="price" id="ninStandardPrice">Loading price...</div>
-  <a href="nin.html" class="service-btn" id="ninStandardBtn">Continue</a>
-</div>
-
-<div class="service-card" id="ninLostCard">
-  <h3>NIN Lost Slip</h3>
-  <p>Reprint your NIN slip if the original is lost.</p>
-  <div class="price" id="ninLostPrice">Loading price...</div>
-  <a href="nin.html" class="service-btn" id="ninLostBtn">Continue</a>
-</div>
-
-<div class="service-card" id="ninPremiumCard">
-  <h3>Premium / Foreigner Slip</h3>
-  <p>Premium NIN slip service.</p>
-  <div class="price" id="ninPremiumPrice">Loading price...</div>
-  <a href="nin.html" class="service-btn" id="ninPremiumBtn">Continue</a>
-</div>
-
-  </div>  <!-- BVN SERVICES -->  <h2 class="section-title">BVN Services</h2>  <div class="services">
-    <div class="service-card" id="bvnCard">
-      <h3>BVN Reprinting</h3>
-      <p>Verify and reprint your BVN slip.</p>
-      <div class="price" id="bvnPrice">Loading price...</div>
-      <a href="bvn.html" class="service-btn" id="bvnBtn">Continue</a>
     </div>
-  </div>  <!-- VERIFICATION -->  <h2 class="section-title">Verification</h2>  <div class="services"><div class="service-card">
-  <h3>NIN Verification</h3>
-  <p>Verify NIN information and view available details.</p>
-  <a href="nin-verification.html" class="service-btn">Verify NIN</a>
-</div>
+  </div>
 
-<div class="service-card">
-  <h3>BVN Verification</h3>
-  <p>Verify BVN information.</p>
-  <a href="bvn-verification.html" class="service-btn">Verify BVN</a>
-</div>
+  <!-- HEADER -->
 
-  </div>  <!-- QUICK LINKS -->  <h2 class="section-title">Quick Links</h2>  <div class="quick-links">
-    <a href="transactions.html" class="quick-link">Transaction History</a>
-    <a href="fund-wallet.html" class="quick-link">Fund Wallet</a>
-    <a href="profile.html" class="quick-link">My Profile</a>
-  </div></div><script>
-  /* SUPABASE */
+  <header>
+    <div class="logo">GRACIOUSTEC</div>
 
-  const SUPABASE_URL = "https://iknhifndgpwibkfidggq.supabase.co";
+    <button
+      class="menu-btn"
+      id="menuBtn"
+      type="button"
+      aria-label="Open menu">
+      ☰
+    </button>
 
-  const SUPABASE_KEY = "sb_publishable_xELauxOMm7eMkNrPz55Mrw_LVkRoASn";
+    <div class="menu" id="menu">
+      <a href="dashboard.html">Dashboard</a>
+      <a href="transactions.html">Transaction History</a>
+      <a href="fund-wallet.html">Fund Wallet</a>
+      <a href="profile.html">Profile</a>
+      <button type="button" id="logoutBtn">Logout</button>
+    </div>
+  </header>
 
-  const supabaseClient = window.supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_KEY
-  );
+  <div class="container">
 
-  let currentUser = null;
+    <!-- WELCOME -->
 
-  let paymentMethods = {
-    paymentpoint: false,
-    recopay: false
-  };
+    <div class="welcome">
+      <h2>Welcome to Gracioustec</h2>
+      <p id="userEmail">Loading account...</p>
+    </div>
 
-  /* MENU */
+    <!-- REFERRAL LINK -->
 
-  document.getElementById("menuBtn").addEventListener("click", function () {
-    document.getElementById("menu").classList.toggle("show");
-  });
+    <div class="account-card" id="referralCard">
+      <h3>Invite Friends &amp; Earn ₦5</h3>
 
-  document.addEventListener("click", function (event) {
-    const menu = document.getElementById("menu");
-    const menuBtn = document.getElementById("menuBtn");
+      <p class="referral-description">
+        Share your personal referral link. When someone successfully
+        registers using your link, you earn ₦5 in your Gracioustec wallet.
+        The new customer does not receive a signup bonus.
+      </p>
 
-    if (!menu.contains(event.target) && !menuBtn.contains(event.target)) {
-      menu.classList.remove("show");
-    }
-  });
+      <label for="referralLink" class="referral-label">
+        Your referral link
+      </label>
 
-  /* LOGOUT */
+      <input
+        type="text"
+        id="referralLink"
+        class="referral-input"
+        readonly
+        value="Loading your referral link..."
+        aria-label="Your personal referral link"
+      >
 
-  document.getElementById("logoutBtn").addEventListener("click", async function () {
-    const { error } = await supabaseClient.auth.signOut();
+      <button
+        type="button"
+        id="copyReferralBtn"
+        class="referral-button"
+        disabled>
+        Loading Referral Link...
+      </button>
 
-    if (error) {
-      console.error("Logout error:", error);
-      alert("Unable to log out. Please try again.");
-      return;
-    }
+      <p id="referralMessage" role="status" aria-live="polite">
+        Retrieving your referral code...
+      </p>
+    </div>
 
-    window.location.href = "login.html";
-  });
+    <!-- WALLET -->
 
-  /* MONEY */
+    <div class="wallet">
+      <div class="wallet-title">Wallet Balance</div>
+      <div class="wallet-balance" id="walletBalance">₦0.00</div>
 
-  function formatMoney(amount) {
-    return "₦" + Number(amount || 0).toLocaleString("en-NG", {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2
-    });
-  }
+      <div class="wallet-actions">
+        <a href="fund-wallet.html" class="fund-btn">Fund Wallet</a>
 
-  /* LOAD USER */
+        <button type="button" class="refresh-btn" id="refreshBtn">
+          ↻ Refresh
+        </button>
+      </div>
 
-  async function loadUser() {
-    const { data, error } = await supabaseClient.auth.getUser();
+      <div
+        id="refreshMessage"
+        style="font-size:13px;margin-top:10px;opacity:.9;">
+      </div>
+    </div>
 
-    if (error || !data || !data.user) {
-      window.location.href = "login.html";
-      return null;
-    }
+    <!-- DEDICATED ACCOUNT -->
 
-    currentUser = data.user;
+    <div class="account-card" id="paymentPointCard">
+      <h3>My Dedicated Account</h3>
 
-    document.getElementById("userEmail").textContent =
-      data.user.email || "";
+      <div id="accountLoading" class="loading">
+        Checking account...
+      </div>
 
-    return data.user;
-  }
+      <div id="accountDetails" style="display:none;">
 
-  /* LOAD WALLET */
+        <div class="account-row">
+          <span class="account-label">Account Name</span>
+          <span class="account-value" id="accountName">---</span>
+        </div>
 
-  async function loadWallet(user) {
-    const { data, error } = await supabaseClient
-      .from("wallets")
-      .select("balance")
-      .eq("user_id", user.id)
-      .maybeSingle();
+        <div class="account-row">
+          <span class="account-label">Bank</span>
+          <span class="account-value" id="bankName">---</span>
+        </div>
 
-    if (error) {
-      console.error("Wallet error:", error);
-      document.getElementById("walletBalance").textContent =
-        "Unable to load";
-      return;
-    }
+        <div class="account-row">
+          <span class="account-label">Account Number</span>
+          <span class="account-value" id="accountNumber">---</span>
+        </div>
 
-    document.getElementById("walletBalance").textContent =
-      formatMoney(data ? data.balance : 0);
-  }
+        <div class="account-note">
+          Transfer money to this dedicated account to fund your
+          Gracioustec wallet.
+        </div>
+      </div>
 
-  /* LOAD PAYMENT METHODS */
+      <div id="accountError" class="error"></div>
+    </div>
 
-  async function loadPaymentMethods() {
-    const { data, error } = await supabaseClient
-      .from("payment_methods")
-      .select("method_code,method_name,is_active")
-      .in("method_code", ["paymentpoint", "recopay"]);
+    <!-- NIN SERVICES -->
 
-    if (error) {
-      console.error("Payment methods error:", error);
-      return;
-    }
+    <h2 class="section-title">NIN Services</h2>
 
-    paymentMethods = {
+    <div class="services">
+
+      <div class="service-card" id="ninStandardCard">
+        <h3>NIN Reprinting</h3>
+        <p>Get your NIN slip reprinted quickly.</p>
+        <div class="price" id="ninStandardPrice">Loading price...</div>
+        <a href="nin.html" class="service-btn" id="ninStandardBtn">
+          Continue
+        </a>
+      </div>
+
+      <div class="service-card" id="ninLostCard">
+        <h3>NIN Lost Slip</h3>
+        <p>Reprint your NIN slip if the original is lost.</p>
+        <div class="price" id="ninLostPrice">Loading price...</div>
+        <a href="nin.html" class="service-btn" id="ninLostBtn">
+          Continue
+        </a>
+      </div>
+
+      <div class="service-card" id="ninPremiumCard">
+        <h3>Premium / Foreigner Slip</h3>
+        <p>Premium NIN slip service.</p>
+        <div class="price" id="ninPremiumPrice">Loading price...</div>
+        <a href="nin.html" class="service-btn" id="ninPremiumBtn">
+          Continue
+        </a>
+      </div>
+
+    </div>
+
+    <!-- BVN SERVICES -->
+
+    <h2 class="section-title">BVN Services</h2>
+
+    <div class="services">
+      <div class="service-card" id="bvnCard">
+        <h3>BVN Reprinting</h3>
+        <p>Verify and reprint your BVN slip.</p>
+        <div class="price" id="bvnPrice">Loading price...</div>
+        <a href="bvn.html" class="service-btn" id="bvnBtn">
+          Continue
+        </a>
+      </div>
+    </div>
+
+    <!-- VERIFICATION -->
+
+    <h2 class="section-title">Verification</h2>
+
+    <div class="services">
+
+      <div class="service-card">
+        <h3>NIN Verification</h3>
+        <p>Verify NIN information and view available details.</p>
+        <a href="nin-verification.html" class="service-btn">
+          Verify NIN
+        </a>
+      </div>
+
+      <div class="service-card">
+        <h3>BVN Verification</h3>
+        <p>Verify BVN information.</p>
+        <a href="bvn-verification.html" class="service-btn">
+          Verify BVN
+        </a>
+      </div>
+
+    </div>
+
+    <!-- QUICK LINKS -->
+
+    <h2 class="section-title">Quick Links</h2>
+
+    <div class="quick-links">
+      <a href="transactions.html" class="quick-link">
+        Transaction History
+      </a>
+      <a href="fund-wallet.html" class="quick-link">
+        Fund Wallet
+      </a>
+      <a href="profile.html" class="quick-link">
+        My Profile
+      </a>
+    </div>
+
+  </div>
+
+  <script>
+    /* SUPABASE */
+
+    const SUPABASE_URL =
+      "https://iknhifndgpwibkfidggq.supabase.co";
+
+    const SUPABASE_KEY =
+      "sb_publishable_xELauxOMm7eMkNrPz55Mrw_LVkRoASn";
+
+    const supabaseClient = window.supabase.createClient(
+      SUPABASE_URL,
+      SUPABASE_KEY
+    );
+
+    let currentUser = null;
+
+    let paymentMethods = {
       paymentpoint: false,
       recopay: false
     };
 
-    (data || []).forEach(method => {
-      if (method.method_code === "paymentpoint") {
-        paymentMethods.paymentpoint = Boolean(method.is_active);
-      }
+    /* MENU */
 
-      if (method.method_code === "recopay") {
-        paymentMethods.recopay = Boolean(method.is_active);
+    document.getElementById("menuBtn").addEventListener(
+      "click",
+      function () {
+        document.getElementById("menu").classList.toggle("show");
+      }
+    );
+
+    document.addEventListener("click", function (event) {
+      const menu = document.getElementById("menu");
+      const menuBtn = document.getElementById("menuBtn");
+
+      if (
+        !menu.contains(event.target) &&
+        !menuBtn.contains(event.target)
+      ) {
+        menu.classList.remove("show");
       }
     });
-  }
 
-  /* DEDICATED ACCOUNT */
+    /* LOGOUT */
 
-  async function loadPaymentPointAccount(user) {
-    const card = document.getElementById("paymentPointCard");
-    const loading = document.getElementById("accountLoading");
-    const details = document.getElementById("accountDetails");
-    const errorBox = document.getElementById("accountError");
+    document.getElementById("logoutBtn").addEventListener(
+      "click",
+      async function () {
+        const { error } = await supabaseClient.auth.signOut();
 
-    loading.style.display = "none";
-    details.style.display = "none";
-    errorBox.textContent = "";
+        if (error) {
+          console.error("Logout error:", error);
+          alert("Unable to log out. Please try again.");
+          return;
+        }
 
-    if (!paymentMethods.paymentpoint) {
-      card.style.display = "none";
-      return;
-    }
-
-    card.style.display = "block";
-    loading.style.display = "block";
-    loading.textContent = "Loading dedicated account...";
-
-    const { data, error } = await supabaseClient
-      .from("paymentpoint_accounts")
-      .select("account_name,bank_name,account_number,created_at")
-      .eq("user_id", user.id)
-      .order("created_at", { ascending: false })
-      .limit(1)
-      .maybeSingle();
-
-    loading.style.display = "none";
-
-    if (error) {
-      console.error("PaymentPoint account error:", error);
-      errorBox.textContent = "Unable to load dedicated account.";
-      return;
-    }
-
-    if (!data) {
-      errorBox.textContent =
-        "No dedicated account found. Please open Fund Wallet to create or view your account.";
-      return;
-    }
-
-    document.getElementById("accountName").textContent =
-      data.account_name || "---";
-
-    document.getElementById("bankName").textContent =
-      data.bank_name || "---";
-
-    document.getElementById("accountNumber").textContent =
-      data.account_number || "---";
-
-    details.style.display = "block";
-  }
-
-  /* SERVICE PRICES */
-
-  async function loadServicePrices() {
-    const { data, error } = await supabaseClient
-      .from("service_settings")
-      .select("service_code,price,is_active");
-
-    if (error) {
-      console.error("Service price error:", error);
-      return;
-    }
-
-    const services = data || [];
-
-    updateServiceCard(
-      "ninStandardCard",
-      "ninStandardPrice",
-      "ninStandardBtn",
-      services.find(item => item.service_code === "nin_standard"),
-      "nin.html"
+        window.location.href = "login.html";
+      }
     );
 
-    updateServiceCard(
-      "ninLostCard",
-      "ninLostPrice",
-      "ninLostBtn",
-      services.find(item => item.service_code === "nin_lost"),
-      "nin.html"
-    );
+    /* MONEY */
 
-    updateServiceCard(
-      "ninPremiumCard",
-      "ninPremiumPrice",
-      "ninPremiumBtn",
-      services.find(item => item.service_code === "nin_premium"),
-      "nin.html"
-    );
-
-    updateServiceCard(
-      "bvnCard",
-      "bvnPrice",
-      "bvnBtn",
-      services.find(item => item.service_code === "bvn_reprint"),
-      "bvn.html"
-    );
-  }
-
-  /* UPDATE SERVICE CARD */
-
-  function updateServiceCard(cardId, priceId, buttonId, service, page) {
-    const card = document.getElementById(cardId);
-    const price = document.getElementById(priceId);
-    const button = document.getElementById(buttonId);
-
-    if (!card || !price || !button) return;
-
-    if (!service) {
-      card.style.display = "none";
-      return;
+    function formatMoney(amount) {
+      return "₦" + Number(amount || 0).toLocaleString("en-NG", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      });
     }
 
-    card.style.display = "block";
+    /* LOAD USER */
 
-    if (!service.is_active) {
-      card.classList.add("disabled");
-      price.textContent = "Currently unavailable";
-      button.textContent = "Unavailable";
-      button.classList.add("disabled-btn");
-      button.removeAttribute("href");
-      return;
+    async function loadUser() {
+      const { data, error } = await supabaseClient.auth.getUser();
+
+      if (error || !data || !data.user) {
+        window.location.href = "login.html";
+        return null;
+      }
+
+      currentUser = data.user;
+
+      document.getElementById("userEmail").textContent =
+        data.user.email || "";
+
+      return data.user;
     }
 
-    card.classList.remove("disabled");
-    price.textContent = formatMoney(service.price);
-    button.textContent = "Continue";
-    button.classList.remove("disabled-btn");
-    button.href = page;
-  }
+    /* LOAD REFERRAL LINK */
 
-  /* ANNOUNCEMENT */
+    async function loadReferralLink(user) {
+      const input = document.getElementById("referralLink");
+      const button = document.getElementById("copyReferralBtn");
+      const message = document.getElementById("referralMessage");
 
-  async function loadAnnouncement() {
-    const overlay = document.getElementById("announcementOverlay");
-    const title = document.getElementById("announcementTitle");
-    const message = document.getElementById("announcementMessage");
+      input.value = "";
+      button.disabled = true;
+      button.textContent = "Loading Referral Link...";
+      message.textContent = "Retrieving your referral code...";
+      message.style.color = "#666";
 
-    if (!overlay || !title || !message) return;
+      try {
+        const { data, error } = await supabaseClient
+          .from("referral_profiles")
+          .select("referral_code")
+          .eq("user_id", user.id)
+          .maybeSingle();
 
-    const { data, error } = await supabaseClient
-      .from("announcements")
-      .select("id,title,message,is_active,created_at")
-      .eq("is_active", true)
-      .order("created_at", { ascending: false })
-      .limit(1)
-      .maybeSingle();
+        if (error) {
+          console.error("Referral profile error:", error);
+          throw new Error("Unable to read your referral profile.");
+        }
 
-    if (error) {
-      console.error("Announcement error:", error);
-      return;
+        if (!data || !data.referral_code) {
+          input.value = "";
+          button.textContent = "Referral Link Unavailable";
+          message.textContent =
+            "Your referral code has not been created yet. Please contact support.";
+          message.style.color = "#b00020";
+          return;
+        }
+
+        const referralCode = String(data.referral_code).trim();
+
+        if (!/^[A-Z0-9_-]+$/i.test(referralCode)) {
+          throw new Error("The referral code is invalid.");
+        }
+
+        const referralURL = new URL(
+          "https://gracioustec.com.ng/register.html"
+        );
+
+        referralURL.searchParams.set("ref", referralCode);
+
+        input.value = referralURL.toString();
+        button.disabled = false;
+        button.textContent = "Copy Referral Link";
+
+        message.textContent =
+          "Share this link to earn ₦5 for each successful referral.";
+        message.style.color = "#087443";
+
+      } catch (error) {
+        console.error("Load referral link error:", error);
+
+        input.value = "";
+        button.disabled = true;
+        button.textContent = "Referral Link Unavailable";
+
+        message.textContent =
+          "Unable to load your referral link. Please refresh the page or contact support.";
+        message.style.color = "#b00020";
+      }
     }
 
-    if (!data) return;
+    /* COPY REFERRAL LINK */
 
-    title.textContent = data.title || "Gracioustec Announcement";
+    document.getElementById("copyReferralBtn").addEventListener(
+      "click",
+      async function () {
+        const input = document.getElementById("referralLink");
+        const button = document.getElementById("copyReferralBtn");
+        const message = document.getElementById("referralMessage");
 
-    /*
-      Display the announcement as plain text.
-      This avoids executing HTML supplied in a database message.
-    */
-    message.textContent = data.message || "";
+        if (!input.value || !input.value.startsWith(
+          "https://gracioustec.com.ng/register.html?ref="
+        )) {
+          message.textContent =
+            "Your referral link is not ready yet.";
+          message.style.color = "#b00020";
+          return;
+        }
 
-    overlay.classList.add("show");
-  }
+        button.disabled = true;
 
-  /* CLOSE ANNOUNCEMENT */
+        try {
+          if (
+            navigator.clipboard &&
+            typeof navigator.clipboard.writeText === "function"
+          ) {
+            await navigator.clipboard.writeText(input.value);
+          } else {
+            throw new Error("Clipboard API unavailable.");
+          }
 
-  function closeAnnouncement() {
-    const overlay = document.getElementById("announcementOverlay");
-    overlay.classList.remove("show");
-    overlay.style.display = "none";
-  }
+          message.textContent =
+            "Referral link copied successfully! Share it with friends.";
+          message.style.color = "#087443";
 
-  document.getElementById("announcementCloseBtn").addEventListener(
-    "click",
-    closeAnnouncement
-  );
+        } catch (error) {
+          /*
+            Fallback for browsers where the clipboard API is unavailable.
+          */
 
-  /* REFRESH DASHBOARD */
+          try {
+            input.focus();
+            input.select();
+            input.setSelectionRange(0, input.value.length);
 
-  async function refreshDashboard() {
-    if (!currentUser) return;
+            const copied = document.execCommand("copy");
 
-    const button = document.getElementById("refreshBtn");
-    const message = document.getElementById("refreshMessage");
+            if (copied) {
+              message.textContent =
+                "Referral link copied successfully! Share it with friends.";
+              message.style.color = "#087443";
+            } else {
+              message.textContent =
+                "Automatic copying failed. Select the link and copy it manually.";
+              message.style.color = "#b00020";
+            }
 
-    button.disabled = true;
-    button.textContent = "↻ Refreshing...";
-    message.textContent = "";
+          } catch (fallbackError) {
+            console.error("Clipboard error:", fallbackError);
 
-    try {
+            message.textContent =
+              "Automatic copying failed. Select the link and copy it manually.";
+            message.style.color = "#b00020";
+          }
+        }
+
+        button.disabled = false;
+      }
+    );
+
+    /* LOAD WALLET */
+
+    async function loadWallet(user) {
+      const { data, error } = await supabaseClient
+        .from("wallets")
+        .select("balance")
+        .eq("user_id", user.id)
+        .maybeSingle();
+
+      if (error) {
+        console.error("Wallet error:", error);
+        document.getElementById("walletBalance").textContent =
+          "Unable to load";
+        return;
+      }
+
+      document.getElementById("walletBalance").textContent =
+        formatMoney(data ? data.balance : 0);
+    }
+
+    /* LOAD PAYMENT METHODS */
+
+    async function loadPaymentMethods() {
+      const { data, error } = await supabaseClient
+        .from("payment_methods")
+        .select("method_code,method_name,is_active")
+        .in("method_code", ["paymentpoint", "recopay"]);
+
+      if (error) {
+        console.error("Payment methods error:", error);
+        return;
+      }
+
+      paymentMethods = {
+        paymentpoint: false,
+        recopay: false
+      };
+
+      (data || []).forEach(method => {
+        if (method.method_code === "paymentpoint") {
+          paymentMethods.paymentpoint = Boolean(method.is_active);
+        }
+
+        if (method.method_code === "recopay") {
+          paymentMethods.recopay = Boolean(method.is_active);
+        }
+      });
+    }
+
+    /* DEDICATED ACCOUNT */
+
+    async function loadPaymentPointAccount(user) {
+      const card = document.getElementById("paymentPointCard");
+      const loading = document.getElementById("accountLoading");
+      const details = document.getElementById("accountDetails");
+      const errorBox = document.getElementById("accountError");
+
+      loading.style.display = "none";
+      details.style.display = "none";
+      errorBox.textContent = "";
+
+      if (!paymentMethods.paymentpoint) {
+        card.style.display = "none";
+        return;
+      }
+
+      card.style.display = "block";
+      loading.style.display = "block";
+      loading.textContent = "Loading dedicated account...";
+
+      const { data, error } = await supabaseClient
+        .from("paymentpoint_accounts")
+        .select("account_name,bank_name,account_number,created_at")
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      loading.style.display = "none";
+
+      if (error) {
+        console.error("PaymentPoint account error:", error);
+        errorBox.textContent =
+          "Unable to load dedicated account.";
+        return;
+      }
+
+      if (!data) {
+        errorBox.textContent =
+          "No dedicated account found. Please open Fund Wallet to create or view your account.";
+        return;
+      }
+
+      document.getElementById("accountName").textContent =
+        data.account_name || "---";
+
+      document.getElementById("bankName").textContent =
+        data.bank_name || "---";
+
+      document.getElementById("accountNumber").textContent =
+        data.account_number || "---";
+
+      details.style.display = "block";
+    }
+
+    /* SERVICE PRICES */
+
+    async function loadServicePrices() {
+      const { data, error } = await supabaseClient
+        .from("service_settings")
+        .select("service_code,price,is_active");
+
+      if (error) {
+        console.error("Service price error:", error);
+        return;
+      }
+
+      const services = data || [];
+
+      updateServiceCard(
+        "ninStandardCard",
+        "ninStandardPrice",
+        "ninStandardBtn",
+        services.find(item => item.service_code === "nin_standard"),
+        "nin.html"
+      );
+
+      updateServiceCard(
+        "ninLostCard",
+        "ninLostPrice",
+        "ninLostBtn",
+        services.find(item => item.service_code === "nin_lost"),
+        "nin.html"
+      );
+
+      updateServiceCard(
+        "ninPremiumCard",
+        "ninPremiumPrice",
+        "ninPremiumBtn",
+        services.find(item => item.service_code === "nin_premium"),
+        "nin.html"
+      );
+
+      updateServiceCard(
+        "bvnCard",
+        "bvnPrice",
+        "bvnBtn",
+        services.find(item => item.service_code === "bvn_reprint"),
+        "bvn.html"
+      );
+    }
+
+    /* UPDATE SERVICE CARD */
+
+    function updateServiceCard(
+      cardId,
+      priceId,
+      buttonId,
+      service,
+      page
+    ) {
+      const card = document.getElementById(cardId);
+      const price = document.getElementById(priceId);
+      const button = document.getElementById(buttonId);
+
+      if (!card || !price || !button) return;
+
+      if (!service) {
+        card.style.display = "none";
+        return;
+      }
+
+      card.style.display = "block";
+
+      if (!service.is_active) {
+        card.classList.add("disabled");
+        price.textContent = "Currently unavailable";
+        button.textContent = "Unavailable";
+        button.classList.add("disabled-btn");
+        button.removeAttribute("href");
+        return;
+      }
+
+      card.classList.remove("disabled");
+      price.textContent = formatMoney(service.price);
+      button.textContent = "Continue";
+      button.classList.remove("disabled-btn");
+      button.href = page;
+    }
+
+    /* ANNOUNCEMENT */
+
+    async function loadAnnouncement() {
+      const overlay =
+        document.getElementById("announcementOverlay");
+      const title =
+        document.getElementById("announcementTitle");
+      const message =
+        document.getElementById("announcementMessage");
+
+      if (!overlay || !title || !message) return;
+
+      const { data, error } = await supabaseClient
+        .from("announcements")
+        .select("id,title,message,is_active,created_at")
+        .eq("is_active", true)
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      if (error) {
+        console.error("Announcement error:", error);
+        return;
+      }
+
+      if (!data) return;
+
+      title.textContent =
+        data.title || "Gracioustec Announcement";
+
+      /*
+        Display announcement text without executing database HTML.
+      */
+      message.textContent = data.message || "";
+
+      overlay.classList.add("show");
+    }
+
+    /* CLOSE ANNOUNCEMENT */
+
+    function closeAnnouncement() {
+      const overlay =
+        document.getElementById("announcementOverlay");
+
+      overlay.classList.remove("show");
+      overlay.style.display = "none";
+    }
+
+    document.getElementById("announcementCloseBtn").addEventListener(
+      "click",
+      closeAnnouncement
+    );
+
+    /* REFRESH DASHBOARD */
+
+    async function refreshDashboard() {
+      if (!currentUser) return;
+
+      const button = document.getElementById("refreshBtn");
+      const message = document.getElementById("refreshMessage");
+
+      button.disabled = true;
+      button.textContent = "↻ Refreshing...";
+      message.textContent = "";
+
+      try {
+        await loadPaymentMethods();
+
+        await Promise.all([
+          loadWallet(currentUser),
+          loadPaymentPointAccount(currentUser),
+          loadServicePrices(),
+          loadReferralLink(currentUser)
+        ]);
+
+        message.textContent = "Updated successfully.";
+
+      } catch (error) {
+        console.error("Refresh error:", error);
+        message.textContent = "Unable to refresh.";
+      }
+
+      button.disabled = false;
+      button.textContent = "↻ Refresh";
+
+      setTimeout(() => {
+        message.textContent = "";
+      }, 3000);
+    }
+
+    document.getElementById("refreshBtn").addEventListener(
+      "click",
+      refreshDashboard
+    );
+
+    /* START DASHBOARD */
+
+    async function startDashboard() {
+      const user = await loadUser();
+
+      if (!user) return;
+
       await loadPaymentMethods();
 
-      await Promise.all([
-        loadWallet(currentUser),
-        loadPaymentPointAccount(currentUser),
-        loadServicePrices()
-      ]);
+      await loadAnnouncement();
 
-      message.textContent = "Updated successfully.";
-    } catch (error) {
-      console.error("Refresh error:", error);
-      message.textContent = "Unable to refresh.";
+      await Promise.all([
+        loadWallet(user),
+        loadPaymentPointAccount(user),
+        loadServicePrices(),
+        loadReferralLink(user)
+      ]);
     }
 
-    button.disabled = false;
-    button.textContent = "↻ Refresh";
+    if (document.readyState === "loading") {
+      document.addEventListener(
+        "DOMContentLoaded",
+        startDashboard
+      );
+    } else {
+      startDashboard();
+    }
+  </script>
 
-    setTimeout(() => {
-      message.textContent = "";
-    }, 3000);
-  }
-
-  document.getElementById("refreshBtn").addEventListener(
-    "click",
-    refreshDashboard
-  );
-
-  /* START DASHBOARD */
-
-  async function startDashboard() {
-    const user = await loadUser();
-
-    if (!user) return;
-
-    await loadPaymentMethods();
-
-    await loadAnnouncement();
-
-    await Promise.all([
-      loadWallet(user),
-      loadPaymentPointAccount(user),
-      loadServicePrices()
-    ]);
-  }
-
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", startDashboard);
-  } else {
-    startDashboard();
-  }
-</script></body>
-</html>
+</body>
+  </html>
