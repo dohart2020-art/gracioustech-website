@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -332,6 +333,7 @@
       font-weight: bold;
       cursor: pointer;
       font-size: 15px;
+      transition: background .2s ease, opacity .2s ease;
     }
 
     .referral-button:hover {
@@ -831,6 +833,8 @@
       input.value = "";
       button.disabled = true;
       button.textContent = "Loading Referral Link...";
+      button.style.background = "#063b2b";
+
       message.textContent = "Retrieving your referral code...";
       message.style.color = "#666";
 
@@ -849,6 +853,7 @@
         if (!data || !data.referral_code) {
           input.value = "";
           button.textContent = "Referral Link Unavailable";
+
           message.textContent =
             "Your referral code has not been created yet. Please contact support.";
           message.style.color = "#b00020";
@@ -868,8 +873,10 @@
         referralURL.searchParams.set("ref", referralCode);
 
         input.value = referralURL.toString();
+
         button.disabled = false;
         button.textContent = "Copy Referral Link";
+        button.style.background = "#063b2b";
 
         message.textContent =
           "Share this link to earn ₦5 for each successful referral.";
@@ -881,6 +888,7 @@
         input.value = "";
         button.disabled = true;
         button.textContent = "Referral Link Unavailable";
+        button.style.background = "#063b2b";
 
         message.textContent =
           "Unable to load your referral link. Please refresh the page or contact support.";
@@ -888,7 +896,7 @@
       }
     }
 
-    /* COPY REFERRAL LINK */
+    /* COPY REFERRAL LINK — UPDATED */
 
     document.getElementById("copyReferralBtn").addEventListener(
       "click",
@@ -897,9 +905,12 @@
         const button = document.getElementById("copyReferralBtn");
         const message = document.getElementById("referralMessage");
 
-        if (!input.value || !input.value.startsWith(
-          "https://gracioustec.com.ng/register.html?ref="
-        )) {
+        if (
+          !input.value ||
+          !input.value.startsWith(
+            "https://gracioustec.com.ng/register.html?ref="
+          )
+        ) {
           message.textContent =
             "Your referral link is not ready yet.";
           message.style.color = "#b00020";
@@ -908,52 +919,61 @@
 
         button.disabled = true;
 
+        let copySucceeded = false;
+
         try {
           if (
             navigator.clipboard &&
             typeof navigator.clipboard.writeText === "function"
           ) {
             await navigator.clipboard.writeText(input.value);
-          } else {
-            throw new Error("Clipboard API unavailable.");
+            copySucceeded = true;
           }
-
-          message.textContent =
-            "Referral link copied successfully! Share it with friends.";
-          message.style.color = "#087443";
-
         } catch (error) {
-          /*
-            Fallback for browsers where the clipboard API is unavailable.
-          */
+          console.warn("Clipboard API unavailable:", error);
+        }
 
+        /* Fallback for browsers without clipboard access */
+
+        if (!copySucceeded) {
           try {
             input.focus();
             input.select();
             input.setSelectionRange(0, input.value.length);
 
-            const copied = document.execCommand("copy");
-
-            if (copied) {
-              message.textContent =
-                "Referral link copied successfully! Share it with friends.";
-              message.style.color = "#087443";
-            } else {
-              message.textContent =
-                "Automatic copying failed. Select the link and copy it manually.";
-              message.style.color = "#b00020";
-            }
-
-          } catch (fallbackError) {
-            console.error("Clipboard error:", fallbackError);
-
-            message.textContent =
-              "Automatic copying failed. Select the link and copy it manually.";
-            message.style.color = "#b00020";
+            copySucceeded = document.execCommand("copy");
+          } catch (error) {
+            console.error("Copy error:", error);
           }
         }
 
-        button.disabled = false;
+        if (copySucceeded) {
+          /* Show green confirmation */
+
+          button.textContent = "Copied ✓";
+          button.style.background = "#087443";
+
+          message.textContent =
+            "Referral link copied successfully! Share it with friends.";
+          message.style.color = "#087443";
+
+          /* Restore the original button after 2 seconds */
+
+          setTimeout(function () {
+            button.textContent = "Copy Referral Link";
+            button.style.background = "#063b2b";
+            button.disabled = false;
+          }, 2000);
+
+        } else {
+          button.textContent = "Copy Referral Link";
+          button.style.background = "#063b2b";
+          button.disabled = false;
+
+          message.textContent =
+            "Automatic copying failed. Select the link above and copy it manually.";
+          message.style.color = "#b00020";
+        }
       }
     );
 
@@ -1272,4 +1292,4 @@
   </script>
 
 </body>
-  </html>
+</html>
