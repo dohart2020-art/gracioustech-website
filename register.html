@@ -1,9 +1,18 @@
-<!DOCTYPE html><html lang="en-NG">
+<!DOCTYPE html>
+<html lang="en-NG">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">  <title>GRACIOUSTEC | Create Account</title>  <meta name="description" content="Create your GRACIOUSTEC account to access NIN and BVN reprinting and verification services in Nigeria.">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>GRACIOUSTEC | Create Account</title>
+
+  <meta name="description" content="Create your GRACIOUSTEC account to access NIN and BVN reprinting and verification services in Nigeria.">
   <meta name="robots" content="index, follow">
-  <link rel="canonical" href="https://gracioustec.com.ng/register.html">  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>  <style>
+  <link rel="canonical" href="https://gracioustec.com.ng/register.html">
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
     * {
       box-sizing: border-box;
     }
@@ -127,204 +136,263 @@
       color: #888;
       font-size: 12px;
     }
-  </style></head><body>  <div class="container"><div class="brand">GRACIOUSTEC</div>
+  </style>
+</head>
 
-<div class="subtitle">
-  NIN &amp; BVN Reprinting and Verification Services
-</div>
+<body>
+  <div class="container">
+    <div class="brand">GRACIOUSTEC</div>
 
-<h2>Create Your Account</h2>
+    <div class="subtitle">
+      NIN &amp; BVN Reprinting and Verification Services
+    </div>
 
-<form id="registerForm">
+    <h2>Create Your Account</h2>
 
-  <input
-    type="text"
-    id="name"
-    placeholder="Full Name"
-    autocomplete="name"
-    required
-  >
+    <form id="registerForm">
+      <input
+        type="text"
+        id="name"
+        placeholder="Full Name"
+        autocomplete="name"
+        required
+      >
 
-  <input
-    type="tel"
-    id="phone"
-    placeholder="Phone Number"
-    inputmode="tel"
-    autocomplete="tel"
-    required
-  >
+      <input
+        type="tel"
+        id="phone"
+        placeholder="Phone Number"
+        inputmode="tel"
+        autocomplete="tel"
+        required
+      >
 
-  <input
-    type="text"
-    id="nin"
-    placeholder="11-digit NIN Number"
-    inputmode="numeric"
-    maxlength="11"
-    autocomplete="off"
-    required
-  >
+      <input
+        type="text"
+        id="nin"
+        placeholder="11-digit NIN Number"
+        inputmode="numeric"
+        maxlength="11"
+        autocomplete="off"
+        required
+      >
 
-  <div class="note">
-    Enter your 11-digit NIN correctly. Your NIN is sensitive personal information; only provide it if required for the service.
+      <div class="note">
+        Enter your 11-digit NIN correctly. Your NIN is sensitive
+        personal information and should be protected.
+      </div>
+
+      <input
+        type="email"
+        id="email"
+        placeholder="Email Address"
+        autocomplete="email"
+        required
+      >
+
+      <input
+        type="password"
+        id="password"
+        placeholder="Create Password"
+        autocomplete="new-password"
+        minlength="6"
+        required
+      >
+
+      <input
+        type="password"
+        id="confirmPassword"
+        placeholder="Confirm Password"
+        autocomplete="new-password"
+        minlength="6"
+        required
+      >
+
+      <button type="submit" id="registerButton">
+        Create Account
+      </button>
+    </form>
+
+    <div id="message" role="status" aria-live="polite"></div>
+
+    <div class="login">
+      Already have an account?
+      <a href="login.html">Login here</a>
+    </div>
+
+    <div class="footer">
+      &copy; <span id="year"></span> GRACIOUSTEC. All rights reserved.
+    </div>
   </div>
 
-  <input
-    type="email"
-    id="email"
-    placeholder="Email Address"
-    autocomplete="email"
-    required
-  >
+  <script>
+    (function () {
+      "use strict";
 
-  <input
-    type="password"
-    id="password"
-    placeholder="Create Password"
-    autocomplete="new-password"
-    minlength="6"
-    required
-  >
+      const SUPABASE_URL =
+        "https://iknhifndgpwibkfidggq.supabase.co";
 
-  <input
-    type="password"
-    id="confirmPassword"
-    placeholder="Confirm Password"
-    autocomplete="new-password"
-    minlength="6"
-    required
-  >
+      const SUPABASE_KEY =
+        "sb_publishable_xELauxOMm7eMkNrPz55Mrw_LVkRoASn";
 
-  <button type="submit" id="registerButton">
-    Create Account
-  </button>
+      const message = document.getElementById("message");
+      const registerForm = document.getElementById("registerForm");
+      const registerButton = document.getElementById("registerButton");
 
-</form>
+      document.getElementById("year").textContent =
+        new Date().getFullYear();
 
-<div id="message" role="status" aria-live="polite"></div>
+      function showMessage(text, color) {
+        message.style.color = color;
+        message.textContent = text;
+      }
 
-<div class="login">
-  Already have an account?
-  <a href="login.html">Login here</a>
-</div>
+      // Check that the Supabase library loaded.
+      if (!window.supabase || !window.supabase.createClient) {
+        showMessage(
+          "Registration could not load. Please check your internet connection and refresh the page.",
+          "#c62828"
+        );
 
-<div class="footer">
-  &copy; <span id="year"></span> GRACIOUSTEC. All rights reserved.
-</div>
+        registerButton.disabled = true;
+        return;
+      }
 
-  </div>  <script>
-    const SUPABASE_URL =
-      "https://iknhifndgpwibkfidggq.supabase.co";
-
-    const SUPABASE_KEY =
-      "sb_publishable_xELauxOMm7eMkNrPz55Mrw_LVkRoASn";
-
-    const supabaseClient =
-      window.supabase.createClient(
+      const supabaseClient = window.supabase.createClient(
         SUPABASE_URL,
         SUPABASE_KEY
       );
 
-    document.getElementById("year").textContent =
-      new Date().getFullYear();
+      registerForm.addEventListener("submit", async function (event) {
+        event.preventDefault();
 
-    const registerForm =
-      document.getElementById("registerForm");
-
-    const message =
-      document.getElementById("message");
-
-    const registerButton =
-      document.getElementById("registerButton");
-
-    registerForm.addEventListener("submit", async function(event) {
-      event.preventDefault();
-
-      const name =
-        document.getElementById("name").value.trim();
-
-      const phone =
-        document.getElementById("phone").value.trim();
-
-      const nin =
-        document.getElementById("nin").value.trim().replace(/\s/g, "");
-
-      const email =
-        document.getElementById("email").value.trim();
-
-      const password =
-        document.getElementById("password").value;
-
-      const confirmPassword =
-        document.getElementById("confirmPassword").value;
-
-      if (!name || !phone || !nin || !email || !password || !confirmPassword) {
-        message.style.color = "#c62828";
-        message.textContent = "Please fill in all fields.";
-        return;
-      }
-
-      if (!/^\d{11}$/.test(nin)) {
-        message.style.color = "#c62828";
-        message.textContent = "Your NIN must contain exactly 11 digits.";
-        return;
-      }
-
-      if (password !== confirmPassword) {
-        message.style.color = "#c62828";
-        message.textContent = "Passwords do not match.";
-        return;
-      }
-
-      if (password.length < 6) {
-        message.style.color = "#c62828";
-        message.textContent = "Password must be at least 6 characters.";
-        return;
-      }
-
-      registerButton.disabled = true;
-      registerButton.textContent = "Creating Account...";
-      message.style.color = "#444";
-      message.textContent = "Please wait while we create your account.";
-
-      try {
-        const { data, error } =
-          await supabaseClient.auth.signUp({
-            email: email,
-            password: password,
-            options: {
-              data: {
-                full_name: name,
-                phone: phone,
-                nin: nin
-                referral_code: new URLSearchParams(window.location.search).get("ref")?.trim().toUpperCase() || null
-              }
-            }
-          });
-
-        if (error) {
-          throw error;
+        if (registerButton.disabled) {
+          return;
         }
 
-        message.style.color = "#087443";
+        const name =
+          document.getElementById("name").value.trim();
 
-        if (data.user && data.session) {
-          message.textContent =
-            "Your GRACIOUSTEC account has been created successfully. You can now log in.";
+        const phone =
+          document.getElementById("phone").value.trim();
+
+        const nin =
+          document.getElementById("nin").value.trim().replace(/\s/g, "");
+
+        const email =
+          document.getElementById("email").value.trim();
+
+        const password =
+          document.getElementById("password").value;
+
+        const confirmPassword =
+          document.getElementById("confirmPassword").value;
+
+        if (!name || !phone || !nin || !email ||
+            !password || !confirmPassword) {
+          showMessage("Please fill in all fields.", "#c62828");
+          return;
+        }
+
+        if (!/^\d{11}$/.test(nin)) {
+          showMessage(
+            "Your NIN must contain exactly 11 digits.",
+            "#c62828"
+          );
+          return;
+        }
+
+        if (password.length < 6) {
+          showMessage(
+            "Password must be at least 6 characters.",
+            "#c62828"
+          );
+          return;
+        }
+
+        if (password !== confirmPassword) {
+          showMessage("Passwords do not match.", "#c62828");
+          return;
+        }
+
+        // Preserve the referral code from the registration URL.
+        const urlParams = new URLSearchParams(window.location.search);
+        const referralCode =
+          (urlParams.get("ref") || "").trim().toUpperCase();
+
+        registerButton.disabled = true;
+        registerButton.textContent = "Creating Account...";
+
+        showMessage(
+          "Please wait while we create your account.",
+          "#444"
+        );
+
+        try {
+          const { data, error } =
+            await supabaseClient.auth.signUp({
+              email: email,
+              password: password,
+              options: {
+                emailRedirectTo:
+                  "https://gracioustec.com.ng/login.html",
+                data: {
+                  full_name: name,
+                  phone: phone,
+                  nin: nin,
+                  referral_code: referralCode || null
+                }
+              }
+            });
+
+          if (error) {
+            throw error;
+          }
+
+          if (!data.user) {
+            throw new Error(
+              "Supabase did not return a user. Please try again."
+            );
+          }
+
+          if (data.session) {
+            showMessage(
+              "Your account has been created and you are signed in. Email confirmation may be disabled in Supabase.",
+              "#087443"
+            );
+          } else {
+            showMessage(
+              "Your registration was submitted. Please check your email inbox and spam folder for the verification link. You must verify your email before logging in.",
+              "#087443"
+            );
+          }
 
           registerForm.reset();
-        } else {
-          message.textContent =
-            "Registration submitted successfully. Please check your email for a verification link before logging in.";
-        }
 
-      } catch (error) {
-        message.style.color = "#c62828";
-        message.textContent =
-          error.message || "Registration failed. Please try again.";
-      } finally {
-        registerButton.disabled = false;
-        registerButton.textContent = "Create Account";
-      }
-    });
-  </script></body>
+        } catch (error) {
+          console.error("Gracioustec registration error:", error);
+
+          let errorMessage =
+            error && error.message
+              ? error.message
+              : "Registration failed. Please try again.";
+
+          if (
+            errorMessage.toLowerCase().includes("rate limit") ||
+            errorMessage.toLowerCase().includes("email rate")
+          ) {
+            errorMessage =
+              "Supabase email sending limit reached. Please try again later or configure a custom SMTP provider.";
+          }
+
+          showMessage(errorMessage, "#c62828");
+
+        } finally {
+          registerButton.disabled = false;
+          registerButton.textContent = "Create Account";
+        }
+      });
+    })();
+  </script>
+</body>
 </html>
