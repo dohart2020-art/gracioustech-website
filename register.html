@@ -296,6 +296,7 @@
                 full_name: name,
                 phone: phone,
                 nin: nin
+                referral_code: new URLSearchParams(window.location.search).get("ref")?.trim().toUpperCase() || null
               }
             }
           });
