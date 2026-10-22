@@ -1,1 +1,564 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>NIN Validation - Gracioustec</title>
 
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f4f7f5;
+      color: #202b25;
+    }
+
+    header {
+      background: #087f3d;
+      color: white;
+      padding: 18px 16px;
+    }
+
+    header a {
+      color: white;
+      text-decoration: none;
+    }
+
+    .header-inner {
+      max-width: 760px;
+      margin: auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+
+    main {
+      max-width: 650px;
+      margin: 28px auto;
+      padding: 0 15px 30px;
+    }
+
+    .card {
+      background: white;
+      padding: 22px;
+      border-radius: 14px;
+      box-shadow: 0 4px 18px rgba(0,0,0,.06);
+      margin-bottom: 18px;
+    }
+
+    h1 { font-size: 25px; margin-top: 0; }
+    h2 { font-size: 19px; }
+
+    .muted {
+      color: #637067;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    label {
+      display: block;
+      font-weight: bold;
+      margin: 18px 0 8px;
+    }
+
+    input {
+      width: 100%;
+      padding: 13px;
+      font-size: 16px;
+      border: 1px solid #cbd5ce;
+      border-radius: 8px;
+    }
+
+    .price {
+      background: #eef8f1;
+      border-radius: 10px;
+      padding: 15px;
+      margin: 18px 0;
+    }
+
+    .price strong {
+      display: block;
+      color: #087f3d;
+      font-size: 26px;
+      margin-top: 5px;
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      background: #087f3d;
+      color: white;
+      border: 0;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 14px;
+    }
+
+    button:disabled {
+      background: #8ba998;
+      cursor: not-allowed;
+    }
+
+    button.secondary {
+      background: #34483b;
+    }
+
+    .message {
+      display: none;
+      padding: 13px;
+      border-radius: 8px;
+      margin: 14px 0;
+      overflow-wrap: anywhere;
+      line-height: 1.5;
+    }
+
+    .message.show { display: block; }
+    .message.error { background: #fff0f0; color: #9a2020; }
+    .message.success { background: #e9f8ed; color: #176534; }
+    .message.info { background: #edf4ff; color: #234d82; }
+
+    .hidden { display: none !important; }
+
+    .result-row {
+      padding: 10px 0;
+      border-bottom: 1px solid #e8ece9;
+      overflow-wrap: anywhere;
+    }
+
+    footer {
+      text-align: center;
+      color: #66736a;
+      font-size: 13px;
+      padding: 20px;
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <div class="header-inner">
+      <strong>GRACIOUSTEC</strong>
+      <a href="dashboard.html">← Dashboard</a>
+    </div>
+  </header>
+
+  <main>
+    <section class="card">
+      <h1>NIN Validation</h1>
+      <p class="muted">
+        Submit a NIN validation request and check its status using your
+        Ninslip reference.
+      </p>
+
+      <div id="pageMessage" class="message"></div>
+
+      <div class="price">
+        <span>Validation price</span>
+        <strong id="servicePrice">Loading...</strong>
+        <p class="muted" id="priceNote">
+          Retrieving the current price from Gracioustec.
+        </p>
+      </div>
+
+      <div class="result-row">
+        <strong>Wallet balance:</strong>
+        <span id="walletBalance">Loading...</span>
+      </div>
+
+      <form id="validationForm">
+        <label for="nin">11-digit NIN</label>
+        <input
+          id="nin"
+          name="nin"
+          type="text"
+          inputmode="numeric"
+          autocomplete="off"
+          maxlength="11"
+          pattern="[0-9]{11}"
+          placeholder="Enter your 11-digit NIN"
+          required
+        >
+
+        <label for="errorType">Validation type</label>
+        <input
+          id="errorType"
+          type="text"
+          value="No Record"
+          readonly
+        >
+
+        <p class="muted">
+          Only the documented “No Record” validation type is currently
+          enabled.
+        </p>
+
+        <button id="submitButton" type="submit" disabled>
+          Submit Validation
+        </button>
+      </form>
+
+      <p class="muted">
+        Your wallet will be charged by the server using the current service
+        price. Do not submit the same request repeatedly if the provider's
+        response is uncertain.
+      </p>
+    </section>
+
+    <section class="card">
+      <h2>Check Validation Status</h2>
+      <p class="muted">
+        Enter the provider reference returned when your request was submitted.
+      </p>
+
+      <label for="reference">Ninslip reference</label>
+      <input
+        id="reference"
+        type="text"
+        autocomplete="off"
+        placeholder="Example: API-12345"
+      >
+
+      <button id="statusButton" class="secondary" type="button">
+        Check Status
+      </button>
+
+      <div id="statusMessage" class="message"></div>
+
+      <div id="statusResult" class="hidden">
+        <div class="result-row">
+          <strong>Reference:</strong>
+          <span id="resultReference"></span>
+        </div>
+        <div class="result-row">
+          <strong>Status:</strong>
+          <span id="resultStatus"></span>
+        </div>
+        <div class="result-row">
+          <strong>Refund status:</strong>
+          <span id="resultRefund"></span>
+        </div>
+      </div>
+    </section>
+
+    <p class="muted">
+      If a request remains pending or its outcome is uncertain, contact
+      Gracioustec support before submitting another request.
+    </p>
+  </main>
+
+  <footer>
+    © Gracioustec. NIN validation services.
+  </footer>
+
+  <script>
+    const SUPABASE_URL =
+      "https://iknhifndgpwibkfidggq.supabase.co";
+
+    const SUPABASE_KEY =
+      "sb_publishable_xELauxOMm7eMkNrPz55Mrw_LVkRoASn";
+
+    const supabaseClient = window.supabase.createClient(
+      SUPABASE_URL,
+      SUPABASE_KEY
+    );
+
+    const $ = (id) => document.getElementById(id);
+
+    let currentPrice = null;
+    let serviceActive = false;
+
+    function naira(value) {
+      return Number(value).toLocaleString("en-NG", {
+        style: "currency",
+        currency: "NGN",
+        maximumFractionDigits: 2
+      });
+    }
+
+    function showMessage(id, message, type = "info") {
+      const el = $(id);
+      el.textContent = message;
+      el.className = "message show " + type;
+    }
+
+    function hideMessage(id) {
+      $(id).className = "message";
+      $(id).textContent = "";
+    }
+
+    async function requireLogin() {
+      const { data, error } =
+        await supabaseClient.auth.getSession();
+
+      if (error || !data.session) {
+        window.location.replace("login.html");
+        return null;
+      }
+
+      return data.session;
+    }
+
+    async function loadPageData() {
+      const session = await requireLogin();
+      if (!session) return;
+
+      try {
+        const { data: service, error: serviceError } =
+          await supabaseClient
+            .from("service_settings")
+            .select("service_name, price, is_active")
+            .eq("service_code", "nin_validation")
+            .maybeSingle();
+
+        if (serviceError || !service) {
+          $("servicePrice").textContent = "Unavailable";
+          $("priceNote").textContent =
+            "Could not load the service price. Please try again later.";
+          showMessage(
+            "pageMessage",
+            "Could not load NIN Validation settings.",
+            "error"
+          );
+          return;
+        }
+
+        currentPrice = Number(service.price);
+        serviceActive = service.is_active === true;
+
+        if (!Number.isFinite(currentPrice) || currentPrice <= 0) {
+          currentPrice = null;
+          serviceActive = false;
+        }
+
+        $("servicePrice").textContent =
+          currentPrice === null ? "Unavailable" : naira(currentPrice);
+
+        $("priceNote").textContent = serviceActive
+          ? "The price is controlled by Gracioustec Admin."
+          : "This service is currently unavailable.";
+
+        const { data: wallet, error: walletError } =
+          await supabaseClient
+            .from("wallets")
+            .select("balance")
+            .eq("user_id", session.user.id)
+            .maybeSingle();
+
+        if (walletError || !wallet) {
+          $("walletBalance").textContent = "Unavailable";
+        } else {
+          $("walletBalance").textContent = naira(wallet.balance);
+        }
+
+        $("submitButton").disabled =
+          !serviceActive || currentPrice === null;
+
+      } catch (error) {
+        console.error("Page setup error:", error);
+        showMessage(
+          "pageMessage",
+          "Could not load the page. Please refresh and try again.",
+          "error"
+        );
+      }
+    }
+
+    $("validationForm").addEventListener("submit", async (event) => {
+      event.preventDefault();
+      hideMessage("pageMessage");
+
+      const nin = $("nin").value.trim();
+
+      if (!/^\d{11}$/.test(nin)) {
+        showMessage(
+          "pageMessage",
+          "Enter a valid 11-digit NIN.",
+          "error"
+        );
+        return;
+      }
+
+      if (!serviceActive || currentPrice === null) {
+        showMessage(
+          "pageMessage",
+          "NIN Validation is currently unavailable.",
+          "error"
+        );
+        return;
+      }
+
+      const button = $("submitButton");
+      button.disabled = true;
+      button.textContent = "Submitting...";
+
+      try {
+        const session = await requireLogin();
+        if (!session) return;
+
+        const { data, error } =
+          await supabaseClient.functions.invoke("nin-validation", {
+            body: {
+              nin,
+              error_type: "No Record"
+            }
+          });
+
+        if (error) {
+          throw new Error(
+            "The request could not be confirmed. Check your request history or contact support before trying again."
+          );
+        }
+
+        if (data && data.payment_taken === true && !data.success) {
+          showMessage(
+            "pageMessage",
+            (data.message || "The provider response is uncertain.") +
+            (data.payment_reference
+              ? " Payment reference: " + data.payment_reference
+              : ""),
+            "error"
+          );
+        } else if (data && data.success) {
+          showMessage(
+            "pageMessage",
+            (data.message || "Request submitted.") +
+            (data.reference ? " Ninslip reference: " + data.reference : "") +
+            (data.payment_reference
+              ? " Payment reference: " + data.payment_reference
+              : ""),
+            "success"
+          );
+
+          if (data.reference) {
+            $("reference").value = data.reference;
+          }
+
+          $("nin").value = "";
+        } else {
+          showMessage(
+            "pageMessage",
+            data?.message || "The request was not successful.",
+            "error"
+          );
+        }
+
+        await loadWalletBalance();
+
+      } catch (error) {
+        console.error("NIN validation error:", error);
+        showMessage(
+          "pageMessage",
+          error.message ||
+            "An error occurred. Contact support before resubmitting.",
+          "error"
+        );
+      } finally {
+        button.textContent = "Submit Validation";
+        button.disabled = !serviceActive || currentPrice === null;
+      }
+    });
+
+    async function loadWalletBalance() {
+      const { data: sessionData } =
+        await supabaseClient.auth.getSession();
+
+      const user = sessionData?.session?.user;
+      if (!user) return;
+
+      const { data, error } = await supabaseClient
+        .from("wallets")
+        .select("balance")
+        .eq("user_id", user.id)
+        .maybeSingle();
+
+      if (!error && data) {
+        $("walletBalance").textContent = naira(data.balance);
+      }
+    }
+
+    $("statusButton").addEventListener("click", async () => {
+      hideMessage("statusMessage");
+      $("statusResult").classList.add("hidden");
+
+      const reference = $("reference").value.trim();
+
+      if (!reference) {
+        showMessage(
+          "statusMessage",
+          "Enter the Ninslip reference first.",
+          "error"
+        );
+        return;
+      }
+
+      const button = $("statusButton");
+      button.disabled = true;
+      button.textContent = "Checking...";
+
+      try {
+        const session = await requireLogin();
+        if (!session) return;
+
+        const { data, error } =
+          await supabaseClient.functions.invoke(
+            "nin-validation-status",
+            { body: { reference } }
+          );
+
+        if (error) {
+          throw new Error(
+            "Status could not be confirmed. Please try again later."
+          );
+        }
+
+        if (!data || !data.success) {
+          showMessage(
+            "statusMessage",
+            data?.message || "Could not retrieve the status.",
+            "error"
+          );
+          return;
+        }
+
+        $("resultReference").textContent =
+          data.reference || reference;
+
+        $("resultStatus").textContent =
+          data.validation_status || data.request_status || "Pending";
+
+        $("resultRefund").textContent =
+          data.refund_status || "Not confirmed";
+
+        $("statusResult").classList.remove("hidden");
+
+        showMessage(
+          "statusMessage",
+          data.message || "Status retrieved.",
+          "success"
+        );
+
+      } catch (error) {
+        console.error("Status check error:", error);
+        showMessage(
+          "statusMessage",
+          error.message || "Status check failed.",
+          "error"
+        );
+      } finally {
+        button.disabled = false;
+        button.textContent = "Check Status";
+      }
+    });
+
+    loadPageData();
+  </script>
+</body>
+</html>
