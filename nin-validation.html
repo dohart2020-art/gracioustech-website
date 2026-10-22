@@ -345,18 +345,7 @@
           ? "The price is controlled by Gracioustec Admin."
           : "This service is currently unavailable.";
 
-        const { data: wallet, error: walletError } =
-          await supabaseClient
-            .from("wallets")
-            .select("balance")
-            .eq("user_id", session.user.id)
-            .maybeSingle();
-
-        if (walletError || !wallet) {
-          $("walletBalance").textContent = "Unavailable";
-        } else {
-          $("walletBalance").textContent = naira(wallet.balance);
-        }
+        await loadWalletBalance();
 
         $("submitButton").disabled =
           !serviceActive || currentPrice === null;
@@ -369,6 +358,28 @@
           "error"
         );
       }
+    }
+
+    async function loadWalletBalance() {
+      const { data: sessionData, error: sessionError } =
+        await supabaseClient.auth.getSession();
+
+      const user = sessionData?.session?.user;
+
+      if (sessionError || !user) return;
+
+      const { data, error } = await supabaseClient
+        .from("wallets")
+        .select("balance")
+        .eq("user_id", user.id)
+        .maybeSingle();
+
+      if (error || !data) {
+        $("walletBalance").textContent = "Unavailable";
+        return;
+      }
+
+      $("walletBalance").textContent = naira(data.balance);
     }
 
     $("validationForm").addEventListener("submit", async (event) => {
@@ -430,7 +441,9 @@
           showMessage(
             "pageMessage",
             (data.message || "Request submitted.") +
-            (data.reference ? " Ninslip reference: " + data.reference : "") +
+            (data.reference
+              ? " Ninslip reference: " + data.reference
+              : "") +
             (data.payment_reference
               ? " Payment reference: " + data.payment_reference
               : ""),
@@ -450,8 +463,6 @@
           );
         }
 
-        await loadWalletBalance();
-
       } catch (error) {
         console.error("NIN validation error:", error);
         showMessage(
@@ -461,28 +472,13 @@
           "error"
         );
       } finally {
+        // Refresh the balance after every submission attempt.
+        await loadWalletBalance();
+
         button.textContent = "Submit Validation";
         button.disabled = !serviceActive || currentPrice === null;
       }
     });
-
-    async function loadWalletBalance() {
-      const { data: sessionData } =
-        await supabaseClient.auth.getSession();
-
-      const user = sessionData?.session?.user;
-      if (!user) return;
-
-      const { data, error } = await supabaseClient
-        .from("wallets")
-        .select("balance")
-        .eq("user_id", user.id)
-        .maybeSingle();
-
-      if (!error && data) {
-        $("walletBalance").textContent = naira(data.balance);
-      }
-    }
 
     $("statusButton").addEventListener("click", async () => {
       hideMessage("statusMessage");
@@ -553,6 +549,10 @@
           "error"
         );
       } finally {
+        // Refresh after checking status, including failed checks.
+        // This updates the displayed balance if a refund was processed.
+        await loadWalletBalance();
+
         button.disabled = false;
         button.textContent = "Check Status";
       }
