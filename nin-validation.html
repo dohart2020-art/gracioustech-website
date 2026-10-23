@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
   <title>NIN Validation - Gracioustec</title>
-
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <style>
@@ -67,12 +66,14 @@
       margin: 18px 0 8px;
     }
 
-    input {
+    input, select {
       width: 100%;
       padding: 13px;
       font-size: 16px;
       border: 1px solid #cbd5ce;
       border-radius: 8px;
+      background: white;
+      color: #202b25;
     }
 
     .price {
@@ -131,6 +132,18 @@
       padding: 10px 0;
       border-bottom: 1px solid #e8ece9;
       overflow-wrap: anywhere;
+      line-height: 1.6;
+    }
+
+    .result-label {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 3px;
+    }
+
+    .result-value {
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
     }
 
     footer {
@@ -154,8 +167,8 @@
     <section class="card">
       <h1>NIN Validation</h1>
       <p class="muted">
-        Submit a NIN validation request and check its status using your
-        Ninslip reference.
+        Submit a NIN validation request and check its progress through
+        Gracioustec.
       </p>
 
       <div id="pageMessage" class="message"></div>
@@ -187,17 +200,15 @@
           required
         >
 
-        <label for="errorType">Validation type</label>
-        <input
-          id="errorType"
-          type="text"
-          value="No Record"
-          readonly
-        >
+        <label for="validationType">Validation type</label>
+        <select id="validationType" name="validationType" required>
+          <option value="no_record">No Record</option>
+          <option value="update_record">Update Record</option>
+        </select>
 
         <p class="muted">
-          Only the documented “No Record” validation type is currently
-          enabled.
+          Select the validation type appropriate to your request.
+          Both options use the current price set by Gracioustec Admin.
         </p>
 
         <button id="submitButton" type="submit" disabled>
@@ -206,24 +217,26 @@
       </form>
 
       <p class="muted">
-        Your wallet will be charged by the server using the current service
-        price. Do not submit the same request repeatedly if the provider's
-        response is uncertain.
+        Submission uses your existing Gracioustec wallet. If a request has
+        an uncertain outcome, check its status before attempting another
+        submission.
       </p>
     </section>
 
     <section class="card">
       <h2>Check Validation Status</h2>
       <p class="muted">
-        Enter the provider reference returned when your request was submitted.
+        Enter the Gracioustec payment reference received after submitting
+        your request. Checking status does not submit a new request or
+        deduct another payment.
       </p>
 
-      <label for="reference">Ninslip reference</label>
+      <label for="reference">Gracioustec payment reference</label>
       <input
         id="reference"
         type="text"
         autocomplete="off"
-        placeholder="Example: API-12345"
+        placeholder="Paste your payment reference"
       >
 
       <button id="statusButton" class="secondary" type="button">
@@ -234,29 +247,44 @@
 
       <div id="statusResult" class="hidden">
         <div class="result-row">
-          <strong>Reference:</strong>
-          <span id="resultReference"></span>
+          <span class="result-label">Payment reference</span>
+          <span class="result-value" id="resultReference"></span>
         </div>
+
         <div class="result-row">
-          <strong>Status:</strong>
-          <span id="resultStatus"></span>
+          <span class="result-label">NIN</span>
+          <span class="result-value" id="resultNin"></span>
         </div>
+
         <div class="result-row">
-          <strong>Refund status:</strong>
-          <span id="resultRefund"></span>
+          <span class="result-label">Validation status</span>
+          <span class="result-value" id="resultStatus"></span>
+        </div>
+
+        <div class="result-row">
+          <span class="result-label">Request status</span>
+          <span class="result-value" id="resultRequestStatus"></span>
+        </div>
+
+        <div class="result-row">
+          <span class="result-label">Refund status</span>
+          <span class="result-value" id="resultRefund"></span>
+        </div>
+
+        <div class="result-row">
+          <span class="result-label">Provider response</span>
+          <span class="result-value" id="resultResponse"></span>
         </div>
       </div>
     </section>
 
     <p class="muted">
-      If a request remains pending or its outcome is uncertain, contact
+      If your request remains pending or its outcome is uncertain, contact
       Gracioustec support before submitting another request.
     </p>
   </main>
 
-  <footer>
-    © Gracioustec. NIN validation services.
-  </footer>
+  <footer>© Gracioustec. NIN validation services.</footer>
 
   <script>
     const SUPABASE_URL =
@@ -274,9 +302,15 @@
 
     let currentPrice = null;
     let serviceActive = false;
+    let submitting = false;
+    let checkingStatus = false;
 
     function naira(value) {
-      return Number(value).toLocaleString("en-NG", {
+      const amount = Number(value);
+
+      if (!Number.isFinite(amount)) return "Unavailable";
+
+      return amount.toLocaleString("en-NG", {
         style: "currency",
         currency: "NGN",
         maximumFractionDigits: 2
@@ -285,13 +319,20 @@
 
     function showMessage(id, message, type = "info") {
       const el = $(id);
-      el.textContent = message;
+      el.textContent = String(message || "");
       el.className = "message show " + type;
     }
 
     function hideMessage(id) {
       $(id).className = "message";
       $(id).textContent = "";
+    }
+
+    function setText(id, value, fallback = "Not available") {
+      $(id).textContent =
+        value === null || value === undefined || value === ""
+          ? fallback
+          : String(value);
     }
 
     async function requireLogin() {
@@ -304,6 +345,31 @@
       }
 
       return data.session;
+    }
+
+    async function loadWalletBalance() {
+      const { data: sessionData, error: sessionError } =
+        await supabaseClient.auth.getSession();
+
+      const user = sessionData?.session?.user;
+
+      if (sessionError || !user) {
+        $("walletBalance").textContent = "Unavailable";
+        return;
+      }
+
+      const { data, error } = await supabaseClient
+        .from("wallets")
+        .select("balance")
+        .eq("user_id", user.id)
+        .maybeSingle();
+
+      if (error || !data) {
+        $("walletBalance").textContent = "Unavailable";
+        return;
+      }
+
+      $("walletBalance").textContent = naira(data.balance);
     }
 
     async function loadPageData() {
@@ -321,10 +387,11 @@
         if (serviceError || !service) {
           $("servicePrice").textContent = "Unavailable";
           $("priceNote").textContent =
-            "Could not load the service price. Please try again later.";
+            "Could not load the current service price.";
+
           showMessage(
             "pageMessage",
-            "Could not load NIN Validation settings.",
+            "Could not load NIN Validation settings. Please refresh later.",
             "error"
           );
           return;
@@ -342,7 +409,7 @@
           currentPrice === null ? "Unavailable" : naira(currentPrice);
 
         $("priceNote").textContent = serviceActive
-          ? "The price is controlled by Gracioustec Admin."
+          ? "Current price set by Gracioustec Admin."
           : "This service is currently unavailable.";
 
         await loadWalletBalance();
@@ -352,6 +419,7 @@
 
       } catch (error) {
         console.error("Page setup error:", error);
+
         showMessage(
           "pageMessage",
           "Could not load the page. Please refresh and try again.",
@@ -360,38 +428,29 @@
       }
     }
 
-    async function loadWalletBalance() {
-      const { data: sessionData, error: sessionError } =
-        await supabaseClient.auth.getSession();
-
-      const user = sessionData?.session?.user;
-
-      if (sessionError || !user) return;
-
-      const { data, error } = await supabaseClient
-        .from("wallets")
-        .select("balance")
-        .eq("user_id", user.id)
-        .maybeSingle();
-
-      if (error || !data) {
-        $("walletBalance").textContent = "Unavailable";
-        return;
-      }
-
-      $("walletBalance").textContent = naira(data.balance);
-    }
-
     $("validationForm").addEventListener("submit", async (event) => {
       event.preventDefault();
+
+      if (submitting) return;
+
       hideMessage("pageMessage");
 
       const nin = $("nin").value.trim();
+      const validationType = $("validationType").value;
 
       if (!/^\d{11}$/.test(nin)) {
         showMessage(
           "pageMessage",
           "Enter a valid 11-digit NIN.",
+          "error"
+        );
+        return;
+      }
+
+      if (!["no_record", "update_record"].includes(validationType)) {
+        showMessage(
+          "pageMessage",
+          "Select a valid validation type.",
           "error"
         );
         return;
@@ -406,101 +465,150 @@
         return;
       }
 
+      const confirmed = window.confirm(
+        "You are about to submit a " +
+        (validationType === "no_record" ? "No Record" : "Update Record") +
+        " validation request. The current service price is " +
+        naira(currentPrice) +
+        ". Continue?"
+      );
+
+      if (!confirmed) return;
+
+      submitting = true;
+
       const button = $("submitButton");
       button.disabled = true;
       button.textContent = "Submitting...";
+
+      let submissionAttempted = false;
 
       try {
         const session = await requireLogin();
         if (!session) return;
 
+        submissionAttempted = true;
+
         const { data, error } =
           await supabaseClient.functions.invoke("nin-validation", {
             body: {
+              action: "submit",
               nin,
-              error_type: "No Record"
+              validation_type: validationType
             }
           });
 
         if (error) {
-  console.error("Supabase function error:", error);
+          console.error("NIN validation function error:", error);
 
-  let details = error.message || "Unknown error";
+          let details =
+            "The submission outcome could not be confirmed.";
 
-  if (error.context) {
-    try {
-      const response = error.context;
+          if (error.context) {
+            try {
+              const response = error.context;
 
-      if (typeof response.clone === "function") {
-        const body = await response.clone().text();
+              if (typeof response.clone === "function") {
+                const body = await response.clone().text();
 
-        details +=
-          " | HTTP status: " + response.status +
-          " | Response: " + body;
-      }
-    } catch (readError) {
-      console.error("Could not read error response:", readError);
-    }
-  }
+                details +=
+                  " HTTP " + response.status + ". " +
+                  body.slice(0, 500);
+              }
+            } catch (_) {
+              // Keep the safe message if the response cannot be read.
+            }
+          }
 
-  throw new Error(
-    "Validation diagnostic: " + details
-  );
-        }
-
-        if (data && data.payment_taken === true && !data.success) {
           showMessage(
             "pageMessage",
-            (data.message || "The provider response is uncertain.") +
-            (data.payment_reference
-              ? " Payment reference: " + data.payment_reference
-              : ""),
+            details +
+            " Check your request status or contact support before retrying.",
             "error"
           );
-        } else if (data && data.success) {
+
+          return;
+        }
+
+        if (!data) {
           showMessage(
             "pageMessage",
-            (data.message || "Request submitted.") +
-            (data.reference
-              ? " Ninslip reference: " + data.reference
+            "No response was received. Check status before submitting again.",
+            "error"
+          );
+          return;
+        }
+
+        const paymentReference =
+          data.payment_reference ||
+          data.reference ||
+          "";
+
+        if (paymentReference) {
+          $("reference").value = paymentReference;
+        }
+
+        if (data.success === true) {
+          showMessage(
+            "pageMessage",
+            (data.message || "Your validation request was submitted.") +
+            (paymentReference
+              ? " Payment reference: " + paymentReference + "."
               : "") +
-            (data.payment_reference
-              ? " Payment reference: " + data.payment_reference
-              : ""),
+            " Use Check Status to follow the request.",
             "success"
           );
 
-          if (data.reference) {
-            $("reference").value = data.reference;
-          }
-
           $("nin").value = "";
+        } else if (
+          data.payment_taken === true ||
+          data.payment_reference ||
+          data.request_status === "unknown" ||
+          data.request_status === "submitted" ||
+          data.request_status === "processing"
+        ) {
+          showMessage(
+            "pageMessage",
+            (data.message ||
+              "The outcome is uncertain; your request may already have been recorded.") +
+            (paymentReference
+              ? " Payment reference: " + paymentReference + "."
+              : "") +
+            " Check status before trying again.",
+            "error"
+          );
         } else {
           showMessage(
             "pageMessage",
-            data?.message || "The request was not successful.",
+            data.message || "The request was not successful.",
             "error"
           );
         }
 
       } catch (error) {
         console.error("NIN validation error:", error);
+
         showMessage(
           "pageMessage",
-          error.message ||
-            "An error occurred. Contact support before resubmitting.",
+          (error.message || "An error occurred.") +
+          (submissionAttempted
+            ? " Check status before attempting another submission."
+            : ""),
           "error"
         );
+
       } finally {
-        // Refresh the balance after every submission attempt.
         await loadWalletBalance();
 
+        submitting = false;
         button.textContent = "Submit Validation";
         button.disabled = !serviceActive || currentPrice === null;
       }
     });
 
     $("statusButton").addEventListener("click", async () => {
+      if (checkingStatus) return;
+
       hideMessage("statusMessage");
       $("statusResult").classList.add("hidden");
 
@@ -509,11 +617,13 @@
       if (!reference) {
         showMessage(
           "statusMessage",
-          "Enter the Ninslip reference first.",
+          "Enter your Gracioustec payment reference first.",
           "error"
         );
         return;
       }
+
+      checkingStatus = true;
 
       const button = $("statusButton");
       button.disabled = true;
@@ -526,53 +636,104 @@
         const { data, error } =
           await supabaseClient.functions.invoke(
             "nin-validation-status",
-            { body: { reference } }
+            {
+              body: { reference }
+            }
           );
 
         if (error) {
+          console.error("Status function error:", error);
+
           throw new Error(
-            "Status could not be confirmed. Please try again later."
+            "Status could not be confirmed. Please try again later. " +
+            "This check does not submit a new validation."
           );
         }
 
-        if (!data || !data.success) {
+        if (!data || data.success !== true) {
           showMessage(
             "statusMessage",
-            data?.message || "Could not retrieve the status.",
+            data?.message ||
+              "Could not retrieve the status for this reference.",
             "error"
           );
           return;
         }
 
-        $("resultReference").textContent =
-          data.reference || reference;
+        setText(
+          "resultReference",
+          data.reference || data.payment_reference || reference
+        );
 
-        $("resultStatus").textContent =
-          data.validation_status || data.request_status || "Pending";
+        setText("resultNin", data.nin, "Not returned");
 
-        $("resultRefund").textContent =
-          data.refund_status || "Not confirmed";
+        setText(
+          "resultStatus",
+          data.validation_status || data.status,
+          "Pending"
+        );
+
+        setText(
+          "resultRequestStatus",
+          data.request_status,
+          "Not available"
+        );
+
+        setText(
+          "resultRefund",
+          data.refund_status,
+          "Not confirmed"
+        );
+
+        let providerText = "";
+
+        if (typeof data.response === "string") {
+          providerText = data.response;
+        } else if (data.provider_response) {
+          const provider = data.provider_response;
+
+          providerText =
+            typeof provider === "string"
+              ? provider
+              : JSON.stringify(provider, null, 2);
+        } else if (data.message) {
+          providerText = data.message;
+        }
+
+        // Avoid displaying a large base64 photo in the page.
+        if (providerText.length > 3000) {
+          providerText = providerText.slice(0, 3000) +
+            "\n...Response shortened for display.";
+        }
+
+        setText(
+          "resultResponse",
+          providerText,
+          "No additional response returned"
+        );
 
         $("statusResult").classList.remove("hidden");
 
         showMessage(
           "statusMessage",
-          data.message || "Status retrieved.",
+          (data.message || "Status retrieved.") +
+          " No new payment was made for this status check.",
           "success"
         );
 
       } catch (error) {
         console.error("Status check error:", error);
+
         showMessage(
           "statusMessage",
           error.message || "Status check failed.",
           "error"
         );
+
       } finally {
-        // Refresh after checking status, including failed checks.
-        // This updates the displayed balance if a refund was processed.
         await loadWalletBalance();
 
+        checkingStatus = false;
         button.disabled = false;
         button.textContent = "Check Status";
       }
