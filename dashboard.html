@@ -76,6 +76,38 @@
       padding: 20px;
     }
 
+    /* LIVE NIGERIA DIGITAL CLOCK */
+    .nigeria-clock-card {
+      background: #ffffff;
+      border-left: 5px solid #063b2b;
+      border-radius: 14px;
+      padding: 18px 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 10px rgba(0,0,0,.06);
+      text-align: center;
+    }
+
+    .nigeria-clock-label {
+      color: #666;
+      font-size: 13px;
+      font-weight: bold;
+      letter-spacing: 2px;
+      margin-bottom: 8px;
+    }
+
+    .nigeria-clock-time {
+      color: #063b2b;
+      font-size: 32px;
+      font-weight: bold;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .nigeria-clock-date {
+      color: #666;
+      font-size: 14px;
+      margin-top: 8px;
+    }
+
     .welcome { margin-bottom: 20px; }
     .welcome h2 { color: #063b2b; margin-bottom: 5px; }
     .welcome p { color: #666; font-size: 14px; }
@@ -371,6 +403,8 @@
       .announcement-box { max-width: 100%; }
       .announcement-title { font-size: 19px; }
       .announcement-message { font-size: 14px; }
+      .nigeria-clock-time { font-size: 27px; }
+      .nigeria-clock-card { padding: 16px 12px; }
     }
   </style>
 </head>
@@ -416,6 +450,13 @@
   </header>
 
   <div class="container">
+
+    <!-- LIVE NIGERIA DIGITAL CLOCK -->
+    <div class="nigeria-clock-card" aria-label="Current Nigeria time">
+      <div class="nigeria-clock-label">NIGERIA TIME</div>
+      <div class="nigeria-clock-time" id="nigeriaClockTime">Loading time...</div>
+      <div class="nigeria-clock-date" id="nigeriaClockDate">Loading date...</div>
+    </div>
 
     <!-- WELCOME -->
     <div class="welcome">
@@ -539,7 +580,6 @@
 
     <div class="services">
 
-      <!-- NIN VALIDATION: PRICE LOADED FROM SUPABASE -->
       <div class="service-card" id="ninValidationCard">
         <h3>NIN Validation</h3>
         <p>Submit a NIN validation request and check its processing status.</p>
@@ -576,7 +616,6 @@
 
   <script>
     /* SUPABASE */
-
     const SUPABASE_URL = "https://iknhifndgpwibkfidggq.supabase.co";
     const SUPABASE_KEY = "sb_publishable_xELauxOMm7eMkNrPz55Mrw_LVkRoASn";
 
@@ -592,8 +631,36 @@
       recopay: false
     };
 
-    /* MENU */
+    /* LIVE NIGERIA DIGITAL CLOCK */
+    function updateNigeriaClock() {
+      const now = new Date();
 
+      const timeElement = document.getElementById("nigeriaClockTime");
+      const dateElement = document.getElementById("nigeriaClockDate");
+
+      if (!timeElement || !dateElement) return;
+
+      timeElement.textContent = new Intl.DateTimeFormat("en-NG", {
+        timeZone: "Africa/Lagos",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        hour12: true
+      }).format(now);
+
+      dateElement.textContent = new Intl.DateTimeFormat("en-NG", {
+        timeZone: "Africa/Lagos",
+        weekday: "long",
+        day: "numeric",
+        month: "long",
+        year: "numeric"
+      }).format(now);
+    }
+
+    updateNigeriaClock();
+    setInterval(updateNigeriaClock, 1000);
+
+    /* MENU */
     document.getElementById("menuBtn").addEventListener("click", function () {
       document.getElementById("menu").classList.toggle("show");
     });
@@ -608,7 +675,6 @@
     });
 
     /* LOGOUT */
-
     document.getElementById("logoutBtn").addEventListener("click", async function () {
       const { error } = await supabaseClient.auth.signOut();
 
@@ -622,7 +688,6 @@
     });
 
     /* MONEY */
-
     function formatMoney(amount) {
       return "₦" + Number(amount || 0).toLocaleString("en-NG", {
         minimumFractionDigits: 2,
@@ -631,7 +696,6 @@
     }
 
     /* LOAD USER */
-
     async function loadUser() {
       const { data, error } = await supabaseClient.auth.getUser();
 
@@ -647,7 +711,6 @@
     }
 
     /* LOAD REFERRAL LINK */
-
     async function loadReferralLink(user) {
       const input = document.getElementById("referralLink");
       const button = document.getElementById("copyReferralBtn");
@@ -715,7 +778,6 @@
     }
 
     /* COPY REFERRAL LINK */
-
     document.getElementById("copyReferralBtn").addEventListener("click", async function () {
       const input = document.getElementById("referralLink");
       const button = document.getElementById("copyReferralBtn");
@@ -775,7 +837,6 @@
     });
 
     /* LOAD WALLET */
-
     async function loadWallet(user) {
       const { data, error } = await supabaseClient
         .from("wallets")
@@ -794,7 +855,6 @@
     }
 
     /* LOAD PAYMENT METHODS */
-
     async function loadPaymentMethods() {
       const { data, error } = await supabaseClient
         .from("payment_methods")
@@ -823,7 +883,6 @@
     }
 
     /* DEDICATED ACCOUNT */
-
     async function loadPaymentPointAccount(user) {
       const card = document.getElementById("paymentPointCard");
       const loading = document.getElementById("accountLoading");
@@ -873,7 +932,6 @@
     }
 
     /* SERVICE PRICES — INCLUDING NIN VALIDATION */
-
     async function loadServicePrices() {
       const { data, error } = await supabaseClient
         .from("service_settings")
@@ -927,7 +985,6 @@
         "Continue"
       );
 
-      // NIN Validation — price is fetched from Supabase service_settings.
       updateServiceCard(
         "ninValidationCard",
         "ninValidationPrice",
@@ -939,7 +996,6 @@
     }
 
     /* UPDATE SERVICE CARD */
-
     function updateServiceCard(
       cardId,
       priceId,
@@ -979,7 +1035,6 @@
     }
 
     /* ANNOUNCEMENT */
-
     async function loadAnnouncement() {
       const overlay = document.getElementById("announcementOverlay");
       const title = document.getElementById("announcementTitle");
@@ -1008,7 +1063,6 @@
     }
 
     /* CLOSE ANNOUNCEMENT */
-
     function closeAnnouncement() {
       const overlay = document.getElementById("announcementOverlay");
       overlay.classList.remove("show");
@@ -1021,7 +1075,6 @@
     );
 
     /* REFRESH DASHBOARD */
-
     async function refreshDashboard() {
       if (!currentUser) return;
 
@@ -1062,7 +1115,6 @@
     );
 
     /* START DASHBOARD */
-
     async function startDashboard() {
       const user = await loadUser();
       if (!user) return;
@@ -1084,6 +1136,5 @@
       startDashboard();
     }
   </script>
-
 </body>
 </html>
