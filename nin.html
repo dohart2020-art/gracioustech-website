@@ -340,6 +340,10 @@ button:disabled{
     Verify by Phone
   </option>
 
+  <option value="by_demo">
+    Search by Personal Details
+  </option>
+
 </select>
 
 <label for="verificationSlipType">
@@ -405,6 +409,27 @@ button:disabled{
     placeholder="Enter phone number"
   >
 
+</div>
+
+<!-- PERSONAL DETAILS / DEMOGRAPHY SEARCH -->
+<div id="demoBox" class="hidden">
+  <label for="demoFirstname">First Name</label>
+  <input id="demoFirstname" type="text" autocomplete="given-name" placeholder="Enter first name">
+
+  <label for="demoSurname">Surname</label>
+  <input id="demoSurname" type="text" autocomplete="family-name" placeholder="Enter surname">
+
+  <label for="demoGender">Gender</label>
+  <select id="demoGender">
+    <option value="">Select gender</option>
+    <option value="male">Male</option>
+    <option value="female">Female</option>
+  </select>
+
+  <label for="demoBirthdate">Date of Birth</label>
+  <input id="demoBirthdate" type="date">
+
+  <p class="small">Enter the person's details accurately. Search results depend on NINSLIP matching the submitted information.</p>
 </div>
 
 <button
@@ -741,7 +766,11 @@ let servicePrices = {
   nin_phone_standard: { price: null, active: false },
   nin_phone_long: { price: null, active: false },
   nin_phone_regular: { price: null, active: false },
-  nin_phone_premium: { price: null, active: false }
+  nin_phone_premium: { price: null, active: false },
+  nin_demo_standard: { price: null, active: false },
+  nin_demo_long: { price: null, active: false },
+  nin_demo_regular: { price: null, active: false },
+  nin_demo_premium: { price: null, active: false }
 
 };
 
@@ -923,7 +952,11 @@ async function loadServicePrices(){
           "nin_phone_standard",
           "nin_phone_long",
           "nin_phone_regular",
-          "nin_phone_premium"
+          "nin_phone_premium",
+          "nin_demo_standard",
+          "nin_demo_long",
+          "nin_demo_regular",
+          "nin_demo_premium"
         ]
       );
 
@@ -968,7 +1001,11 @@ async function loadServicePrices(){
       nin_phone_standard: { price: null, active: false },
       nin_phone_long: { price: null, active: false },
       nin_phone_regular: { price: null, active: false },
-      nin_phone_premium: { price: null, active: false }
+      nin_phone_premium: { price: null, active: false },
+      nin_demo_standard: { price: null, active: false },
+      nin_demo_long: { price: null, active: false },
+      nin_demo_regular: { price: null, active: false },
+      nin_demo_premium: { price: null, active: false }
 
     };
 
@@ -1075,11 +1112,17 @@ async function loadServicePrices(){
 function updatePriceDisplays(){
   const method = document.getElementById("verificationType")?.value || "by_nin";
   const phoneMethod = method === "by_phone";
+  const demoMethod = method === "by_demo";
   const codes = phoneMethod ? {
     regular: "nin_phone_regular",
     standard: "nin_phone_standard",
     long: "nin_phone_long",
     premium: "nin_phone_premium"
+  } : demoMethod ? {
+    regular: "nin_demo_regular",
+    standard: "nin_demo_standard",
+    long: "nin_demo_long",
+    premium: "nin_demo_premium"
   } : {
     regular: "nin_standard",
     standard: "nin_standard",
@@ -1094,7 +1137,7 @@ function updatePriceDisplays(){
     ["Premium Slip", codes.premium, "Premium / Foreigner Slip"]
   ];
   if (select) {
-    select.disabled = !(method === "by_nin" || method === "by_phone");
+    select.disabled = !(method === "by_nin" || method === "by_phone" || method === "by_demo");
     for (const [value, code, label] of options) {
       const option = select.querySelector('option[value="' + value + '"]');
       if (!option) continue;
@@ -1196,33 +1239,15 @@ function getServicePrice(
 ========================================================= */
 
 function changeMethod(){
+  const type = document.getElementById("verificationType").value;
 
-  const type =
-    document.getElementById(
-      "verificationType"
-    ).value;
-
-
-  document
-    .getElementById("ninBox")
-    .classList.toggle(
-      "hidden",
-      type !== "by_nin"
-    );
-
-
-  document
-    .getElementById("phoneBox")
-    .classList.toggle(
-      "hidden",
-      type !== "by_phone"
-    );
-
+  document.getElementById("ninBox").classList.toggle("hidden", type !== "by_nin");
+  document.getElementById("phoneBox").classList.toggle("hidden", type !== "by_phone");
+  document.getElementById("demoBox").classList.toggle("hidden", type !== "by_demo");
 
   const slipSelect = document.getElementById("verificationSlipType");
-  if (slipSelect) slipSelect.disabled = !(type === "by_nin" || type === "by_phone");
+  if (slipSelect) slipSelect.disabled = !(type === "by_nin" || type === "by_phone" || type === "by_demo");
   updatePriceDisplays();
-
 }
 
 
@@ -1430,13 +1455,13 @@ function syncSlipRadio(
 
 function getServiceCodeForSlip(slipType, verificationType = "by_nin"){
   const normalized = normalizeSlipType(slipType);
-  if (verificationType === "by_phone") {
-    if (normalized === "Standard Slip") return "nin_phone_standard";
-    if (normalized === "Long Slip") return "nin_phone_long";
-    if (normalized === "Regular Slip") return "nin_phone_regular";
-    if (normalized === "Premium Slip") return "nin_phone_premium";
-    return null;
-  }
+  const suffix = normalized === "Standard Slip" ? "standard"
+    : normalized === "Long Slip" ? "long"
+    : normalized === "Regular Slip" ? "regular"
+    : normalized === "Premium Slip" ? "premium" : null;
+  if (!suffix) return null;
+  if (verificationType === "by_phone") return "nin_phone_" + suffix;
+  if (verificationType === "by_demo") return "nin_demo_" + suffix;
   if (normalized === "Regular Slip" || normalized === "Standard Slip") return "nin_standard";
   if (normalized === "Long Slip") return "nin_lost";
   if (normalized === "Premium Slip") return "nin_premium";
@@ -1508,7 +1533,7 @@ async function verifyNIN(){
       getSelectedSlipType();
 
 
-    if(type === "by_nin" || type === "by_phone"){
+    if(type === "by_nin" || type === "by_phone" || type === "by_demo"){
 
       const serviceCode =
         getServiceCodeForSlip(
@@ -1578,24 +1603,24 @@ async function verifyNIN(){
 
 
     if(type === "by_phone"){
-
-      const phone =
-        document
-          .getElementById("phone")
-          .value
-          .trim();
-
-
-      if(!phone){
-
-        throw new Error(
-          "Please enter your phone number."
-        );
-
-      }
-
-
+      const phone = document.getElementById("phone").value.trim();
+      if(!phone) throw new Error("Please enter your phone number.");
       requestBody.phone = phone;
+      requestBody.slip_type = slipType;
+    }
+
+    if(type === "by_demo"){
+      const firstname = document.getElementById("demoFirstname").value.trim();
+      const surname = document.getElementById("demoSurname").value.trim();
+      const gender = document.getElementById("demoGender").value;
+      const birthdate = document.getElementById("demoBirthdate").value;
+      if(!firstname || !surname || !gender || !birthdate){
+        throw new Error("Please enter first name, surname, gender, and date of birth.");
+      }
+      requestBody.firstname = firstname;
+      requestBody.surname = surname;
+      requestBody.gender = gender;
+      requestBody.birthdate = birthdate;
       requestBody.slip_type = slipType;
     }
 
@@ -1647,23 +1672,23 @@ async function verifyNIN(){
     }
 
 
-    /* For phone lookup, charge the selected service after the provider
-       succeeds but before displaying the customer's verification result. */
-    if (type === "by_phone") {
-      const phoneServiceCode = getServiceCodeForSlip(slipType, "by_phone");
-      if (!phoneServiceCode || !isServiceAvailable(phoneServiceCode)) {
-        throw new Error("This phone verification service is unavailable.");
+    /* Charge phone and personal-details searches only after NINSLIP succeeds,
+       and before displaying the returned identity data. */
+    if (type === "by_phone" || type === "by_demo") {
+      const paidServiceCode = getServiceCodeForSlip(slipType, type);
+      if (!paidServiceCode || !isServiceAvailable(paidServiceCode)) {
+        throw new Error("This selected verification service is unavailable.");
       }
       const { data: paymentData, error: paymentError } = await supabaseClient.rpc(
-        "pay_nin_reprint", { p_service_code: phoneServiceCode }
+        "pay_nin_reprint", { p_service_code: paidServiceCode }
       );
       if (paymentError) throw paymentError;
       if (!paymentData || paymentData.success !== true) {
         throw new Error(paymentData?.message || "Wallet payment failed. No verification result was delivered.");
       }
       sessionStorage.setItem("gracioustech_nin_paid", "true");
-      sessionStorage.setItem("gracioustech_phone_service_code", phoneServiceCode);
-      showMessage("Payment successful: " + slipType + " — " + formatNaira(paymentData.amount) + ". Your phone verification result is now available.", "success");
+      sessionStorage.setItem("gracioustech_phone_service_code", paidServiceCode);
+      showMessage("Payment successful: " + slipType + " — " + formatNaira(paymentData.amount) + ". Your search result is now available.", "success");
     }
 
     verifiedNINData =
@@ -1785,7 +1810,7 @@ async function verifyNIN(){
     }
 
 
-    if(type !== "by_phone"){
+    if(type !== "by_phone" && type !== "by_demo"){
       sessionStorage.removeItem("gracioustech_nin_paid");
     }
 
@@ -1840,8 +1865,10 @@ async function verifyNIN(){
 
     showMessage(
       type === "by_nin"
-      ? "NIN verification successful. Your slip has also been generated."
-      : "Phone verification successful. Payment has been completed before displaying your result.",
+        ? "NIN verification successful. Your slip has also been generated."
+        : type === "by_phone"
+          ? "Phone verification successful. Payment has been completed before displaying your result."
+          : "Personal-details search successful. Payment has been completed before displaying your result.",
       "success"
     );
 
