@@ -2,9 +2,9 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>NIN Validation - Gracioustec</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#087f3d">
+  <title>NIN Validation - Gracioustec</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <style>
@@ -19,182 +19,149 @@
     }
 
     .container {
-      max-width: 520px;
-      margin: 0 auto;
+      max-width: 500px;
+      margin: 20px auto;
     }
 
     .header {
       background: #087f3d;
       color: white;
-      padding: 22px 18px;
-      border-radius: 14px;
       text-align: center;
+      padding: 22px;
+      border-radius: 14px;
     }
 
-    .header h1 {
-      margin: 0 0 8px;
-      font-size: 25px;
-    }
-
-    .header p {
-      margin: 0;
-      font-size: 14px;
-    }
+    .header h1 { margin: 0 0 8px; }
+    .header p { margin: 0; }
 
     .card {
       background: white;
+      padding: 22px;
       margin-top: 18px;
-      padding: 20px;
       border-radius: 14px;
-      box-shadow: 0 3px 12px rgba(0,0,0,.07);
+      box-shadow: 0 3px 12px #0000000d;
     }
 
     .balance {
       background: #e8f5ec;
-      padding: 14px;
-      border-radius: 10px;
       color: #087f3d;
+      padding: 14px;
+      border-radius: 8px;
       font-weight: bold;
-      margin-bottom: 20px;
+      margin-bottom: 18px;
     }
 
     label {
       display: block;
+      margin: 15px 0 8px;
       font-weight: bold;
-      margin: 16px 0 8px;
     }
 
-    input, select {
+    input[type="text"] {
       width: 100%;
-      padding: 13px;
+      padding: 14px;
       border: 1px solid #ccc;
       border-radius: 8px;
       font-size: 16px;
-      background: white;
-    }
-
-    .price-options {
-      display: grid;
-      gap: 12px;
-      margin-top: 12px;
-    }
-
-    .option {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      border: 2px solid #ddd;
-      border-radius: 10px;
-      padding: 15px;
-      cursor: pointer;
-    }
-
-    .option:has(input:checked) {
-      border-color: #087f3d;
-      background: #f0faf3;
-    }
-
-    .option input {
-      width: 20px;
-      height: 20px;
-      flex-shrink: 0;
-      accent-color: #087f3d;
-    }
-
-    .option-text {
-      flex: 1;
-      line-height: 1.5;
-    }
-
-    .option-title {
-      font-weight: bold;
-    }
-
-    .price {
-      font-size: 18px;
-      color: #087f3d;
-      font-weight: bold;
-      white-space: nowrap;
-    }
-
-    .summary {
-      margin-top: 18px;
-      padding: 16px;
-      background: #f4f6f5;
-      border-radius: 10px;
-    }
-
-    .summary-row {
-      display: flex;
-      justify-content: space-between;
-      gap: 12px;
-      margin: 8px 0;
-    }
-
-    .summary-total {
-      border-top: 1px solid #ddd;
-      padding-top: 12px;
-      font-size: 18px;
-      font-weight: bold;
     }
 
     button {
       width: 100%;
       padding: 14px;
+      margin-top: 15px;
       border: none;
-      border-radius: 9px;
+      border-radius: 8px;
       background: #087f3d;
       color: white;
       font-size: 16px;
       font-weight: bold;
       cursor: pointer;
-      margin-top: 16px;
     }
 
     button:disabled {
-      background: #999;
+      opacity: .6;
       cursor: not-allowed;
     }
 
-    .secondary {
-      background: #37474f;
-      margin-top: 10px;
+    .secondary { background: #37474f; }
+
+    .hidden { display: none !important; }
+
+    .option {
+      border: 1px solid #d5d5d5;
+      border-radius: 10px;
+      padding: 15px;
+      margin-top: 12px;
+      cursor: pointer;
+    }
+
+    .option:has(input:checked) {
+      border: 2px solid #087f3d;
+      background: #f0faf3;
+    }
+
+    .option-line {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .option input {
+      width: 19px;
+      height: 19px;
+      accent-color: #087f3d;
+    }
+
+    .option-name { flex: 1; }
+    .option-price {
+      font-size: 17px;
+      font-weight: bold;
+      color: #087f3d;
+      white-space: nowrap;
+    }
+
+    .description {
+      font-size: 13px;
+      color: #666;
+      margin: 8px 0 0 29px;
+      line-height: 1.5;
+      font-weight: normal;
     }
 
     .message {
       display: none;
+      margin-top: 15px;
       padding: 13px;
-      margin-top: 16px;
       border-radius: 8px;
+      white-space: pre-line;
       overflow-wrap: anywhere;
       line-height: 1.5;
     }
 
     .success {
       display: block;
-      color: #155724;
       background: #d4edda;
+      color: #155724;
     }
 
     .error {
       display: block;
-      color: #721c24;
       background: #f8d7da;
+      color: #721c24;
     }
 
     .note {
       font-size: 13px;
-      color: #666;
       line-height: 1.6;
-      margin-top: 14px;
+      color: #666;
     }
 
     .back {
       display: block;
       text-align: center;
       margin: 20px 0;
-      color: #087f3d;
       text-decoration: none;
+      color: #087f3d;
       font-weight: bold;
     }
   </style>
@@ -204,7 +171,7 @@
   <main class="container">
     <header class="header">
       <h1>GRACIOUSTEC</h1>
-      <p>NIN Validation Service</p>
+      <p>NIN Validation</p>
     </header>
 
     <section class="card">
@@ -213,76 +180,70 @@
       </div>
 
       <form id="validationForm">
-        <label for="nin">Enter 11-digit NIN</label>
+        <label for="nin">Enter your 11-digit NIN</label>
         <input
           id="nin"
-          name="nin"
           type="text"
           inputmode="numeric"
           maxlength="11"
-          pattern="[0-9]{11}"
-          placeholder="Enter your NIN"
+          placeholder="Enter NIN"
           required
         >
 
-        <label>Select Validation Type</label>
-
-        <div class="price-options">
-          <label class="option">
-            <input
-              type="radio"
-              name="validationType"
-              value="no_record"
-              checked
-            >
-            <span class="option-text">
-              <span class="option-title">No Record Found</span><br>
-              Check the No Record validation option.
-            </span>
-            <span class="price">₦1,200</span>
-          </label>
-
-          <label class="option">
-            <input
-              type="radio"
-              name="validationType"
-              value="update_record"
-            >
-            <span class="option-text">
-              <span class="option-title">Update Details</span><br>
-              Select this option for Update Record validation.
-            </span>
-            <span class="price">₦1,500</span>
-          </label>
-        </div>
-
-        <div class="summary">
-          <div class="summary-row">
-            <span>Service</span>
-            <strong id="selectedService">No Record Found</strong>
-          </div>
-          <div class="summary-row summary-total">
-            <span>Amount to Pay</span>
-            <span id="selectedPrice">₦1,200</span>
-          </div>
-        </div>
-
-        <button id="submitBtn" type="submit">
-          Pay ₦1,200 & Continue
+        <button type="button" id="showOptionsBtn">
+          Submit
         </button>
+
+        <div id="optionsSection" class="hidden">
+          <label>Select the service you want</label>
+
+          <label class="option">
+            <div class="option-line">
+              <input
+                type="radio"
+                name="validationType"
+                value="no_record"
+                checked
+              >
+              <span class="option-name">No Record Found</span>
+              <span class="option-price">₦1,200</span>
+            </div>
+            <p class="description">
+              Price for the No Record validation option.
+            </p>
+          </label>
+
+          <label class="option">
+            <div class="option-line">
+              <input
+                type="radio"
+                name="validationType"
+                value="update_record"
+              >
+              <span class="option-name">Update Details</span>
+              <span class="option-price">₦1,500</span>
+            </div>
+            <p class="description">
+              Price for the Update Record validation option.
+            </p>
+          </label>
+
+          <button type="submit" id="payBtn">
+            Continue to Payment
+          </button>
+        </div>
       </form>
 
-      <button id="statusBtn" class="secondary" type="button">
+      <button type="button" id="statusBtn" class="secondary">
         Check Validation Status
       </button>
 
       <div id="message" class="message" role="status"></div>
 
       <p class="note">
-        Please confirm your NIN and selected service before proceeding.
-        Payment is deducted from your Gracioustec wallet. If a provider
-        response is uncertain, check your request status before submitting
-        again.
+        Confirm your NIN and service selection before payment.
+        Payment is deducted from your wallet. If a request is still
+        processing, check its status before submitting another request.
       </p>
     </section>
 
@@ -296,7 +257,7 @@
     const SUPABASE_ANON_KEY =
       "sb_publishable_xELauxOMm7eMkNrPz55Mrw_LVkRoASn";
 
-    const supabaseClient = window.supabase.createClient(
+    const client = window.supabase.createClient(
       SUPABASE_URL,
       SUPABASE_ANON_KEY
     );
@@ -308,49 +269,37 @@
 
     const form = document.getElementById("validationForm");
     const ninInput = document.getElementById("nin");
-    const submitBtn = document.getElementById("submitBtn");
+    const optionsSection = document.getElementById("optionsSection");
+    const showOptionsBtn = document.getElementById("showOptionsBtn");
+    const payBtn = document.getElementById("payBtn");
     const statusBtn = document.getElementById("statusBtn");
     const walletBalance = document.getElementById("walletBalance");
-    const messageBox = document.getElementById("message");
+    const message = document.getElementById("message");
 
-    let currentBalance = 0;
+    let balance = 0;
 
-    function money(amount) {
+    function formatMoney(amount) {
       return "₦" + Number(amount).toLocaleString("en-NG");
     }
 
-    function selectedType() {
+    function showMessage(text, type) {
+      message.textContent = text;
+      message.className = "message " + type;
+    }
+
+    function clearMessage() {
+      message.textContent = "";
+      message.className = "message";
+    }
+
+    function getSelectedType() {
       return document.querySelector(
         'input[name="validationType"]:checked'
       ).value;
     }
 
-    function updatePrice() {
-      const type = selectedType();
-      const amount = PRICES[type];
-
-      document.getElementById("selectedService").textContent =
-        type === "no_record" ? "No Record Found" : "Update Details";
-
-      document.getElementById("selectedPrice").textContent =
-        money(amount);
-
-      submitBtn.textContent =
-        "Pay " + money(amount) + " & Continue";
-    }
-
-    function showMessage(text, type) {
-      messageBox.textContent = text;
-      messageBox.className = "message " + type;
-    }
-
-    function clearMessage() {
-      messageBox.textContent = "";
-      messageBox.className = "message";
-    }
-
-    async function requireLogin() {
-      const { data, error } = await supabaseClient.auth.getSession();
+    async function getSession() {
+      const { data, error } = await client.auth.getSession();
 
       if (error || !data.session) {
         window.location.href = "login.html";
@@ -361,10 +310,10 @@
     }
 
     async function loadWallet() {
-      const session = await requireLogin();
+      const session = await getSession();
       if (!session) return;
 
-      const { data, error } = await supabaseClient
+      const { data, error } = await client
         .from("wallets")
         .select("balance")
         .eq("user_id", session.user.id)
@@ -375,29 +324,42 @@
         return;
       }
 
-      currentBalance = Number(data.balance || 0);
-      walletBalance.textContent = money(currentBalance);
+      balance = Number(data.balance || 0);
+      walletBalance.textContent = formatMoney(balance);
     }
-
-    document.querySelectorAll(
-      'input[name="validationType"]'
-    ).forEach((radio) => {
-      radio.addEventListener("change", updatePrice);
-    });
 
     ninInput.addEventListener("input", () => {
       ninInput.value = ninInput.value.replace(/\D/g, "").slice(0, 11);
+    });
+
+    showOptionsBtn.addEventListener("click", async () => {
+      clearMessage();
+
+      const session = await getSession();
+      if (!session) return;
+
+      if (!/^\d{11}$/.test(ninInput.value.trim())) {
+        showMessage("Please enter a valid 11-digit NIN first.", "error");
+        return;
+      }
+
+      optionsSection.classList.remove("hidden");
+      showOptionsBtn.textContent = "Change NIN";
+      optionsSection.scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+      });
     });
 
     form.addEventListener("submit", async (event) => {
       event.preventDefault();
       clearMessage();
 
-      const session = await requireLogin();
+      const session = await getSession();
       if (!session) return;
 
       const nin = ninInput.value.trim();
-      const validationType = selectedType();
+      const validationType = getSelectedType();
       const amount = PRICES[validationType];
 
       if (!/^\d{11}$/.test(nin)) {
@@ -405,71 +367,65 @@
         return;
       }
 
-      if (currentBalance < amount) {
+      if (balance < amount) {
         showMessage(
           "Insufficient wallet balance. You need " +
-          money(amount) + " for this service.",
+          formatMoney(amount) + ".",
           "error"
         );
         return;
       }
 
       const confirmed = window.confirm(
-        "You selected " +
+        "Service: " +
         (validationType === "no_record"
           ? "No Record Found"
           : "Update Details") +
-        ".\nAmount: " + money(amount) +
-        "\n\nContinue with payment?"
+        "\nAmount: " + formatMoney(amount) +
+        "\n\nProceed with payment?"
       );
 
       if (!confirmed) return;
 
-      submitBtn.disabled = true;
+      payBtn.disabled = true;
       statusBtn.disabled = true;
-      submitBtn.textContent = "Processing...";
+      payBtn.textContent = "Processing...";
 
       try {
-        const { data, error } =
-          await supabaseClient.functions.invoke(
-            "nin-validation",
-            {
-              body: {
-                action: "submit",
-                nin: nin,
-                validation_type: validationType
-              }
+        const { data, error } = await client.functions.invoke(
+          "nin-validation",
+          {
+            body: {
+              action: "submit",
+              nin,
+              validation_type: validationType
             }
-          );
+          }
+        );
 
         if (error) {
-          throw new Error(
-            data?.message ||
-            error.message ||
-            "Request failed. Please check your connection."
-          );
+          throw new Error(error.message || "Request failed.");
         }
 
         if (!data || data.success !== true) {
           showMessage(
             (data?.message || "Validation request failed.") +
             (data?.payment_reference
-              ? " Reference: " + data.payment_reference
+              ? "\nReference: " + data.payment_reference
               : ""),
             "error"
           );
-
           await loadWallet();
           return;
         }
 
         showMessage(
-          (data.message || "Validation request submitted.") +
+          (data.message || "Request submitted successfully.") +
           "\nAmount charged: " +
-          money(data.amount_charged ?? amount) +
-          (data.status ? "\nStatus: " + data.status : "") +
+          formatMoney(data.amount_charged ?? amount) +
+          "\nStatus: " + (data.status || "Processing") +
           (data.payment_reference
-            ? "\nPayment reference: " + data.payment_reference
+            ? "\nReference: " + data.payment_reference
             : ""),
           "success"
         );
@@ -478,28 +434,28 @@
       } catch (error) {
         showMessage(
           error.message ||
-          "Something went wrong. Check the request status before trying again.",
+          "Request failed. Check the status before trying again.",
           "error"
         );
         await loadWallet();
       } finally {
-        submitBtn.disabled = false;
+        payBtn.disabled = false;
         statusBtn.disabled = false;
-        updatePrice();
+        payBtn.textContent = "Continue to Payment";
       }
     });
 
     statusBtn.addEventListener("click", async () => {
       clearMessage();
 
-      const session = await requireLogin();
+      const session = await getSession();
       if (!session) return;
 
       const nin = ninInput.value.trim();
 
       if (!/^\d{11}$/.test(nin)) {
         showMessage(
-          "Enter the same 11-digit NIN used for your request.",
+          "Enter the 11-digit NIN used for your request.",
           "error"
         );
         return;
@@ -509,57 +465,49 @@
       statusBtn.textContent = "Checking...";
 
       try {
-        const { data, error } =
-          await supabaseClient.functions.invoke(
-            "nin-validation",
-            {
-              body: {
-                action: "status",
-                nin: nin
-              }
+        const { data, error } = await client.functions.invoke(
+          "nin-validation",
+          {
+            body: {
+              action: "status",
+              nin
             }
-          );
+          }
+        );
 
         if (error) {
-          throw new Error(
-            data?.message || error.message ||
-            "Unable to check status."
-          );
+          throw new Error(error.message || "Status check failed.");
         }
 
         if (!data || data.success !== true) {
           showMessage(
-            data?.message || "Could not retrieve request status.",
+            data?.message || "Unable to retrieve status.",
             "error"
           );
           return;
         }
 
         const request = data.request || {};
+
         showMessage(
           (data.message || "Status retrieved.") +
           "\nRequest status: " +
           (request.request_status || "Unknown") +
           "\nValidation status: " +
           (request.validation_status || "Unknown") +
-          "\nAmount: " +
-          money(request.amount || 0),
+          "\nAmount: " + formatMoney(request.amount || 0),
           "success"
         );
 
         await loadWallet();
       } catch (error) {
-        showMessage(
-          error.message || "Unable to check status.",
-          "error"
-        );
+        showMessage(error.message || "Status check failed.", "error");
       } finally {
         statusBtn.disabled = false;
         statusBtn.textContent = "Check Validation Status";
       }
     });
 
-    updatePrice();
     loadWallet();
   </script>
 </body>
