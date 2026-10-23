@@ -1,9 +1,8 @@
 <!DOCTYPE html><html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0"><link rel="canonical" href="https://gracioustec.com.ng/nin.html"><title>NIN Slip Reprinting | Gracioustec</title>
-<meta name="description" content="Access Gracioustec NIN slip reprinting services after signing in to your account.">
-<meta name="theme-color" content="#087f3d"><link rel="manifest" href="./manifest.json">
+<meta name="viewport" content="width=device-width, initial-scale=1.0"><title>GRACIOUSTEC - NIN Reprint</title><meta name="theme-color" content="#087f3d">
+<meta name="description" content="Gracioustec NIN and BVN reprinting and verification services."><link rel="manifest" href="./manifest.json">
 <link rel="icon" type="image/png" sizes="192x192" href="./icons/icon-192.png">
 <link rel="icon" type="image/png" sizes="512x512" href="./icons/icon-512.png">
 <link rel="apple-touch-icon" href="./icons/icon-192.png"><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><style>
@@ -316,18 +315,16 @@ button:disabled{
   <div class="auth-box">
     <h2>Checking Account...</h2>
     <p>
-      Please wait while we check your Gracioustec account.
+      Please wait while we check your GRACIOUSTEC account.
     </p>
   </div>
 </div><div class="header">
-  <h2>Gracioustec</h2>
+  <h2>GRACIOUSTEC</h2>
   <p>NIN Reprint Service</p>
 </div><div class="container">  <!-- VERIFICATION CARD -->  <div class="card"><h3>NIN Verification</h3>
 
 <div class="notice">
-  For NIN slip reprinting, select your slip type before verification.
-  The slip PDF will be generated together with the verification result
-  using one NINSLIP request.
+  Select your slip type before verification. For phone verification, the selected fee is charged from your wallet after NINSLIP successfully returns the verification result and before your details are displayed. Phone verification returns details and photo, not a PDF slip.
 </div>
 
 <label for="verificationType">
@@ -343,9 +340,6 @@ button:disabled{
     Verify by Phone
   </option>
 
-  <option value="by_demo">
-    Verify by Personal Details
-  </option>
 </select>
 
 <label for="verificationSlipType">
@@ -371,13 +365,13 @@ button:disabled{
 </select>
 
 <div class="small">
-  Prices are controlled by Gracioustec Admin and updated from the
+  Prices are controlled by GRACIOUSTEC Admin and updated from the
   service pricing database.
 </div>
 
 <div id="priceErrorBox" class="price-error hidden">
   Unable to load service prices.
-  Please refresh the page or contact Gracioustec support.
+  Please refresh the page or contact GRACIOUSTEC support.
 </div>
 
 <!-- NIN -->
@@ -409,58 +403,6 @@ button:disabled{
     type="text"
     inputmode="numeric"
     placeholder="Enter phone number"
-  >
-
-</div>
-
-<!-- DEMO -->
-<div id="demoBox" class="hidden">
-
-  <label for="firstname">
-    First Name
-  </label>
-
-  <input
-    id="firstname"
-    type="text"
-    placeholder="First name"
-  >
-
-  <label for="surname">
-    Surname
-  </label>
-
-  <input
-    id="surname"
-    type="text"
-    placeholder="Surname"
-  >
-
-  <label for="gender">
-    Gender
-  </label>
-
-  <select id="gender">
-    <option value="">
-      Select gender
-    </option>
-
-    <option value="M">
-      Male
-    </option>
-
-    <option value="F">
-      Female
-    </option>
-  </select>
-
-  <label for="birthdate">
-    Date of Birth
-  </label>
-
-  <input
-    id="birthdate"
-    type="date"
   >
 
 </div>
@@ -648,7 +590,7 @@ button:disabled{
 ></div>
 
 <div class="small">
-  The actual payment amount is controlled by Gracioustec Admin.
+  The actual payment amount is controlled by GRACIOUSTEC Admin.
   The same database price is used when your wallet is debited.
 </div>
 
@@ -795,10 +737,11 @@ let servicePrices = {
     active: false
   },
 
-  nin_premium: {
-    price: null,
-    active: false
-  }
+  nin_premium: { price: null, active: false },
+  nin_phone_standard: { price: null, active: false },
+  nin_phone_long: { price: null, active: false },
+  nin_phone_regular: { price: null, active: false },
+  nin_phone_premium: { price: null, active: false }
 
 };
 
@@ -976,7 +919,11 @@ async function loadServicePrices(){
         [
           "nin_standard",
           "nin_lost",
-          "nin_premium"
+          "nin_premium",
+          "nin_phone_standard",
+          "nin_phone_long",
+          "nin_phone_regular",
+          "nin_phone_premium"
         ]
       );
 
@@ -1017,10 +964,11 @@ async function loadServicePrices(){
         active: false
       },
 
-      nin_premium: {
-        price: null,
-        active: false
-      }
+      nin_premium: { price: null, active: false },
+      nin_phone_standard: { price: null, active: false },
+      nin_phone_long: { price: null, active: false },
+      nin_phone_regular: { price: null, active: false },
+      nin_phone_premium: { price: null, active: false }
 
     };
 
@@ -1125,334 +1073,60 @@ async function loadServicePrices(){
 ========================================================= */
 
 function updatePriceDisplays(){
-
-  const standard =
-    servicePrices.nin_standard;
-
-  const lost =
-    servicePrices.nin_lost;
-
-  const premium =
-    servicePrices.nin_premium;
-
-
-  /* -----------------------------------------
-     VERIFICATION SELECT
-  ----------------------------------------- */
-
-  const verificationSelect =
-    document.getElementById(
-      "verificationSlipType"
-    );
-
-  if(verificationSelect){
-
-    const regularOption =
-      verificationSelect.querySelector(
-        'option[value="Regular Slip"]'
-      );
-
-    const standardOption =
-      verificationSelect.querySelector(
-        'option[value="Standard Slip"]'
-      );
-
-    const longOption =
-      verificationSelect.querySelector(
-        'option[value="Long Slip"]'
-      );
-
-    const premiumOption =
-      verificationSelect.querySelector(
-        'option[value="Premium Slip"]'
-      );
-
-
-    if(regularOption){
-
-      regularOption.textContent =
-        "Regular Slip — " +
-        (
-          standard.active &&
-          standard.price !== null
-          ?
-          formatNaira(
-            standard.price
-          )
-          :
-          "Unavailable"
-        );
-
-      regularOption.disabled =
-        !(
-          standard.active &&
-          standard.price !== null
-        );
-
+  const method = document.getElementById("verificationType")?.value || "by_nin";
+  const phoneMethod = method === "by_phone";
+  const codes = phoneMethod ? {
+    regular: "nin_phone_regular",
+    standard: "nin_phone_standard",
+    long: "nin_phone_long",
+    premium: "nin_phone_premium"
+  } : {
+    regular: "nin_standard",
+    standard: "nin_standard",
+    long: "nin_lost",
+    premium: "nin_premium"
+  };
+  const select = document.getElementById("verificationSlipType");
+  const options = [
+    ["Regular Slip", codes.regular, "Regular Slip"],
+    ["Standard Slip", codes.standard, "Standard Slip"],
+    ["Long Slip", codes.long, "Long / Lost Slip"],
+    ["Premium Slip", codes.premium, "Premium / Foreigner Slip"]
+  ];
+  if (select) {
+    select.disabled = !(method === "by_nin" || method === "by_phone");
+    for (const [value, code, label] of options) {
+      const option = select.querySelector('option[value="' + value + '"]');
+      if (!option) continue;
+      const service = servicePrices[code];
+      const available = !!service && service.active && service.price !== null;
+      option.textContent = label + " — " + (available ? formatNaira(service.price) : "Unavailable");
+      option.disabled = !available;
     }
-
-
-    if(standardOption){
-
-      standardOption.textContent =
-        "Standard Slip — " +
-        (
-          standard.active &&
-          standard.price !== null
-          ?
-          formatNaira(
-            standard.price
-          )
-          :
-          "Unavailable"
-        );
-
-      standardOption.disabled =
-        !(
-          standard.active &&
-          standard.price !== null
-        );
-
+  }
+  const radioCodes = {
+    "Regular Slip": codes.regular,
+    "Standard Slip": codes.standard,
+    "Long Slip": codes.long,
+    "Premium Slip": codes.premium
+  };
+  for (const [slipType, code] of Object.entries(radioCodes)) {
+    const radio = document.querySelector('input[name="slip"][data-slip-type="' + slipType + '"]');
+    const service = servicePrices[code];
+    if (radio) {
+      radio.value = service && service.price !== null ? service.price : "";
+      radio.disabled = !(service && service.active && service.price !== null);
     }
-
-
-    if(longOption){
-
-      longOption.textContent =
-        "Long / Lost Slip — " +
-        (
-          lost.active &&
-          lost.price !== null
-          ?
-          formatNaira(
-            lost.price
-          )
-          :
-          "Unavailable"
-        );
-
-      longOption.disabled =
-        !(
-          lost.active &&
-          lost.price !== null
-        );
-
-    }
-
-
-    if(premiumOption){
-
-      premiumOption.textContent =
-        "Premium / Foreigner Slip — " +
-        (
-          premium.active &&
-          premium.price !== null
-          ?
-          formatNaira(
-            premium.price
-          )
-          :
-          "Unavailable"
-        );
-
-      premiumOption.disabled =
-        !(
-          premium.active &&
-          premium.price !== null
-        );
-
-    }
-
+    const id = {
+      "Regular Slip": "regularPriceLabel",
+      "Standard Slip": "standardPriceLabel",
+      "Long Slip": "longPriceLabel",
+      "Premium Slip": "premiumPriceLabel"
+    }[slipType];
+    const label = document.getElementById(id);
+    if (label) label.textContent = ({"Regular Slip":"Regular Slip", "Standard Slip":"Standard Slip", "Long Slip":"Long / Lost Slip", "Premium Slip":"Premium / Foreigner Slip"})[slipType] + " — " + (service && service.active && service.price !== null ? formatNaira(service.price) : "Unavailable");
   }
-
-
-  /* -----------------------------------------
-     RADIO BUTTONS
-  ----------------------------------------- */
-
-  const regularRadio =
-    document.querySelector(
-      'input[name="slip"][data-slip-type="Regular Slip"]'
-    );
-
-  const standardRadio =
-    document.querySelector(
-      'input[name="slip"][data-slip-type="Standard Slip"]'
-    );
-
-  const longRadio =
-    document.querySelector(
-      'input[name="slip"][data-slip-type="Long Slip"]'
-    );
-
-  const premiumRadio =
-    document.querySelector(
-      'input[name="slip"][data-slip-type="Premium Slip"]'
-    );
-
-
-  if(regularRadio){
-
-    regularRadio.value =
-      standard.price !== null
-      ? standard.price
-      : "";
-
-    regularRadio.disabled =
-      !(
-        standard.active &&
-        standard.price !== null
-      );
-
-  }
-
-
-  if(standardRadio){
-
-    standardRadio.value =
-      standard.price !== null
-      ? standard.price
-      : "";
-
-    standardRadio.disabled =
-      !(
-        standard.active &&
-        standard.price !== null
-      );
-
-  }
-
-
-  if(longRadio){
-
-    longRadio.value =
-      lost.price !== null
-      ? lost.price
-      : "";
-
-    longRadio.disabled =
-      !(
-        lost.active &&
-        lost.price !== null
-      );
-
-  }
-
-
-  if(premiumRadio){
-
-    premiumRadio.value =
-      premium.price !== null
-      ? premium.price
-      : "";
-
-    premiumRadio.disabled =
-      !(
-        premium.active &&
-        premium.price !== null
-      );
-
-  }
-
-
-  /* -----------------------------------------
-     PRICE LABELS
-  ----------------------------------------- */
-
-  const regularLabel =
-    document.getElementById(
-      "regularPriceLabel"
-    );
-
-  const standardLabel =
-    document.getElementById(
-      "standardPriceLabel"
-    );
-
-  const longLabel =
-    document.getElementById(
-      "longPriceLabel"
-    );
-
-  const premiumLabel =
-    document.getElementById(
-      "premiumPriceLabel"
-    );
-
-
-  if(regularLabel){
-
-    regularLabel.textContent =
-      "Regular Slip — " +
-      (
-        standard.active &&
-        standard.price !== null
-        ?
-        formatNaira(
-          standard.price
-        )
-        :
-        "Unavailable"
-      );
-
-  }
-
-
-  if(standardLabel){
-
-    standardLabel.textContent =
-      "Standard Slip — " +
-      (
-        standard.active &&
-        standard.price !== null
-        ?
-        formatNaira(
-          standard.price
-        )
-        :
-        "Unavailable"
-      );
-
-  }
-
-
-  if(longLabel){
-
-    longLabel.textContent =
-      "Long / Lost Slip — " +
-      (
-        lost.active &&
-        lost.price !== null
-        ?
-        formatNaira(
-          lost.price
-        )
-        :
-        "Unavailable"
-      );
-
-  }
-
-
-  if(premiumLabel){
-
-    premiumLabel.textContent =
-      "Premium / Foreigner Slip — " +
-      (
-        premium.active &&
-        premium.price !== null
-        ?
-        formatNaira(
-          premium.price
-        )
-        :
-        "Unavailable"
-      );
-
-  }
-
 }
-
 
 /* =========================================================
    SERVICE AVAILABILITY
@@ -1545,26 +1219,9 @@ function changeMethod(){
     );
 
 
-  document
-    .getElementById("demoBox")
-    .classList.toggle(
-      "hidden",
-      type !== "by_demo"
-    );
-
-
-  const slipSelect =
-    document.getElementById(
-      "verificationSlipType"
-    );
-
-
-  if(slipSelect){
-
-    slipSelect.disabled =
-      type !== "by_nin";
-
-  }
+  const slipSelect = document.getElementById("verificationSlipType");
+  if (slipSelect) slipSelect.disabled = !(type === "by_nin" || type === "by_phone");
+  updatePriceDisplays();
 
 }
 
@@ -1771,48 +1428,20 @@ function syncSlipRadio(
    SERVICE CODE FOR SLIP
 ========================================================= */
 
-function getServiceCodeForSlip(
-  slipType
-){
-
-  const normalized =
-    normalizeSlipType(
-      slipType
-    );
-
-
-  if(
-    normalized === "Regular Slip" ||
-    normalized === "Standard Slip"
-  ){
-
-    return "nin_standard";
-
+function getServiceCodeForSlip(slipType, verificationType = "by_nin"){
+  const normalized = normalizeSlipType(slipType);
+  if (verificationType === "by_phone") {
+    if (normalized === "Standard Slip") return "nin_phone_standard";
+    if (normalized === "Long Slip") return "nin_phone_long";
+    if (normalized === "Regular Slip") return "nin_phone_regular";
+    if (normalized === "Premium Slip") return "nin_phone_premium";
+    return null;
   }
-
-
-  if(
-    normalized === "Long Slip"
-  ){
-
-    return "nin_lost";
-
-  }
-
-
-  if(
-    normalized === "Premium Slip"
-  ){
-
-    return "nin_premium";
-
-  }
-
-
+  if (normalized === "Regular Slip" || normalized === "Standard Slip") return "nin_standard";
+  if (normalized === "Long Slip") return "nin_lost";
+  if (normalized === "Premium Slip") return "nin_premium";
   return null;
-
 }
-
 
 /* =========================================================
    VERIFY NIN
@@ -1879,11 +1508,11 @@ async function verifyNIN(){
       getSelectedSlipType();
 
 
-    if(type === "by_nin"){
+    if(type === "by_nin" || type === "by_phone"){
 
       const serviceCode =
         getServiceCodeForSlip(
-          slipType
+          slipType, type
         );
 
 
@@ -1903,7 +1532,7 @@ async function verifyNIN(){
       ){
 
         throw new Error(
-          "This NIN slip service is currently unavailable."
+          "This selected NIN service is currently unavailable."
         );
 
       }
@@ -1966,66 +1595,8 @@ async function verifyNIN(){
       }
 
 
-      requestBody.phone =
-        phone;
-
-    }
-
-
-    if(type === "by_demo"){
-
-      const firstname =
-        document
-          .getElementById("firstname")
-          .value
-          .trim();
-
-
-      const surname =
-        document
-          .getElementById("surname")
-          .value
-          .trim();
-
-
-      const gender =
-        document
-          .getElementById("gender")
-          .value;
-
-
-      const birthdate =
-        document
-          .getElementById("birthdate")
-          .value;
-
-
-      if(
-        !firstname ||
-        !surname ||
-        !gender ||
-        !birthdate
-      ){
-
-        throw new Error(
-          "Please complete all personal details."
-        );
-
-      }
-
-
-      requestBody.firstname =
-        firstname;
-
-      requestBody.surname =
-        surname;
-
-      requestBody.gender =
-        gender;
-
-      requestBody.birthdate =
-        birthdate;
-
+      requestBody.phone = phone;
+      requestBody.slip_type = slipType;
     }
 
 
@@ -2075,6 +1646,25 @@ async function verifyNIN(){
 
     }
 
+
+    /* For phone lookup, charge the selected service after the provider
+       succeeds but before displaying the customer's verification result. */
+    if (type === "by_phone") {
+      const phoneServiceCode = getServiceCodeForSlip(slipType, "by_phone");
+      if (!phoneServiceCode || !isServiceAvailable(phoneServiceCode)) {
+        throw new Error("This phone verification service is unavailable.");
+      }
+      const { data: paymentData, error: paymentError } = await supabaseClient.rpc(
+        "pay_nin_reprint", { p_service_code: phoneServiceCode }
+      );
+      if (paymentError) throw paymentError;
+      if (!paymentData || paymentData.success !== true) {
+        throw new Error(paymentData?.message || "Wallet payment failed. No verification result was delivered.");
+      }
+      sessionStorage.setItem("gracioustech_nin_paid", "true");
+      sessionStorage.setItem("gracioustech_phone_service_code", phoneServiceCode);
+      showMessage("Payment successful: " + slipType + " — " + formatNaira(paymentData.amount) + ". Your phone verification result is now available.", "success");
+    }
 
     verifiedNINData =
       result.data ||
@@ -2195,9 +1785,9 @@ async function verifyNIN(){
     }
 
 
-    sessionStorage.removeItem(
-      "gracioustech_nin_paid"
-    );
+    if(type !== "by_phone"){
+      sessionStorage.removeItem("gracioustech_nin_paid");
+    }
 
 
     displayNINData(
@@ -2250,10 +1840,8 @@ async function verifyNIN(){
 
     showMessage(
       type === "by_nin"
-      ?
-      "NIN verification successful. Your slip has also been generated."
-      :
-      "NIN verification successful.",
+      ? "NIN verification successful. Your slip has also been generated."
+      : "Phone verification successful. Payment has been completed before displaying your result.",
       "success"
     );
 
@@ -3246,4 +2834,3 @@ window.addEventListener(
 
 </script></body>
 </html>
-
