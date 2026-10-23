@@ -464,14 +464,13 @@
       <p id="userEmail">Loading account...</p>
     </div>
 
-    <!-- REFERRAL LINK -->
+    <!-- REFERRAL LINK: REWARD AMOUNT HIDDEN -->
     <div class="account-card" id="referralCard">
-      <h3>Invite Friends &amp; Earn ₦5</h3>
+      <h3>Invite Friends</h3>
 
       <p class="referral-description">
-        Share your personal referral link. When someone successfully
-        registers using your link, you earn ₦5 in your Gracioustec wallet.
-        The new customer does not receive a signup bonus.
+        Invite friends to join Gracioustec using your personal referral link.
+        Share your link with friends and family to introduce them to our services.
       </p>
 
       <label for="referralLink" class="referral-label">Your referral link</label>
@@ -490,7 +489,7 @@
       </button>
 
       <p id="referralMessage" role="status" aria-live="polite">
-        Retrieving your referral code...
+        Retrieving your referral link...
       </p>
     </div>
 
@@ -759,8 +758,9 @@
         button.textContent = "Copy Referral Link";
         button.style.background = "#063b2b";
 
+        /* REWARD AMOUNT HIDDEN FROM THE DASHBOARD */
         message.textContent =
-          "Share this link to earn ₦5 for each successful referral.";
+          "Your referral link is ready. Share it with friends and family.";
         message.style.color = "#087443";
 
       } catch (error) {
