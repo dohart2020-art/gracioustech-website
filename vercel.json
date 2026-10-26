@@ -1,0 +1,16 @@
+
+{
+  "redirects": [
+    {
+      "source": "/nin-verification.html",
+      "destination": "/nin-verification",
+      "permanent": true
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/nin-verification",
+      "destination": "/nin-verification.html"
+    }
+  ]
+}
