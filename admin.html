@@ -1265,6 +1265,215 @@ async function logout() {
   window.location.href = "login.html";
 }
 
+
+// DAILY EMAIL MANAGER
+(function () {
+  const walletSection = [...document.querySelectorAll(".section")]
+    .find(section =>
+      section.querySelector("h2")?.textContent.trim() === "Wallet Transactions"
+    );
+
+  if (!walletSection) return;
+
+  const section = document.createElement("div");
+  section.className = "section";
+
+  section.innerHTML = `
+    <h2>Daily Email Manager</h2>
+    <p class="small">
+      Edit your daily greeting, marketing message and image.
+      Promotional email sending is currently OFF.
+    </p>
+
+    <p id="dailyEmailStatus"><strong>Status: OFF</strong></p>
+
+    <label>Email Subject</label>
+    <input id="dailyEmailSubject" type="text"
+      placeholder="Enter email subject">
+
+    <br><br>
+
+    <label>Daily Email Message</label>
+    <textarea id="dailyEmailMessage"
+      placeholder="Write your daily greeting and announcement"></textarea>
+
+    <br><br>
+
+    <label>Daily Marketing Image</label>
+    <input id="dailyEmailImage" type="file"
+      accept="image/jpeg,image/png,image/webp,image/gif">
+
+    <br><br>
+
+    <button class="save" id="uploadDailyEmailButton">
+      Upload Image
+    </button>
+
+    <p id="dailyEmailImageStatus" class="small"></p>
+
+    <button class="save" id="saveDailyEmailButton">
+      Save Daily Email
+    </button>
+
+    <p class="small">
+      Saving content does not activate or send promotional emails.
+    </p>
+  `;
+
+  walletSection.parentNode.insertBefore(section, walletSection);
+
+  const DAILY_EMAIL_URL =
+    SUPABASE_URL + "/functions/v1/daily-email-admin";
+
+  async function dailyEmailRequest(action, extra = {}) {
+    const { data, error } = await supabaseClient.auth.getSession();
+
+    if (error || !data.session) {
+      throw new Error("Your login session has expired. Please log in again.");
+    }
+
+    const response = await fetch(DAILY_EMAIL_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + data.session.access_token
+      },
+      body: JSON.stringify({ action, ...extra })
+    });
+
+    const result = await response.json();
+
+    if (!response.ok || !result.success) {
+      throw new Error(result.message || "Daily email request failed.");
+    }
+
+    return result;
+  }
+
+  async function loadDailyEmailSettings() {
+    try {
+      const result = await dailyEmailRequest("get_settings");
+      const settings = result.settings || {};
+
+      document.getElementById("dailyEmailSubject").value =
+        settings.subject || "";
+
+      document.getElementById("dailyEmailMessage").value =
+        settings.message || "";
+
+      document.getElementById("dailyEmailStatus").textContent =
+        "Status: " + (settings.is_enabled ? "ON" : "OFF") +
+        " — promotional sending remains protected.";
+
+      if (settings.image_url) {
+        document.getElementById("dailyEmailImageStatus").textContent =
+          "Current image is uploaded.";
+      }
+    } catch (error) {
+      document.getElementById("dailyEmailStatus").textContent =
+        "Unable to load email settings: " + error.message;
+    }
+  }
+
+  async function saveDailyEmailSettings() {
+    const subject =
+      document.getElementById("dailyEmailSubject").value.trim();
+
+    const message =
+      document.getElementById("dailyEmailMessage").value.trim();
+
+    if (!subject || !message) {
+      alert("Enter both the email subject and message.");
+      return;
+    }
+
+    const button = document.getElementById("saveDailyEmailButton");
+    button.disabled = true;
+    button.textContent = "Saving...";
+
+    try {
+      const result = await dailyEmailRequest("save_settings", {
+        subject,
+        message
+      });
+
+      alert(result.message);
+      await loadDailyEmailSettings();
+    } catch (error) {
+      alert(error.message);
+    } finally {
+      button.disabled = false;
+      button.textContent = "Save Daily Email";
+    }
+  }
+
+  async function uploadDailyEmailImage() {
+    const input = document.getElementById("dailyEmailImage");
+    const file = input.files[0];
+
+    if (!file) {
+      alert("Please select an image first.");
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      alert("Image must not exceed 5MB.");
+      return;
+    }
+
+    const button = document.getElementById("uploadDailyEmailButton");
+    const status = document.getElementById("dailyEmailImageStatus");
+
+    button.disabled = true;
+    button.textContent = "Uploading...";
+    status.textContent = "Please wait...";
+
+    try {
+      const { data, error } = await supabaseClient.auth.getSession();
+
+      if (error || !data.session) {
+        throw new Error("Please log in again.");
+      }
+
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const response = await fetch(DAILY_EMAIL_URL, {
+        method: "POST",
+        headers: {
+          "Authorization": "Bearer " + data.session.access_token
+        },
+        body: formData
+      });
+
+      const result = await response.json();
+
+      if (!response.ok || !result.success) {
+        throw new Error(result.message || "Image upload failed.");
+      }
+
+      status.textContent = "Image uploaded successfully.";
+      input.value = "";
+      alert(result.message);
+    } catch (error) {
+      status.textContent = error.message;
+      alert(error.message);
+    } finally {
+      button.disabled = false;
+      button.textContent = "Upload Image";
+    }
+  }
+
+  document.getElementById("saveDailyEmailButton")
+    .addEventListener("click", saveDailyEmailSettings);
+
+  document.getElementById("uploadDailyEmailButton")
+    .addEventListener("click", uploadDailyEmailImage);
+
+  loadDailyEmailSettings();
+})();
+
 loadDashboard();
+
 </script></body>
 </html>
