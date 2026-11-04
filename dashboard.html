@@ -464,7 +464,7 @@
       <p id="userEmail">Loading account...</p>
     </div>
 
-    <!-- REFERRAL LINK: REWARD AMOUNT HIDDEN -->
+    <!-- REFERRAL LINK -->
     <div class="account-card" id="referralCard">
       <h3>Invite Friends</h3>
 
@@ -603,18 +603,20 @@
     </div>
 
     <!-- IPE CLEARANCE -->
-<h2 class="section-title">IPE Clearance</h2>
+    <h2 class="section-title">IPE Clearance</h2>
 
-<div class="services">
-  <div class="service-card" id="ipeClearanceCard">
-    <h3>IPE Clearance</h3>
-    <p>Submit your IPE Clearance tracking ID and check your clearance request status.</p>
-    <div class="price" id="ipeClearancePrice">Loading price...</div>
-    <a href="ipe-clearance.html" class="service-btn" id="ipeClearanceBtn">
-      Open IPE Clearance
-    </a>
-  </div>
-</div>
+    <div class="services">
+      <div class="service-card" id="ipeClearanceCard">
+        <h3>IPE Clearance</h3>
+        <p>
+          Submit your IPE Clearance tracking ID and check your clearance request status.
+        </p>
+        <div class="price" id="ipeClearancePrice">Loading price...</div>
+        <a href="ipe-clearance.html" class="service-btn" id="ipeClearanceBtn">
+          Open IPE Clearance
+        </a>
+      </div>
+    </div>
 
     <!-- QUICK LINKS -->
     <h2 class="section-title">Quick Links</h2>
@@ -772,7 +774,6 @@
         button.textContent = "Copy Referral Link";
         button.style.background = "#063b2b";
 
-        /* REWARD AMOUNT HIDDEN FROM THE DASHBOARD */
         message.textContent =
           "Your referral link is ready. Share it with friends and family.";
         message.style.color = "#087443";
@@ -945,7 +946,7 @@
       details.style.display = "block";
     }
 
-    /* SERVICE PRICES — INCLUDING NIN VALIDATION */
+    /* SERVICE PRICES — INCLUDING IPE CLEARANCE */
     async function loadServicePrices() {
       const { data, error } = await supabaseClient
         .from("service_settings")
@@ -954,10 +955,14 @@
       if (error) {
         console.error("Service price error:", error);
 
-        const validationPrice = document.getElementById("ninValidationPrice");
-        if (validationPrice) {
-          validationPrice.textContent = "Unable to load price";
-        }
+        ["ninValidationPrice", "ipeClearancePrice"].forEach(function(id) {
+          const element = document.getElementById(id);
+
+          if (element) {
+            element.textContent = "Unable to load price";
+          }
+        });
+
         return;
       }
 
@@ -1009,13 +1014,13 @@
       );
 
       updateServiceCard(
-  "ipeClearanceCard",
-  "ipeClearancePrice",
-  "ipeClearanceBtn",
-  services.find(item => item.service_code === "ipe_clearance"),
-  "ipe-clearance.html",
-  "Open IPE Clearance"
-);
+        "ipeClearanceCard",
+        "ipeClearancePrice",
+        "ipeClearanceBtn",
+        services.find(item => item.service_code === "ipe_clearance"),
+        "ipe-clearance.html",
+        "Open IPE Clearance"
+      );
     }
 
     /* UPDATE SERVICE CARD */
