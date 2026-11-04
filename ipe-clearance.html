@@ -1,0 +1,568 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IPE Clearance - Gracioustec</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f7f5;
+      color: #222;
+      padding: 18px;
+    }
+
+    .container {
+      max-width: 520px;
+      margin: 25px auto;
+      background: white;
+      padding: 24px;
+      border-radius: 12px;
+      box-shadow: 0 3px 15px rgba(0,0,0,0.08);
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 22px;
+    }
+
+    .header h1 {
+      color: #087f3d;
+      font-size: 25px;
+      margin-bottom: 8px;
+    }
+
+    .header p {
+      color: #666;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .wallet {
+      background: #e9f7ee;
+      border: 1px solid #b9e5c8;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+
+    .wallet p {
+      color: #386548;
+      font-size: 14px;
+      margin-bottom: 5px;
+    }
+
+    .wallet strong {
+      color: #087f3d;
+      font-size: 23px;
+    }
+
+    .price {
+      background: #f5f5f5;
+      padding: 13px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .price span {
+      color: #666;
+      font-size: 13px;
+    }
+
+    .price strong {
+      display: block;
+      color: #087f3d;
+      font-size: 23px;
+      margin-top: 5px;
+    }
+
+    label {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 8px;
+      font-size: 14px;
+    }
+
+    input {
+      width: 100%;
+      padding: 14px;
+      border: 1px solid #ccc;
+      border-radius: 7px;
+      font-size: 16px;
+      margin-bottom: 15px;
+      outline: none;
+    }
+
+    input:focus {
+      border-color: #087f3d;
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 7px;
+      font-size: 15px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-bottom: 12px;
+    }
+
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .submit-btn {
+      background: #087f3d;
+      color: white;
+    }
+
+    .status-btn {
+      background: #e7f1eb;
+      color: #087f3d;
+      border: 1px solid #087f3d;
+    }
+
+    .back-btn {
+      display: block;
+      text-align: center;
+      padding: 13px;
+      background: #eee;
+      color: #333;
+      text-decoration: none;
+      border-radius: 7px;
+      margin-top: 10px;
+      font-size: 14px;
+    }
+
+    .notice {
+      font-size: 13px;
+      line-height: 1.6;
+      color: #666;
+      margin: 15px 0;
+    }
+
+    #message {
+      display: none;
+      padding: 13px;
+      border-radius: 7px;
+      margin-top: 15px;
+      font-size: 14px;
+      line-height: 1.6;
+      overflow-wrap: anywhere;
+    }
+
+    .success {
+      display: block !important;
+      background: #e8f7ed;
+      color: #176b35;
+    }
+
+    .error {
+      display: block !important;
+      background: #fdecec;
+      color: #a32121;
+    }
+
+    .pending {
+      display: block !important;
+      background: #fff5df;
+      color: #805600;
+    }
+
+    .small {
+      font-size: 12px;
+      color: #777;
+      text-align: center;
+      margin-top: 15px;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <div class="header">
+    <h1>GRACIOUSTEC</h1>
+    <p>IPE Clearance Service</p>
+  </div>
+
+  <div class="wallet">
+    <p>Your Wallet Balance</p>
+    <strong id="walletBalance">Loading...</strong>
+  </div>
+
+  <div class="price">
+    <span>IPE Clearance Service Price</span>
+    <strong id="servicePrice">Loading...</strong>
+  </div>
+
+  <label for="trackingId">IPE Tracking ID</label>
+
+  <input
+    type="text"
+    id="trackingId"
+    placeholder="Enter your IPE tracking ID"
+    autocomplete="off"
+  >
+
+  <button
+    type="button"
+    class="submit-btn"
+    id="submitBtn"
+    onclick="submitRequest()"
+  >
+    Submit IPE Clearance
+  </button>
+
+  <button
+    type="button"
+    class="status-btn"
+    id="statusBtn"
+    onclick="checkStatus()"
+  >
+    Check Existing Request Status
+  </button>
+
+  <div class="notice">
+    <strong>Important:</strong>
+    Submitting a new IPE Clearance request deducts the displayed
+    service price from your wallet.
+
+    Checking the status of an existing request does not deduct
+    money again. Do not submit the same tracking ID repeatedly.
+  </div>
+
+  <div id="message"></div>
+
+  <a href="dashboard.html" class="back-btn">
+    Back to Dashboard
+  </a>
+
+  <p class="small">
+    © Gracioustec. All rights reserved.
+  </p>
+
+</div>
+
+<script>
+  const SUPABASE_URL =
+    "https://iknhifndgpwibkfidggq.supabase.co";
+
+  const SUPABASE_ANON_KEY =
+    "sb_publishable_xELauxOMm7eMkNrPz55Mrw_LVkRoASn";
+
+  const db = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_ANON_KEY
+  );
+
+  let currentUser = null;
+  let currentPrice = 0;
+  let serviceActive = false;
+
+  const messageBox = document.getElementById("message");
+  const submitBtn = document.getElementById("submitBtn");
+  const statusBtn = document.getElementById("statusBtn");
+
+  function showMessage(message, type) {
+    messageBox.className = type;
+    messageBox.textContent = message;
+  }
+
+  function hideMessage() {
+    messageBox.className = "";
+    messageBox.textContent = "";
+  }
+
+  function formatMoney(amount) {
+    return "₦" + Number(amount || 0).toLocaleString("en-NG", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    });
+  }
+
+  function getTrackingId() {
+    return document.getElementById("trackingId").value.trim();
+  }
+
+  async function loadWallet() {
+    const { data, error } = await db
+      .from("wallets")
+      .select("balance")
+      .eq("user_id", currentUser.id)
+      .maybeSingle();
+
+    if (error) {
+      document.getElementById("walletBalance").textContent =
+        "Unable to load";
+      return;
+    }
+
+    document.getElementById("walletBalance").textContent =
+      formatMoney(data ? data.balance : 0);
+  }
+
+  async function loadService() {
+    const { data, error } = await db
+      .from("service_settings")
+      .select("price, is_active")
+      .eq("service_code", "ipe_clearance")
+      .maybeSingle();
+
+    if (error || !data) {
+      document.getElementById("servicePrice").textContent =
+        "Unavailable";
+
+      showMessage(
+        "Unable to load the IPE Clearance service settings. Please try again later.",
+        "error"
+      );
+
+      submitBtn.disabled = true;
+      return;
+    }
+
+    currentPrice = Number(data.price);
+    serviceActive = data.is_active === true;
+
+    document.getElementById("servicePrice").textContent =
+      formatMoney(currentPrice);
+
+    if (!serviceActive) {
+      showMessage(
+        "IPE Clearance is currently unavailable. Please check back later.",
+        "error"
+      );
+
+      submitBtn.disabled = true;
+    }
+  }
+
+  async function initializePage() {
+    const { data, error } = await db.auth.getSession();
+
+    if (error || !data.session) {
+      window.location.href = "login.html";
+      return;
+    }
+
+    currentUser = data.session.user;
+
+    await Promise.all([
+      loadWallet(),
+      loadService()
+    ]);
+  }
+
+  async function callIPEFunction(action, trackingId) {
+    const { data, error } = await db.functions.invoke(
+      "ipe-clearance",
+      {
+        body: {
+          action: action,
+          tracking_id: trackingId
+        }
+      }
+    );
+
+    if (error) {
+      let details = "";
+
+      if (error.context) {
+        try {
+          const response = await error.context.json();
+          details = response.message || response.error || "";
+        } catch (e) {
+          details = "";
+        }
+      }
+
+      throw new Error(
+        details || error.message || "Unable to contact the service."
+      );
+    }
+
+    if (!data) {
+      throw new Error("No response was received from the service.");
+    }
+
+    return data;
+  }
+
+  async function submitRequest() {
+    hideMessage();
+
+    const trackingId = getTrackingId();
+
+    if (!currentUser) {
+      showMessage("Please log in again.", "error");
+      return;
+    }
+
+    if (!serviceActive) {
+      showMessage("This service is currently unavailable.", "error");
+      return;
+    }
+
+    if (!/^[A-Za-z0-9_-]{5,100}$/.test(trackingId)) {
+      showMessage(
+        "Please enter a valid tracking ID. Use 5 to 100 letters, numbers, hyphens or underscores.",
+        "error"
+      );
+      return;
+    }
+
+    if (!confirm(
+      "You are about to submit an IPE Clearance request. The service price is " +
+      formatMoney(currentPrice) +
+      ". Continue?"
+    )) {
+      return;
+    }
+
+    submitBtn.disabled = true;
+    statusBtn.disabled = true;
+    submitBtn.textContent = "Processing...";
+
+    try {
+      const result = await callIPEFunction("submit", trackingId);
+
+      if (result.ok === true ||
+          result.status === "success" ||
+          result.status === "pending") {
+
+        if (result.status === "pending") {
+          showMessage(
+            result.message ||
+            "Your request is still being processed. Check its status using the button below. Do not submit it again.",
+            "pending"
+          );
+        } else {
+          showMessage(
+            result.message ||
+            "Your IPE Clearance request has been submitted successfully. You can check its status without paying again.",
+            "success"
+          );
+        }
+
+      } else {
+        showMessage(
+          result.message ||
+          result.error ||
+          "The request could not be completed. Please check the message before trying again.",
+          "error"
+        );
+      }
+
+      await loadWallet();
+
+    } catch (error) {
+      showMessage(
+        error.message +
+        " If you are unsure whether payment was processed, check the existing request status before submitting again.",
+        "error"
+      );
+
+      await loadWallet();
+
+    } finally {
+      submitBtn.disabled = !serviceActive;
+      statusBtn.disabled = false;
+      submitBtn.textContent = "Submit IPE Clearance";
+    }
+  }
+
+  async function checkStatus() {
+    hideMessage();
+
+    const trackingId = getTrackingId();
+
+    if (!currentUser) {
+      showMessage("Please log in again.", "error");
+      return;
+    }
+
+    if (!/^[A-Za-z0-9_-]{5,100}$/.test(trackingId)) {
+      showMessage(
+        "Enter the tracking ID of the request you want to check.",
+        "error"
+      );
+      return;
+    }
+
+    submitBtn.disabled = true;
+    statusBtn.disabled = true;
+    statusBtn.textContent = "Checking status...";
+
+    try {
+      const result = await callIPEFunction("status", trackingId);
+
+      if (result.status === "success") {
+        const clearance = result.clearance_status ||
+          result.data?.clearance_status ||
+          "Status received";
+
+        showMessage(
+          "Status check completed. Clearance status: " + clearance +
+          (result.reference ? ". Reference: " + result.reference : ""),
+          "success"
+        );
+
+      } else if (result.status === "pending") {
+        showMessage(
+          result.message ||
+          "Your request is still pending. Please check again later.",
+          "pending"
+        );
+
+      } else if (result.status === "failed" ||
+                 result.status === "refunded") {
+        showMessage(
+          result.message ||
+          "This request failed or was refunded. Check your wallet balance.",
+          "error"
+        );
+
+      } else {
+        showMessage(
+          result.message ||
+          result.error ||
+          "Unable to confirm the request status. Please try again later.",
+          "pending"
+        );
+      }
+
+      await loadWallet();
+
+    } catch (error) {
+      showMessage(
+        error.message || "Unable to check the request status.",
+        "error"
+      );
+
+    } finally {
+      submitBtn.disabled = !serviceActive;
+      statusBtn.disabled = false;
+      statusBtn.textContent = "Check Existing Request Status";
+    }
+  }
+
+  initializePage();
+</script>
+
+</body>
+</html>
