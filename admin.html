@@ -1,8 +1,11 @@
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Gracioustec Admin Dashboard</title>  <style>
+  <title>Gracioustec Admin Dashboard</title>
+
+  <style>
     * { box-sizing: border-box; }
 
     body {
@@ -335,151 +338,167 @@
       .container { padding: 12px; }
       .section { padding: 15px; }
     }
-  </style></head><body>
+  </style>
+</head>
+
+<body>
+
 <header>
   <h1>Gracioustec Admin</h1>
   <button class="logout" onclick="logout()">Logout</button>
-</header><div class="container">
+</header>
+
+<div class="container">
+
   <div id="loading">Loading Gracioustec Admin Dashboard...</div>
   <div id="error"></div>
-  <div id="success" class="success-message"></div>  <div id="dashboard" style="display:none">
-    <button class="refresh-btn" onclick="loadDashboard()">↻ Refresh Dashboard</button><div class="stats">
-  <div class="stat"><h3>Total Users</h3><strong id="totalUsers">0</strong></div>
-  <div class="stat"><h3>Total Deposits</h3><strong id="totalDeposits">₦0.00</strong></div>
-  <div class="stat"><h3>Total Wallet Balance</h3><strong id="totalWallet">₦0.00</strong></div>
-  <div class="stat"><h3>NIN Reprints</h3><strong id="ninReprints">0</strong></div>
-  <div class="stat"><h3>BVN Reprints</h3><strong id="bvnReprints">0</strong></div>
-  <div class="stat"><h3>NIN Revenue</h3><strong id="ninRevenue">₦0.00</strong></div>
-  <div class="stat"><h3>BVN Revenue</h3><strong id="bvnRevenue">₦0.00</strong></div>
-  <div class="stat"><h3>Wallet Transactions</h3><strong id="walletTransactions">0</strong></div>
-  <div class="stat"><h3>Funded Users</h3><strong id="fundedUsers">0</strong></div>
-</div>
+  <div id="success" class="success-message"></div>
 
-<div class="section">
-  <h2>Financial Overview</h2>
-  <p class="small">Summary of wallet funding, service revenue and current customer wallet balances.</p>
+  <div id="dashboard" style="display:none">
 
-  <div class="report-grid">
-    <div class="report-card"><div class="label">Total Deposits</div><div class="value" id="reportDeposits">₦0.00</div></div>
-    <div class="report-card"><div class="label">NIN Revenue</div><div class="value" id="reportNIN">₦0.00</div></div>
-    <div class="report-card"><div class="label">BVN Revenue</div><div class="value" id="reportBVN">₦0.00</div></div>
-    <div class="report-card"><div class="label">Current Wallet Balance</div><div class="value" id="reportWallet">₦0.00</div></div>
-    <div class="report-card"><div class="label">Wallet Transactions</div><div class="value" id="reportTransactions">0</div></div>
-    <div class="report-card"><div class="label">Users With Funds</div><div class="value" id="reportFundedUsers">0</div></div>
+    <button class="refresh-btn" onclick="loadDashboard()">↻ Refresh Dashboard</button>
+
+    <div class="stats">
+      <div class="stat"><h3>Total Users</h3><strong id="totalUsers">0</strong></div>
+      <div class="stat"><h3>Total Deposits</h3><strong id="totalDeposits">₦0.00</strong></div>
+      <div class="stat"><h3>Total Wallet Balance</h3><strong id="totalWallet">₦0.00</strong></div>
+      <div class="stat"><h3>NIN Reprints</h3><strong id="ninReprints">0</strong></div>
+      <div class="stat"><h3>BVN Reprints</h3><strong id="bvnReprints">0</strong></div>
+      <div class="stat"><h3>NIN Revenue</h3><strong id="ninRevenue">₦0.00</strong></div>
+      <div class="stat"><h3>BVN Revenue</h3><strong id="bvnRevenue">₦0.00</strong></div>
+      <div class="stat"><h3>Wallet Transactions</h3><strong id="walletTransactions">0</strong></div>
+      <div class="stat"><h3>Funded Users</h3><strong id="fundedUsers">0</strong></div>
+    </div>
+
+    <div class="section">
+      <h2>Financial Overview</h2>
+      <p class="small">Summary of wallet funding, service revenue and current customer wallet balances.</p>
+
+      <div class="report-grid">
+        <div class="report-card"><div class="label">Total Deposits</div><div class="value" id="reportDeposits">₦0.00</div></div>
+        <div class="report-card"><div class="label">NIN Revenue</div><div class="value" id="reportNIN">₦0.00</div></div>
+        <div class="report-card"><div class="label">BVN Revenue</div><div class="value" id="reportBVN">₦0.00</div></div>
+        <div class="report-card"><div class="label">Current Wallet Balance</div><div class="value" id="reportWallet">₦0.00</div></div>
+        <div class="report-card"><div class="label">Wallet Transactions</div><div class="value" id="reportTransactions">0</div></div>
+        <div class="report-card"><div class="label">Users With Funds</div><div class="value" id="reportFundedUsers">0</div></div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-header"><h2>User Management</h2></div>
+      <p class="small">Add users, search registered users, fund wallets, subtract funds, or remove user login accounts.</p>
+
+      <h3>Add New User</h3>
+      <div class="add-user-form">
+        <input id="newUserEmail" type="email" placeholder="User email">
+        <input id="newUserPassword" type="password" placeholder="Temporary password">
+        <button class="save" onclick="createUser()">Add User</button>
+      </div>
+
+      <p class="small">Password must contain at least 6 characters. The new user will be created as a confirmed account.</p>
+
+      <h3>Wallet Control</h3>
+      <div class="wallet-box">
+        <select id="walletUser"><option value="">Select a user</option></select>
+        <input id="walletAmount" type="number" min="1" step="1" placeholder="Amount">
+        <button class="save" onclick="applyWalletFromBox()">Apply</button>
+      </div>
+      <p class="small">Select a user and amount, then choose CREDIT to fund the wallet or DEBIT to subtract funds.</p>
+
+      <h3>Registered Users</h3>
+      <div class="user-search">
+        <input id="userSearch" type="search" placeholder="Search user by email or ID..." oninput="filterUsers()">
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Email</th><th>Registration</th><th>Last Login</th><th>Wallet Balance</th><th>Status</th><th>Actions</th></tr></thead>
+          <tbody id="usersTable"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>Service Pricing</h2>
+      <p class="small">These prices are stored in Supabase. Customer payment functions use the current database price when charging the wallet.</p>
+      <div id="services"></div>
+    </div>
+
+    <div class="section">
+      <h2>Payment Methods</h2>
+      <p class="small">Turn a payment method ON or OFF. Existing customer accounts are not deleted.</p>
+      <div id="paymentMethods"></div>
+    </div>
+
+    <div class="section">
+      <h2>Broadcast Announcement</h2>
+      <p class="small">Create an announcement that can be shown to customers when they log in.</p>
+      <input id="announcementTitle" type="text" placeholder="Announcement title">
+      <br><br>
+      <textarea id="announcementMessage" placeholder="Write your announcement here..."></textarea>
+      <br><br>
+      <button class="save" onclick="createAnnouncement()">Publish Announcement</button>
+      <div id="announcements"></div>
+    </div>
+
+    <div class="section">
+      <div class="section-header">
+        <h2>Wallet Transactions</h2>
+        <button class="refresh-btn" onclick="clearTransactionFilters()">Clear Filters</button>
+      </div>
+      <p class="small">Search deposits, service payments, admin wallet adjustments and other wallet transactions.</p>
+
+      <div class="transaction-filters">
+        <input id="transactionSearch" type="search" placeholder="Search email, description or reference..." oninput="applyTransactionFilters()">
+        <select id="transactionType" onchange="applyTransactionFilters()">
+          <option value="all">All Types</option>
+          <option value="credit">Credit</option>
+          <option value="debit">Debit</option>
+          <option value="deposit">Deposit</option>
+        </select>
+        <select id="transactionCategory" onchange="applyTransactionFilters()">
+          <option value="all">All Categories</option>
+          <option value="nin">NIN</option>
+          <option value="bvn">BVN</option>
+          <option value="admin">Admin Adjustment</option>
+          <option value="funding">Wallet Funding</option>
+        </select>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Date</th><th>User</th><th>Type</th><th>Amount</th><th>Description</th><th>Reference</th></tr></thead>
+          <tbody id="transactionsTable"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>NIN Reprint Transactions</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Date</th><th>User</th><th>Amount</th><th>Status</th></tr></thead>
+          <tbody id="ninTable"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>BVN Reprint Transactions</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Date</th><th>User</th><th>Amount</th><th>Status</th></tr></thead>
+          <tbody id="bvnTable"></tbody>
+        </table>
+      </div>
+    </div>
+
   </div>
 </div>
 
-<div class="section">
-  <div class="section-header"><h2>User Management</h2></div>
-  <p class="small">Add users, search registered users, fund wallets, subtract funds, or remove user login accounts.</p>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-  <h3>Add New User</h3>
-  <div class="add-user-form">
-    <input id="newUserEmail" type="email" placeholder="User email">
-    <input id="newUserPassword" type="password" placeholder="Temporary password">
-    <button class="save" onclick="createUser()">Add User</button>
-  </div>
-
-  <p class="small">Password must contain at least 6 characters. The new user will be created as a confirmed account.</p>
-
-  <h3>Wallet Control</h3>
-  <div class="wallet-box">
-    <select id="walletUser"><option value="">Select a user</option></select>
-    <input id="walletAmount" type="number" min="1" step="1" placeholder="Amount">
-    <button class="save" onclick="applyWalletFromBox()">Apply</button>
-  </div>
-  <p class="small">Select a user and amount, then choose CREDIT to fund the wallet or DEBIT to subtract funds.</p>
-
-  <h3>Registered Users</h3>
-  <div class="user-search">
-    <input id="userSearch" type="search" placeholder="Search user by email or ID..." oninput="filterUsers()">
-  </div>
-
-  <div class="table-wrap">
-    <table>
-      <thead><tr><th>Email</th><th>Registration</th><th>Last Login</th><th>Wallet Balance</th><th>Status</th><th>Actions</th></tr></thead>
-      <tbody id="usersTable"></tbody>
-    </table>
-  </div>
-</div>
-
-<div class="section">
-  <h2>Service Pricing</h2>
-  <p class="small">These prices are stored in Supabase. Customer payment functions use the current database price when charging the wallet.</p>
-  <div id="services"></div>
-</div>
-
-<div class="section">
-  <h2>Payment Methods</h2>
-  <p class="small">Turn a payment method ON or OFF. Existing customer accounts are not deleted.</p>
-  <div id="paymentMethods"></div>
-</div>
-
-<div class="section">
-  <h2>Broadcast Announcement</h2>
-  <p class="small">Create an announcement that can be shown to customers when they log in.</p>
-  <input id="announcementTitle" type="text" placeholder="Announcement title">
-  <br><br>
-  <textarea id="announcementMessage" placeholder="Write your announcement here..."></textarea>
-  <br><br>
-  <button class="save" onclick="createAnnouncement()">Publish Announcement</button>
-  <div id="announcements"></div>
-</div>
-
-<div class="section">
-  <div class="section-header">
-    <h2>Wallet Transactions</h2>
-    <button class="refresh-btn" onclick="clearTransactionFilters()">Clear Filters</button>
-  </div>
-  <p class="small">Search deposits, service payments, admin wallet adjustments and other wallet transactions.</p>
-
-  <div class="transaction-filters">
-    <input id="transactionSearch" type="search" placeholder="Search email, description or reference..." oninput="applyTransactionFilters()">
-    <select id="transactionType" onchange="applyTransactionFilters()">
-      <option value="all">All Types</option>
-      <option value="credit">Credit</option>
-      <option value="debit">Debit</option>
-      <option value="deposit">Deposit</option>
-    </select>
-    <select id="transactionCategory" onchange="applyTransactionFilters()">
-      <option value="all">All Categories</option>
-      <option value="nin">NIN</option>
-      <option value="bvn">BVN</option>
-      <option value="admin">Admin Adjustment</option>
-      <option value="funding">Wallet Funding</option>
-    </select>
-  </div>
-
-  <div class="table-wrap">
-    <table>
-      <thead><tr><th>Date</th><th>User</th><th>Type</th><th>Amount</th><th>Description</th><th>Reference</th></tr></thead>
-      <tbody id="transactionsTable"></tbody>
-    </table>
-  </div>
-</div>
-
-<div class="section">
-  <h2>NIN Reprint Transactions</h2>
-  <div class="table-wrap">
-    <table>
-      <thead><tr><th>Date</th><th>User</th><th>Amount</th><th>Status</th></tr></thead>
-      <tbody id="ninTable"></tbody>
-    </table>
-  </div>
-</div>
-
-<div class="section">
-  <h2>BVN Reprint Transactions</h2>
-  <div class="table-wrap">
-    <table>
-      <thead><tr><th>Date</th><th>User</th><th>Amount</th><th>Status</th></tr></thead>
-      <tbody id="bvnTable"></tbody>
-    </table>
-  </div>
-</div>
-
-  </div>
-</div><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script>
+<script>
 const SUPABASE_URL = "https://iknhifndgpwibkfidggq.supabase.co";
 const SUPABASE_KEY = "sb_publishable_xELauxOMm7eMkNrPz55Mrw_LVkRoASn";
 
@@ -490,11 +509,15 @@ const supabaseClient = window.supabase.createClient(
 
 const FUNCTION_URL = SUPABASE_URL + "/functions/v1/admin-dashboard";
 
+/* UPDATED: Added IPE Clearance and both NIN Validation services */
 const ALLOWED_SERVICES = [
   "nin_standard",
   "nin_lost",
   "nin_premium",
-  "bvn_reprint"
+  "bvn_reprint",
+  "ipe_clearance",
+  "nin_validation_no_record",
+  "nin_validation_update_record"
 ];
 
 let allUsers = [];
@@ -506,11 +529,11 @@ async function callAdmin(action, extra = {}) {
     error
   } = await supabaseClient.auth.getSession();
 
-  
-if (error || !session) {
-  window.location.href = "login.html?next=admin.html";
-  return null;
-}
+  if (error || !session) {
+    window.location.href = "login.html?next=admin.html";
+    return null;
+  }
+
   const response = await fetch(FUNCTION_URL, {
     method: "POST",
     headers: {
@@ -596,6 +619,7 @@ async function loadDashboard() {
     applyTransactionFilters();
     renderNIN(result.nin_transactions || []);
     renderBVN(result.bvn_transactions || []);
+
   } catch (error) {
     loading.style.display = "none";
     dashboard.style.display = "none";
@@ -887,7 +911,17 @@ function renderServices(services) {
     return;
   }
 
-  const order = ["nin_standard", "nin_lost", "nin_premium", "bvn_reprint"];
+  /* UPDATED: Added the three new services to the display order */
+  const order = [
+    "nin_standard",
+    "nin_lost",
+    "nin_premium",
+    "bvn_reprint",
+    "ipe_clearance",
+    "nin_validation_no_record",
+    "nin_validation_update_record"
+  ];
+
   filtered.sort((a, b) =>
     order.indexOf(a.service_code) - order.indexOf(b.service_code)
   );
@@ -1399,8 +1433,10 @@ async function logout() {
 
       alert(result.message);
       await loadDailyEmailSettings();
+
     } catch (error) {
       alert(error.message);
+
     } finally {
       button.disabled = false;
       button.textContent = "Save Daily Email";
@@ -1455,9 +1491,11 @@ async function logout() {
       status.textContent = "Image uploaded successfully.";
       input.value = "";
       alert(result.message);
+
     } catch (error) {
       status.textContent = error.message;
       alert(error.message);
+
     } finally {
       button.disabled = false;
       button.textContent = "Upload Image";
@@ -1475,5 +1513,6 @@ async function logout() {
 
 loadDashboard();
 
-</script></body>
-</html>
+</script>
+</body>
+  </html>
