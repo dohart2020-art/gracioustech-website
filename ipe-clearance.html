@@ -182,7 +182,7 @@
       color: #805600;
     }
 
-    /* IJOVIA-style API response */
+    /* Dynamic IJOVIA API response */
 
     #apiResponse {
       display: none;
@@ -214,6 +214,14 @@
       margin-bottom: 15px;
     }
 
+    .clearance-heading.processing {
+      color: #946200;
+    }
+
+    .clearance-heading.failed {
+      color: #b42318;
+    }
+
     .response-row {
       margin-bottom: 13px;
       line-height: 1.5;
@@ -231,6 +239,7 @@
       display: block;
       color: #222;
       overflow-wrap: anywhere;
+      white-space: pre-wrap;
     }
 
     .response-status {
@@ -246,6 +255,22 @@
     .response-failed {
       color: #b42318;
       font-weight: bold;
+    }
+
+    .response-group {
+      margin: 12px 0 15px;
+      padding: 12px;
+      background: #f7faf8;
+      border: 1px solid #e3ebe5;
+      border-radius: 7px;
+    }
+
+    .response-group-title {
+      color: #087f3d;
+      font-weight: bold;
+      font-size: 14px;
+      margin-bottom: 12px;
+      overflow-wrap: anywhere;
     }
 
     .small {
@@ -318,42 +343,12 @@
       Live API Status Response
     </div>
 
-    <div id="clearanceHeading" class="clearance-heading"></div>
+    <div
+      id="clearanceHeading"
+      class="clearance-heading"
+    ></div>
 
-    <div class="response-row">
-      <span class="response-label">Name:</span>
-      <span class="response-value" id="resultName">Not available</span>
-    </div>
-
-    <div class="response-row">
-      <span class="response-label">Batch:</span>
-      <span class="response-value" id="resultBatch">N/A</span>
-    </div>
-
-    <div class="response-row">
-      <span class="response-label">Old Tracking ID:</span>
-      <span class="response-value" id="resultOldTracking">Not available</span>
-    </div>
-
-    <div class="response-row">
-      <span class="response-label">Status:</span>
-      <span class="response-value" id="resultStatus">Processing</span>
-    </div>
-
-    <div class="response-row">
-      <span class="response-label">Reply:</span>
-      <span class="response-value" id="resultReply">Not available</span>
-    </div>
-
-    <div class="response-row">
-      <span class="response-label">Price:</span>
-      <span class="response-value" id="resultPrice">Not available</span>
-    </div>
-
-    <div class="response-row">
-      <span class="response-label">Date:</span>
-      <span class="response-value" id="resultDate">Not available</span>
-    </div>
+    <div id="apiResponseFields"></div>
   </div>
 
   <a href="dashboard.html" class="back-btn">
@@ -386,6 +381,8 @@
   const submitBtn = document.getElementById("submitBtn");
   const statusBtn = document.getElementById("statusBtn");
   const apiResponse = document.getElementById("apiResponse");
+  const apiResponseFields =
+    document.getElementById("apiResponseFields");
 
   function showMessage(message, type) {
     messageBox.className = type;
@@ -399,6 +396,7 @@
 
   function hideApiResponse() {
     apiResponse.classList.remove("visible");
+    apiResponseFields.replaceChildren();
   }
 
   function formatMoney(amount) {
@@ -428,11 +426,6 @@
     return String(value).trim();
   }
 
-  function setResponseValue(id, value, fallback) {
-    document.getElementById(id).textContent =
-      cleanValue(value, fallback);
-  }
-
   function isSuccessfulStatus(status) {
     return [
       "successful",
@@ -443,127 +436,479 @@
     ].includes(String(status || "").toLowerCase().trim());
   }
 
-  function buildReply(details, successful) {
-    let reply = cleanValue(details.reply, "");
+  function isProcessingStatus(status) {
+    const value = String(status || "").toLowerCase().trim();
 
-    const replyCode = cleanValue(details.reply_code, "");
-    const formerNin = cleanValue(details.former_nin, "");
-    const formerDob = cleanValue(details.former_dob, "");
+    return [
+      "processing",
+      "pending",
+      "in progress",
+      "in_progress",
+      "queued",
+      "submitted",
+      "initiated"
+    ].includes(value);
+  }
 
-    // Use the full provider details when available.
-    if (replyCode) {
-      const ninText =
-        successful && formerNin
-          ? formerNin
-          : "Not available";
+  function isFailedStatus(status) {
+    const value = String(status || "").toLowerCase().trim();
 
-      const dobText = formerDob || "Not available";
+    return [
+      "failed",
+      "failure",
+      "rejected",
+      "declined",
+      "cancelled",
+      "canceled",
+      "error"
+    ].includes(value);
+  }
 
-      return "Reply: " + replyCode +
-        " | NIN: " + ninText +
-        " | DOB: " + dobText;
+  function formatLabel(key) {
+    return String(key)
+      .replace(/([a-z0-9])([A-Z])/g, "$1 $2")
+      .replace(/[_-]+/g, " ")
+      .replace(/\s+/g, " ")
+      .trim()
+      .replace(/\b\w/g, character => character.toUpperCase());
+  }
+
+  function isSensitiveKey(key) {
+    const normalized = String(key)
+      .toLowerCase()
+      .replace(/[^a-z0-9]/g, "");
+
+    const blocked = [
+      "apikey",
+      "authorization",
+      "token",
+      "accesstoken",
+      "refreshtoken",
+      "secret",
+      "password",
+      "service_role_key",
+      "service_role",
+      "privatekey",
+      "clientsecret",
+      "bearertoken"
+    ];
+
+    return blocked.some(item =>
+      normalized.includes(item.replace(/[^a-z0-9]/g, ""))
+    );
+  }
+
+  function makeResponseRow(label, value) {
+    const row = document.createElement("div");
+    row.className = "response-row";
+
+    const labelElement = document.createElement("span");
+    labelElement.className = "response-label";
+    labelElement.textContent = formatLabel(label) + ":";
+
+    const valueElement = document.createElement("span");
+    valueElement.className = "response-value";
+    valueElement.textContent = value;
+
+    row.appendChild(labelElement);
+    row.appendChild(valueElement);
+
+    if (String(label).toLowerCase() === "status") {
+      const status = String(value).toLowerCase();
+
+      if (isSuccessfulStatus(status)) {
+        valueElement.classList.add("response-status");
+      } else if (isProcessingStatus(status)) {
+        valueElement.classList.add("response-processing");
+      } else if (isFailedStatus(status)) {
+        valueElement.classList.add("response-failed");
+      }
     }
 
-    // If the provider already supplied the complete reply, use it.
-    if (reply) {
-      return reply;
+    return row;
+  }
+
+  function renderProviderValue(key, value, parent, depth = 0) {
+    if (isSensitiveKey(key)) {
+      return;
     }
 
-    return "Not available";
+    if (value === null || value === undefined) {
+      parent.appendChild(
+        makeResponseRow(key, "N/A")
+      );
+      return;
+    }
+
+    if (Array.isArray(value)) {
+      if (value.length === 0) {
+        parent.appendChild(
+          makeResponseRow(key, "No information returned")
+        );
+        return;
+      }
+
+      const group = document.createElement("div");
+      group.className = "response-group";
+
+      const title = document.createElement("div");
+      title.className = "response-group-title";
+      title.textContent = formatLabel(key);
+
+      group.appendChild(title);
+
+      value.forEach((item, index) => {
+        if (
+          item !== null &&
+          typeof item === "object"
+        ) {
+          renderProviderValue(
+            "Item " + (index + 1),
+            item,
+            group,
+            depth + 1
+          );
+        } else {
+          group.appendChild(
+            makeResponseRow(
+              "Item " + (index + 1),
+              String(item)
+            )
+          );
+        }
+      });
+
+      parent.appendChild(group);
+      return;
+    }
+
+    if (typeof value === "object") {
+      if (depth > 10) {
+        return;
+      }
+
+      const group = document.createElement("div");
+      group.className = "response-group";
+
+      const title = document.createElement("div");
+      title.className = "response-group-title";
+      title.textContent = formatLabel(key);
+
+      group.appendChild(title);
+
+      const entries = Object.entries(value);
+
+      if (entries.length === 0) {
+        group.appendChild(
+          makeResponseRow("Information", "No additional information")
+        );
+      } else {
+        entries.forEach(([childKey, childValue]) => {
+          renderProviderValue(
+            childKey,
+            childValue,
+            group,
+            depth + 1
+          );
+        });
+      }
+
+      parent.appendChild(group);
+      return;
+    }
+
+    parent.appendChild(
+      makeResponseRow(key, String(value))
+    );
+  }
+
+  function renderProviderResponse(providerResponse) {
+    apiResponseFields.replaceChildren();
+
+    if (
+      providerResponse === null ||
+      providerResponse === undefined
+    ) {
+      return false;
+    }
+
+    if (typeof providerResponse === "string") {
+      apiResponseFields.appendChild(
+        makeResponseRow("Provider Response", providerResponse)
+      );
+      return true;
+    }
+
+    if (Array.isArray(providerResponse)) {
+      renderProviderValue(
+        "Provider Response",
+        providerResponse,
+        apiResponseFields
+      );
+      return true;
+    }
+
+    if (typeof providerResponse === "object") {
+      const entries = Object.entries(providerResponse)
+        .filter(([key]) => !isSensitiveKey(key));
+
+      if (entries.length === 0) {
+        return false;
+      }
+
+      entries.forEach(([key, value]) => {
+        renderProviderValue(
+          key,
+          value,
+          apiResponseFields
+        );
+      });
+
+      return true;
+    }
+
+    apiResponseFields.appendChild(
+      makeResponseRow("Provider Response", String(providerResponse))
+    );
+
+    return true;
+  }
+
+  function findProviderStatus(value, depth = 0) {
+    if (
+      !value ||
+      typeof value !== "object" ||
+      depth > 8
+    ) {
+      return null;
+    }
+
+    const statusKeys = [
+      "clearance_status",
+      "status",
+      "request_status",
+      "transaction_status"
+    ];
+
+    for (const key of statusKeys) {
+      if (
+        Object.prototype.hasOwnProperty.call(value, key) &&
+        typeof value[key] !== "object" &&
+        value[key] !== null
+      ) {
+        return String(value[key]);
+      }
+    }
+
+    for (const [key, child] of Object.entries(value)) {
+      if (
+        isSensitiveKey(key) ||
+        !child ||
+        typeof child !== "object"
+      ) {
+        continue;
+      }
+
+      const found = findProviderStatus(child, depth + 1);
+
+      if (found) {
+        return found;
+      }
+    }
+
+    return null;
+  }
+
+  function getProviderResponse(result) {
+    if (!result || typeof result !== "object") {
+      return null;
+    }
+
+    const transaction = result.transaction || {};
+
+    const possibleResponses = [
+      result.provider_response,
+      result.providerResponse,
+      transaction.provider_response,
+      transaction.providerResponse,
+      result.provider_result,
+      result.providerResult,
+      result.raw_response,
+      result.rawResponse
+    ];
+
+    for (const response of possibleResponses) {
+      if (
+        response !== null &&
+        response !== undefined &&
+        response !== ""
+      ) {
+        return response;
+      }
+    }
+
+    return null;
+  }
+
+  function getResponseStatus(result, providerResponse) {
+    const details = result.details || {};
+    const transaction = result.transaction || {};
+
+    const providerStatus = findProviderStatus(providerResponse);
+
+    if (providerStatus) {
+      return providerStatus;
+    }
+
+    const detailStatus =
+      details.clearance_status ||
+      details.status;
+
+    if (detailStatus) {
+      return String(detailStatus);
+    }
+
+    const transactionStatus =
+      transaction.clearance_status ||
+      transaction.status;
+
+    if (transactionStatus) {
+      return String(transactionStatus);
+    }
+
+    if (result.pending === true) {
+      return "Processing";
+    }
+
+    if (result.refunded === true) {
+      return "Refunded";
+    }
+
+    if (result.success === true) {
+      return "Successful";
+    }
+
+    return "Processing";
   }
 
   function showApiResponse(result) {
     const details = result.details || {};
-
     const transaction = result.transaction || {};
 
-    const status =
-      details.status ||
-      transaction.status ||
-      (result.pending
-        ? "Processing"
-        : result.refunded
-          ? "Refunded"
-          : result.success
-            ? "Successful"
-            : "Processing");
+    const providerResponse = getProviderResponse(result);
+
+    const status = getResponseStatus(
+      result,
+      providerResponse
+    );
+
+    const refunded = result.refunded === true;
+
+    const processing =
+      result.pending === true ||
+      isProcessingStatus(status);
 
     const successful =
-      !result.pending &&
-      !result.refunded &&
+      !refunded &&
+      !processing &&
       (
         isSuccessfulStatus(status) ||
-        result.success === true
+        (
+          result.success === true &&
+          !isFailedStatus(status)
+        )
       );
 
-    const processing = result.pending === true;
-
-    document.getElementById("clearanceHeading").textContent =
-      successful
-        ? "Clearance Successful!"
-        : processing
-          ? "Clearance Processing..."
-          : result.refunded
-            ? "Clearance Refunded"
-            : "Clearance Status Response";
-
-    setResponseValue(
-      "resultName",
-      details.name,
-      "Not available"
-    );
-
-    setResponseValue(
-      "resultBatch",
-      details.batch,
-      "N/A"
-    );
-
-    setResponseValue(
-      "resultOldTracking",
-      details.old_tracking_id,
-      "Not available"
-    );
-
-    const statusElement = document.getElementById("resultStatus");
-
-    statusElement.textContent = cleanValue(status, "Processing");
-
-    statusElement.className = "response-value " +
+    const failed =
+      refunded ||
+      isFailedStatus(status) ||
       (
-        successful
-          ? "response-status"
-          : processing
-            ? "response-processing"
-            : result.refunded
-              ? "response-failed"
-              : ""
+        result.success === false &&
+        !processing
       );
 
-    // The former NIN is included in the reply only after success.
-    setResponseValue(
-      "resultReply",
-      buildReply(details, successful),
-      processing ? "Awaiting provider response" : "Not available"
-    );
+    const heading = document.getElementById("clearanceHeading");
 
-    const providerPrice =
-      details.price ??
-      details.provider_price ??
-      transaction.provider_amount;
+    heading.className = "clearance-heading";
 
-    setResponseValue(
-      "resultPrice",
-      providerPrice !== null && providerPrice !== undefined
-        ? formatMoney(providerPrice)
-        : "Not available"
-    );
+    if (successful) {
+      heading.textContent = "Clearance Successful!";
+    } else if (processing) {
+      heading.textContent = "Clearance Processing...";
+      heading.classList.add("processing");
+    } else if (refunded) {
+      heading.textContent = "Clearance Refunded";
+      heading.classList.add("failed");
+    } else if (failed) {
+      heading.textContent = "Clearance Failed";
+      heading.classList.add("failed");
+    } else {
+      heading.textContent = "Clearance Status Response";
+    }
 
-    setResponseValue(
-      "resultDate",
-      details.date,
-      "Not available"
-    );
+    apiResponseFields.replaceChildren();
+
+    if (successful) {
+      /*
+       * On success, display the provider's complete response.
+       * This supports additional fields and nested objects.
+       */
+
+      const rendered = renderProviderResponse(providerResponse);
+
+      /*
+       * If the backend did not include the raw provider response,
+       * display the available details without inventing missing data.
+       */
+
+      if (!rendered) {
+        const availableDetails = Object.keys(details).length
+          ? details
+          : transaction;
+
+        renderProviderResponse(availableDetails);
+      }
+
+      if (!apiResponseFields.hasChildNodes()) {
+        apiResponseFields.appendChild(
+          makeResponseRow(
+            "Status",
+            "Successful. No additional provider details were supplied."
+          )
+        );
+      }
+
+    } else {
+      /*
+       * Do not show an incomplete provider report as a successful
+       * clearance report while the request is still processing.
+       */
+
+      apiResponseFields.appendChild(
+        makeResponseRow("Status", status)
+      );
+
+      const message =
+        result.message ||
+        details.message ||
+        details.reply ||
+        "";
+
+      if (message) {
+        apiResponseFields.appendChild(
+          makeResponseRow("Message", String(message))
+        );
+      }
+
+      if (refunded) {
+        apiResponseFields.appendChild(
+          makeResponseRow(
+            "Refund",
+            result.message || "The request was refunded."
+          )
+        );
+      }
+    }
 
     apiResponse.classList.add("visible");
   }
@@ -714,7 +1059,6 @@
     statusBtn.disabled = true;
     submitBtn.textContent = "Processing...";
 
-    // Show processing immediately while the request is submitted.
     showApiResponse({
       pending: true,
       success: false,
@@ -852,4 +1196,4 @@
 </script>
 
 </body>
-</html>
+                                           </html>
