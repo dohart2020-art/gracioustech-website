@@ -1,0 +1,683 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NIN Tracking - Gracioustec</title>
+  <meta name="theme-color" content="#087f3d">
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background: #f4f7f9;
+      color: #222;
+    }
+
+    header {
+      background: #063b2b;
+      color: white;
+      padding: 17px 20px;
+      font-size: 20px;
+      font-weight: bold;
+    }
+
+    .container {
+      max-width: 650px;
+      margin: 25px auto;
+      padding: 15px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 14px;
+      padding: 22px;
+      margin-bottom: 18px;
+      box-shadow: 0 3px 12px rgba(0,0,0,.06);
+    }
+
+    h2 {
+      color: #063b2b;
+      margin-bottom: 12px;
+    }
+
+    .description {
+      color: #666;
+      font-size: 14px;
+      line-height: 1.7;
+      margin-bottom: 18px;
+    }
+
+    .price-box {
+      background: #edf7f0;
+      padding: 16px;
+      border-radius: 10px;
+      margin-bottom: 18px;
+    }
+
+    .price-label {
+      color: #555;
+      font-size: 13px;
+    }
+
+    .price {
+      font-size: 25px;
+      font-weight: bold;
+      color: #087f3d;
+      margin-top: 5px;
+    }
+
+    .wallet {
+      font-size: 14px;
+      color: #555;
+      margin-bottom: 18px;
+    }
+
+    .wallet strong {
+      color: #063b2b;
+      font-size: 17px;
+    }
+
+    label {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 8px;
+      font-size: 14px;
+    }
+
+    input {
+      width: 100%;
+      padding: 14px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 16px;
+      outline: none;
+    }
+
+    input:focus {
+      border-color: #087f3d;
+    }
+
+    .submit-btn {
+      width: 100%;
+      padding: 15px;
+      margin-top: 16px;
+      background: #087f3d;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .submit-btn:disabled {
+      background: #999;
+      cursor: not-allowed;
+    }
+
+    .back-btn {
+      display: block;
+      text-align: center;
+      margin-top: 18px;
+      color: #087f3d;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .notice {
+      background: #fff8e5;
+      border-left: 4px solid #e5a000;
+      padding: 13px;
+      border-radius: 7px;
+      color: #765600;
+      font-size: 13px;
+      line-height: 1.6;
+      margin-bottom: 18px;
+    }
+
+    .message {
+      display: none;
+      padding: 14px;
+      border-radius: 8px;
+      margin-top: 18px;
+      font-size: 14px;
+      line-height: 1.6;
+      overflow-wrap: anywhere;
+    }
+
+    .message.success {
+      display: block;
+      background: #e8f7ed;
+      color: #087443;
+    }
+
+    .message.error {
+      display: block;
+      background: #fdeaea;
+      color: #b00020;
+    }
+
+    .message.pending {
+      display: block;
+      background: #fff5df;
+      color: #795500;
+    }
+
+    .result {
+      display: none;
+      margin-top: 20px;
+    }
+
+    .result h3 {
+      color: #063b2b;
+      margin-bottom: 15px;
+    }
+
+    .result-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 11px 0;
+      border-bottom: 1px solid #eee;
+      font-size: 14px;
+    }
+
+    .result-row span:first-child {
+      color: #777;
+      flex-shrink: 0;
+    }
+
+    .result-row strong {
+      text-align: right;
+      overflow-wrap: anywhere;
+    }
+
+    .photo {
+      display: none;
+      max-width: 130px;
+      max-height: 150px;
+      object-fit: contain;
+      border-radius: 8px;
+      margin: 15px auto;
+      border: 1px solid #ddd;
+    }
+
+    .small-note {
+      color: #777;
+      font-size: 12px;
+      line-height: 1.6;
+      margin-top: 15px;
+    }
+
+    @media(max-width: 480px) {
+      .container { margin-top: 12px; }
+      .card { padding: 18px; }
+      .result-row { font-size: 13px; }
+    }
+  </style>
+</head>
+
+<body>
+
+<header>GRACIOUSTEC</header>
+
+<div class="container">
+
+  <div class="card">
+    <h2>NIN Tracking</h2>
+
+    <p class="description">
+      Have you lost your NIN number and cannot remember the phone number
+      used during registration? You can use the Tracking ID on your
+      original NIN registration slip to retrieve your NIN details.
+    </p>
+
+    <div class="notice">
+      Enter the Tracking ID exactly as it appears on your original
+      NIN registration slip. Make sure the information belongs to you
+      before submitting.
+    </div>
+
+    <div class="price-box">
+      <div class="price-label">NIN Tracking Service Price</div>
+      <div class="price" id="servicePrice">Loading price...</div>
+    </div>
+
+    <div class="wallet">
+      Wallet Balance:
+      <strong id="walletBalance">Loading...</strong>
+    </div>
+
+    <form id="trackingForm">
+      <label for="trackingID">Enter Your Tracking ID</label>
+
+      <input
+        type="text"
+        id="trackingID"
+        name="trackingID"
+        placeholder="Enter Tracking ID"
+        maxlength="60"
+        autocomplete="off"
+        required
+      >
+
+      <button type="submit" class="submit-btn" id="submitBtn">
+        Submit Tracking ID
+      </button>
+    </form>
+
+    <div id="message" class="message" role="status" aria-live="polite"></div>
+
+    <p class="small-note">
+      Your wallet will be charged only when the request is accepted
+      for processing. If the provider confirms a failed request,
+      the refund process will be handled by the system.
+    </p>
+  </div>
+
+  <div class="card result" id="resultCard">
+    <h3>NIN Tracking Result</h3>
+
+    <img id="customerPhoto" class="photo" alt="Retrieved customer photograph">
+
+    <div id="resultDetails"></div>
+
+    <p class="small-note">
+      Keep your NIN information private. Do not share your result
+      with unauthorized persons.
+    </p>
+  </div>
+
+  <a href="dashboard.html" class="back-btn">← Back to Dashboard</a>
+
+</div>
+
+<script>
+  /* SUPABASE CONFIGURATION */
+  const SUPABASE_URL =
+    "https://iknhifndgpwibkfidggq.supabase.co";
+
+  const SUPABASE_KEY =
+    "sb_publishable_xELauxOMm7eMkNrPz55Mrw_LVkRoASn";
+
+  const supabaseClient = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+  );
+
+  let currentUser = null;
+  let servicePrice = null;
+  let requestInProgress = false;
+
+  const trackingForm = document.getElementById("trackingForm");
+  const trackingInput = document.getElementById("trackingID");
+  const submitBtn = document.getElementById("submitBtn");
+  const messageBox = document.getElementById("message");
+
+  /* FORMAT MONEY */
+  function formatMoney(amount) {
+    return "₦" + Number(amount || 0).toLocaleString("en-NG", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    });
+  }
+
+  /* DISPLAY MESSAGE */
+  function showMessage(text, type) {
+    messageBox.textContent = text;
+    messageBox.className = "message " + type;
+  }
+
+  function hideMessage() {
+    messageBox.textContent = "";
+    messageBox.className = "message";
+  }
+
+  /* CHECK LOGIN */
+  async function checkLogin() {
+    const { data, error } = await supabaseClient.auth.getUser();
+
+    if (error || !data || !data.user) {
+      window.location.href = "login.html";
+      return false;
+    }
+
+    currentUser = data.user;
+    return true;
+  }
+
+  /* LOAD WALLET */
+  async function loadWallet() {
+    const balanceElement = document.getElementById("walletBalance");
+
+    const { data, error } = await supabaseClient
+      .from("wallets")
+      .select("balance")
+      .eq("user_id", currentUser.id)
+      .maybeSingle();
+
+    if (error) {
+      console.error("Wallet loading error:", error);
+      balanceElement.textContent = "Unable to load";
+      return;
+    }
+
+    balanceElement.textContent = formatMoney(data ? data.balance : 0);
+  }
+
+  /* LOAD SERVICE PRICE */
+  async function loadServicePrice() {
+    const priceElement = document.getElementById("servicePrice");
+
+    const { data, error } = await supabaseClient
+      .from("service_settings")
+      .select("price,is_active")
+      .eq("service_code", "nin_tracking")
+      .maybeSingle();
+
+    if (error || !data) {
+      console.error("NIN Tracking price error:", error);
+      priceElement.textContent = "Price unavailable";
+      submitBtn.disabled = true;
+      showMessage(
+        "Unable to load the NIN Tracking price. Please try again later.",
+        "error"
+      );
+      return;
+    }
+
+    if (!data.is_active) {
+      servicePrice = null;
+      priceElement.textContent = "Currently unavailable";
+      submitBtn.disabled = true;
+      showMessage("NIN Tracking is currently unavailable.", "error");
+      return;
+    }
+
+    servicePrice = Number(data.price);
+    priceElement.textContent = formatMoney(servicePrice);
+    submitBtn.disabled = false;
+  }
+
+  /* ADD RESULT ROW SAFELY */
+  function addResultRow(container, label, value) {
+    const row = document.createElement("div");
+    row.className = "result-row";
+
+    const left = document.createElement("span");
+    left.textContent = label;
+
+    const right = document.createElement("strong");
+    right.textContent =
+      value === null || value === undefined || value === ""
+        ? "Not provided"
+        : String(value);
+
+    row.appendChild(left);
+    row.appendChild(right);
+    container.appendChild(row);
+  }
+
+  /* DISPLAY RESULT */
+  function displayResult(data, reportID, reference) {
+    const resultCard = document.getElementById("resultCard");
+    const resultDetails = document.getElementById("resultDetails");
+    const photo = document.getElementById("customerPhoto");
+
+    resultDetails.replaceChildren();
+    photo.removeAttribute("src");
+    photo.style.display = "none";
+
+    const fields = [
+      ["First Name", data.firstname],
+      ["Middle Name", data.middlename],
+      ["Surname", data.surname],
+      ["NIN", data.nin],
+      ["Phone Number", data.telephoneno],
+      ["Gender", data.gender],
+      ["Date of Birth", data.birthdate],
+      ["State of Residence", data.residence_state],
+      ["Town of Residence", data.residence_town],
+      ["LGA of Residence", data.residence_lga],
+      ["Residential Address", data.residence_address],
+      ["Country of Birth", data.birthcountry],
+      ["State of Birth", data.birthstate],
+      ["LGA of Birth", data.birthlga],
+      ["Report ID", reportID],
+      ["Payment Reference", reference]
+    ];
+
+    fields.forEach(function(field) {
+      addResultRow(resultDetails, field[0], field[1]);
+    });
+
+    /* DISPLAY PHOTO ONLY IF PROVIDER RETURNS BASE64 */
+    if (
+      typeof data.photo === "string" &&
+      data.photo.length > 0 &&
+      data.photo.length < 2000000
+    ) {
+      const photoData = data.photo.replace(/\s/g, "");
+
+      if (/^[A-Za-z0-9+/]+={0,2}$/.test(photoData)) {
+        photo.src = "data:image/jpeg;base64," + photoData;
+        photo.style.display = "block";
+      }
+    }
+
+    resultCard.style.display = "block";
+  }
+
+  /* READ ERROR DETAILS */
+  async function getFunctionErrorMessage(error) {
+    if (error && error.context) {
+      try {
+        if (typeof error.context.json === "function") {
+          const body = await error.context.json();
+
+          if (body && body.message) return body.message;
+          if (body && body.error) return body.error;
+        }
+      } catch (e) {
+        // Keep generic message if response cannot be read.
+      }
+    }
+
+    return error && error.message
+      ? error.message
+      : "Unable to process your request.";
+  }
+
+  /* SUBMIT TRACKING REQUEST */
+  trackingForm.addEventListener("submit", async function(event) {
+    event.preventDefault();
+
+    if (requestInProgress) return;
+
+    if (!currentUser) {
+      window.location.href = "login.html";
+      return;
+    }
+
+    if (servicePrice === null || !Number.isFinite(servicePrice)) {
+      showMessage("Service price is unavailable. Please refresh the page.", "error");
+      return;
+    }
+
+    const trackingID = trackingInput.value.trim();
+
+    if (trackingID.length < 4 || trackingID.length > 60) {
+      showMessage("Please enter a valid Tracking ID.", "error");
+      return;
+    }
+
+    if (!/^[A-Za-z0-9_-]+$/.test(trackingID)) {
+      showMessage(
+        "Your Tracking ID contains invalid characters. Check the original slip.",
+        "error"
+      );
+      return;
+    }
+
+    const confirmed = confirm(
+      "You are about to submit your NIN Tracking ID.\n\n" +
+      "Service charge: " + formatMoney(servicePrice) +
+      "\n\nYour wallet will be debited for this request. Continue?"
+    );
+
+    if (!confirmed) return;
+
+    requestInProgress = true;
+    submitBtn.disabled = true;
+    submitBtn.textContent = "Processing...";
+    trackingInput.disabled = true;
+
+    document.getElementById("resultCard").style.display = "none";
+    hideMessage();
+
+    showMessage(
+      "Your request is being processed. Please do not close this page or submit again.",
+      "pending"
+    );
+
+    try {
+      /*
+       * CALL THE SUPABASE EDGE FUNCTION.
+       * Payment and provider verification are handled on the server.
+       */
+      const { data, error } = await supabaseClient.functions.invoke(
+        "nin-tracking",
+        {
+          body: {
+            number: trackingID
+          }
+        }
+      );
+
+      if (error) {
+        const errorMessage = await getFunctionErrorMessage(error);
+
+        showMessage(
+          "We could not confirm the result of this request. " +
+          "Please do not submit again immediately. Contact support " +
+          "with your request details if the issue continues. " +
+          "Details: " + errorMessage,
+          "pending"
+        );
+
+        await loadWallet();
+        return;
+      }
+
+      if (!data) {
+        showMessage(
+          "No confirmation was received. Please contact support before trying again.",
+          "pending"
+        );
+        await loadWallet();
+        return;
+      }
+
+      if (data.pending) {
+        showMessage(
+          "Your request is still being processed. Please do not submit the same Tracking ID again. " +
+          "Reference: " + (data.reference || "Not available"),
+          "pending"
+        );
+
+        await loadWallet();
+        return;
+      }
+
+      if (data.success === true && data.data) {
+        displayResult(
+          data.data,
+          data.reportID || "",
+          data.reference || ""
+        );
+
+        showMessage(
+          "NIN Tracking completed successfully.",
+          "success"
+        );
+
+        await loadWallet();
+        return;
+      }
+
+      if (data.refunded === true || data.refund_status === "refunded") {
+        showMessage(
+          "Your NIN Tracking request was unsuccessful. Your wallet has been refunded.",
+          "error"
+        );
+
+        await loadWallet();
+        return;
+      }
+
+      if (data.success === false) {
+        showMessage(
+          data.message ||
+          "NIN Tracking could not be completed. Check the response before making another request.",
+          data.pending ? "pending" : "error"
+        );
+
+        await loadWallet();
+        return;
+      }
+
+      showMessage(
+        "The server returned an unexpected response. Please contact support before submitting again.",
+        "pending"
+      );
+
+      await loadWallet();
+
+    } catch (error) {
+      console.error("NIN Tracking request error:", error);
+
+      showMessage(
+        "We could not confirm your request. Please do not submit again until its status has been checked.",
+        "pending"
+      );
+
+      await loadWallet();
+
+    } finally {
+      requestInProgress = false;
+      submitBtn.disabled = false;
+      submitBtn.textContent = "Submit Tracking ID";
+      trackingInput.disabled = false;
+    }
+  });
+
+  /* START PAGE */
+  async function startPage() {
+    const loggedIn = await checkLogin();
+
+    if (!loggedIn) return;
+
+    await Promise.all([
+      loadWallet(),
+      loadServicePrice()
+    ]);
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", startPage);
+  } else {
+    startPage();
+  }
+</script>
+
+</body>
+</html>
