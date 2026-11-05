@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NIN Personalisation - Gracioustec</title>
+  <meta name="theme-color" content="#087f3d">
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f7f5;
+      color: #222;
+      padding: 18px;
+    }
+
+    .container {
+      max-width: 520px;
+      margin: 25px auto;
+    }
+
+    .header {
+      background: #087f3d;
+      color: white;
+      padding: 22px;
+      border-radius: 12px;
+      text-align: center;
+      margin-bottom: 18px;
+    }
+
+    .header h2 {
+      margin-bottom: 8px;
+    }
+
+    .card {
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      margin-bottom: 18px;
+      box-shadow: 0 2px 9px rgba(0,0,0,0.06);
+    }
+
+    label {
+      display: block;
+      font-weight: bold;
+      margin: 15px 0 7px;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 13px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 15px;
+      outline: none;
+    }
+
+    input:focus, select:focus {
+      border-color: #087f3d;
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      background: #087f3d;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: bold;
+      margin-top: 17px;
+      cursor: pointer;
+    }
+
+    button:disabled {
+      background: #999;
+      cursor: not-allowed;
+    }
+
+    .secondary {
+      background: #333;
+    }
+
+    .price {
+      background: #eaf5ee;
+      padding: 12px;
+      border-radius: 8px;
+      margin-top: 12px;
+      color: #087f3d;
+      font-weight: bold;
+      text-align: center;
+    }
+
+    .notice {
+      background: #fff7df;
+      border-left: 4px solid #d69e00;
+      padding: 12px;
+      border-radius: 6px;
+      margin-top: 15px;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .message {
+      display: none;
+      padding: 13px;
+      border-radius: 8px;
+      margin-top: 15px;
+      line-height: 1.5;
+      overflow-wrap: anywhere;
+    }
+
+    .success {
+      display: block;
+      background: #e7f6eb;
+      color: #12652e;
+    }
+
+    .error {
+      display: block;
+      background: #fdeaea;
+      color: #a51e1e;
+    }
+
+    .pending {
+      display: block;
+      background: #fff5dc;
+      color: #805600;
+    }
+
+    .result {
+      margin-top: 15px;
+      line-height: 1.8;
+      overflow-wrap: anywhere;
+    }
+
+    .result p {
+      border-bottom: 1px solid #eee;
+      padding: 6px 0;
+    }
+
+    .back {
+      display: block;
+      text-align: center;
+      color: #087f3d;
+      text-decoration: none;
+      font-weight: bold;
+      margin-top: 20px;
+    }
+
+    .small {
+      font-size: 13px;
+      color: #666;
+      margin-top: 8px;
+      line-height: 1.5;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <div class="header">
+    <h2>GRACIOUSTEC</h2>
+    <p>NIN Personalisation Service</p>
+  </div>
+
+  <div class="card">
+    <h3>Personalisation Request</h3>
+
+    <p class="small">
+      Enter your 15-character IJOVIA tracking ID and select your preferred slip type.
+    </p>
+
+    <label for="trackingId">Tracking ID</label>
+    <input
+      type="text"
+      id="trackingId"
+      maxlength="15"
+      placeholder="Enter your 15-character tracking ID"
+      autocomplete="off"
+    >
+
+    <label for="slipType">Select Personalisation Type</label>
+    <select id="slipType">
+      <option value="standard">Standard - ₦500</option>
+      <option value="premium">Premium - ₦1,000</option>
+    </select>
+
+    <div class="price" id="priceDisplay">
+      Standard Personalisation: ₦500
+    </div>
+
+    <div class="notice">
+      Please confirm that your tracking ID is correct before submitting.
+      Your wallet will be charged when the request is submitted.
+    </div>
+
+    <button id="submitBtn" onclick="submitRequest()">
+      Submit Personalisation
+    </button>
+
+    <div id="submitMessage" class="message"></div>
+    <div id="submitResult" class="result"></div>
+  </div>
+
+  <div class="card">
+    <h3>Check Personalisation Status</h3>
+
+    <p class="small">
+      Enter the same tracking ID used when submitting your request.
+    </p>
+
+    <label for="checkTrackingId">Tracking ID</label>
+    <input
+      type="text"
+      id="checkTrackingId"
+      maxlength="15"
+      placeholder="Enter your tracking ID"
+      autocomplete="off"
+    >
+
+    <button class="secondary" id="checkBtn" onclick="checkStatus()">
+      Check Status
+    </button>
+
+    <div id="checkMessage" class="message"></div>
+    <div id="checkResult" class="result"></div>
+  </div>
+
+  <a href="dashboard.html" class="back">← Back to Dashboard</a>
+
+</div>
+
+<script>
+  const SUPABASE_URL =
+    "https://iknhifndgpwibkfidggq.supabase.co";
+
+  const SUPABASE_KEY =
+    "sb_publishable_xELauxOMm7eMkNrPz55Mrw_LVkRoASn";
+
+  const client = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+  );
+
+  const prices = {
+    standard: 500,
+    premium: 1000
+  };
+
+  const slipType = document.getElementById("slipType");
+  const priceDisplay = document.getElementById("priceDisplay");
+
+  slipType.addEventListener("change", () => {
+    const selected = slipType.value;
+    const amount = prices[selected];
+
+    priceDisplay.textContent =
+      (selected === "standard" ? "Standard" : "Premium") +
+      " Personalisation: ₦" +
+      amount.toLocaleString("en-NG");
+  });
+
+  function showMessage(elementId, message, type) {
+    const element = document.getElementById(elementId);
+    element.className = "message " + type;
+    element.textContent = message;
+  }
+
+  function clearMessage(elementId) {
+    const element = document.getElementById(elementId);
+    element.className = "message";
+    element.textContent = "";
+  }
+
+  function displayResult(elementId, response) {
+    const container = document.getElementById(elementId);
+    container.replaceChildren();
+
+    const providerData =
+      response?.provider_response?.data?.data ||
+      response?.provider_response?.data ||
+      response?.data ||
+      {};
+
+    const fields = [
+      ["NIN", providerData.idNumber],
+      ["First Name", providerData.firstName],
+      ["Last Name", providerData.lastName],
+      ["Date of Birth", providerData.dateOfBirth],
+      ["Gender", providerData.gender],
+      ["Request ID", response.request_id],
+      ["Status", response.status]
+    ];
+
+    fields.forEach(([label, value]) => {
+      if (value !== undefined && value !== null && value !== "") {
+        const paragraph = document.createElement("p");
+        const strong = document.createElement("strong");
+
+        strong.textContent = label + ": ";
+        paragraph.appendChild(strong);
+        paragraph.appendChild(
+          document.createTextNode(String(value))
+        );
+
+        container.appendChild(paragraph);
+      }
+    });
+  }
+
+  async function getLoggedInUser() {
+    const {
+      data: { user },
+      error
+    } = await client.auth.getUser();
+
+    if (error || !user) {
+      window.location.href = "login.html";
+      return null;
+    }
+
+    return user;
+  }
+
+  async function callPersonalisation(action, trackingId, type) {
+    const payload = {
+      action: action,
+      tracking_id: trackingId
+    };
+
+    if (type) {
+      payload.slip_type = type;
+    }
+
+    const { data, error } = await client.functions.invoke(
+      "nin-personalisation",
+      {
+        body: payload
+      }
+    );
+
+    if (error) {
+      let message = error.message || "Request failed.";
+
+      try {
+        if (error.context) {
+          const response = await error.context.json();
+          message = response.message || message;
+        }
+      } catch (_) {}
+
+      throw new Error(message);
+    }
+
+    return data;
+  }
+
+  async function submitRequest() {
+    const button = document.getElementById("submitBtn");
+    const trackingId =
+      document.getElementById("trackingId").value.trim();
+
+    const type = slipType.value;
+
+    clearMessage("submitMessage");
+    document.getElementById("submitResult").replaceChildren();
+
+    if (!/^[a-zA-Z0-9]{15}$/.test(trackingId)) {
+      showMessage(
+        "submitMessage",
+        "Tracking ID must contain exactly 15 letters or numbers.",
+        "error"
+      );
+      return;
+    }
+
+    const confirmed = confirm(
+      "You are about to submit " +
+      type.toUpperCase() +
+      " NIN Personalisation for ₦" +
+      prices[type].toLocaleString("en-NG") +
+      ". Continue?"
+    );
+
+    if (!confirmed) return;
+
+    button.disabled = true;
+    button.textContent = "Submitting...";
+
+    try {
+      const user = await getLoggedInUser();
+      if (!user) return;
+
+      const response = await callPersonalisation(
+        "submit",
+        trackingId,
+        type
+      );
+
+      if (response.status === "successful") {
+        showMessage(
+          "submitMessage",
+          response.message || "Personalisation completed successfully.",
+          "success"
+        );
+      } else if (
+        response.status === "processing" ||
+        response.status === "pending"
+      ) {
+        showMessage(
+          "submitMessage",
+          response.message ||
+            "Your request is being processed. Check the status again later.",
+          "pending"
+        );
+      } else {
+        showMessage(
+          "submitMessage",
+          response.message || "The request could not be confirmed.",
+          "error"
+        );
+      }
+
+      displayResult("submitResult", response);
+
+      document.getElementById("checkTrackingId").value =
+        trackingId;
+
+    } catch (error) {
+      showMessage(
+        "submitMessage",
+        error.message || "Unable to submit request. Please try again.",
+        "error"
+      );
+    } finally {
+      button.disabled = false;
+      button.textContent = "Submit Personalisation";
+    }
+  }
+
+  async function checkStatus() {
+    const button = document.getElementById("checkBtn");
+    const trackingId =
+      document.getElementById("checkTrackingId").value.trim();
+
+    clearMessage("checkMessage");
+    document.getElementById("checkResult").replaceChildren();
+
+    if (!/^[a-zA-Z0-9]{15}$/.test(trackingId)) {
+      showMessage(
+        "checkMessage",
+        "Enter a valid 15-character tracking ID.",
+        "error"
+      );
+      return;
+    }
+
+    button.disabled = true;
+    button.textContent = "Checking...";
+
+    try {
+      const user = await getLoggedInUser();
+      if (!user) return;
+
+      const response = await callPersonalisation(
+        "check",
+        trackingId
+      );
+
+      if (response.status === "successful") {
+        showMessage(
+          "checkMessage",
+          response.message || "Personalisation completed successfully.",
+          "success"
+        );
+      } else if (response.status === "failed") {
+        showMessage(
+          "checkMessage",
+          response.message || "The provider confirmed that the request failed. Check your wallet transaction history for the refund.",
+          "error"
+        );
+      } else {
+        showMessage(
+          "checkMessage",
+          response.message ||
+            "Your request is still being processed. Please check again later.",
+          "pending"
+        );
+      }
+
+      displayResult("checkResult", response);
+
+    } catch (error) {
+      showMessage(
+        "checkMessage",
+        error.message || "Unable to check status. Please try again.",
+        "error"
+      );
+    } finally {
+      button.disabled = false;
+      button.textContent = "Check Status";
+    }
+  }
+
+  getLoggedInUser();
+</script>
+
+</body>
+</html>
