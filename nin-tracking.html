@@ -106,7 +106,7 @@
       border-color: #087f3d;
     }
 
-    .submit-btn {
+    button {
       width: 100%;
       padding: 15px;
       margin-top: 16px;
@@ -119,9 +119,13 @@
       cursor: pointer;
     }
 
-    .submit-btn:disabled {
+    button:disabled {
       background: #999;
       cursor: not-allowed;
+    }
+
+    .status-btn {
+      background: #063b2b;
     }
 
     .back-btn {
@@ -232,7 +236,9 @@
 
 <div class="container">
 
+  <!-- NIN TRACKING SUBMISSION -->
   <div class="card">
+
     <h2>NIN Tracking</h2>
 
     <p class="description">
@@ -243,8 +249,7 @@
 
     <div class="notice">
       Enter the Tracking ID exactly as it appears on your original
-      NIN registration slip. Make sure the information belongs to you
-      before submitting.
+      NIN registration slip. Only submit information that belongs to you.
     </div>
 
     <div class="price-box">
@@ -258,6 +263,7 @@
     </div>
 
     <form id="trackingForm">
+
       <label for="trackingID">Enter Your Tracking ID</label>
 
       <input
@@ -270,24 +276,80 @@
         required
       >
 
-      <button type="submit" class="submit-btn" id="submitBtn">
+      <button type="submit" id="submitBtn">
         Submit Tracking ID
       </button>
+
     </form>
 
     <div id="message" class="message" role="status" aria-live="polite"></div>
 
     <p class="small-note">
-      Your wallet will be charged only when the request is accepted
-      for processing. If the provider confirms a failed request,
-      the refund process will be handled by the system.
+      Your wallet will be charged when you submit a verification request.
+      If the provider confirms a failed request, the system will process
+      the refund.
     </p>
+
   </div>
 
+  <!-- CHECK STATUS -->
+  <div class="card">
+
+    <h2>Check NIN Tracking Status</h2>
+
+    <p class="description">
+      Have you already submitted a Tracking ID? Enter your payment
+      reference below to check your request status and retrieve
+      completed results.
+    </p>
+
+    <form id="statusForm">
+
+      <label for="paymentReference">Payment Reference</label>
+
+      <input
+        type="text"
+        id="paymentReference"
+        placeholder="Enter your NINTRK reference"
+        maxlength="100"
+        autocomplete="off"
+        required
+      >
+
+      <button
+        type="submit"
+        class="status-btn"
+        id="statusBtn"
+      >
+        Check Status
+      </button>
+
+    </form>
+
+    <div
+      id="statusMessage"
+      class="message"
+      role="status"
+      aria-live="polite"
+    ></div>
+
+    <p class="small-note">
+      Checking your status is free. It does not deduct money from
+      your wallet.
+    </p>
+
+  </div>
+
+  <!-- VERIFICATION RESULT -->
   <div class="card result" id="resultCard">
+
     <h3>NIN Tracking Result</h3>
 
-    <img id="customerPhoto" class="photo" alt="Retrieved customer photograph">
+    <img
+      id="customerPhoto"
+      class="photo"
+      alt="Retrieved customer photograph"
+    >
 
     <div id="resultDetails"></div>
 
@@ -295,14 +357,17 @@
       Keep your NIN information private. Do not share your result
       with unauthorized persons.
     </p>
+
   </div>
 
-  <a href="dashboard.html" class="back-btn">← Back to Dashboard</a>
+  <a href="dashboard.html" class="back-btn">
+    ← Back to Dashboard
+  </a>
 
 </div>
 
 <script>
-  /* SUPABASE CONFIGURATION */
+
   const SUPABASE_URL =
     "https://iknhifndgpwibkfidggq.supabase.co";
 
@@ -317,13 +382,18 @@
   let currentUser = null;
   let servicePrice = null;
   let requestInProgress = false;
+  let statusInProgress = false;
 
   const trackingForm = document.getElementById("trackingForm");
   const trackingInput = document.getElementById("trackingID");
   const submitBtn = document.getElementById("submitBtn");
   const messageBox = document.getElementById("message");
 
-  /* FORMAT MONEY */
+  const statusForm = document.getElementById("statusForm");
+  const referenceInput = document.getElementById("paymentReference");
+  const statusBtn = document.getElementById("statusBtn");
+  const statusMessage = document.getElementById("statusMessage");
+
   function formatMoney(amount) {
     return "₦" + Number(amount || 0).toLocaleString("en-NG", {
       minimumFractionDigits: 2,
@@ -331,18 +401,16 @@
     });
   }
 
-  /* DISPLAY MESSAGE */
-  function showMessage(text, type) {
-    messageBox.textContent = text;
-    messageBox.className = "message " + type;
+  function showMessage(element, text, type) {
+    element.textContent = text;
+    element.className = "message " + type;
   }
 
-  function hideMessage() {
-    messageBox.textContent = "";
-    messageBox.className = "message";
+  function hideMessage(element) {
+    element.textContent = "";
+    element.className = "message";
   }
 
-  /* CHECK LOGIN */
   async function checkLogin() {
     const { data, error } = await supabaseClient.auth.getUser();
 
@@ -355,7 +423,6 @@
     return true;
   }
 
-  /* LOAD WALLET */
   async function loadWallet() {
     const balanceElement = document.getElementById("walletBalance");
 
@@ -374,7 +441,6 @@
     balanceElement.textContent = formatMoney(data ? data.balance : 0);
   }
 
-  /* LOAD SERVICE PRICE */
   async function loadServicePrice() {
     const priceElement = document.getElementById("servicePrice");
 
@@ -388,10 +454,13 @@
       console.error("NIN Tracking price error:", error);
       priceElement.textContent = "Price unavailable";
       submitBtn.disabled = true;
+
       showMessage(
+        messageBox,
         "Unable to load the NIN Tracking price. Please try again later.",
         "error"
       );
+
       return;
     }
 
@@ -399,7 +468,13 @@
       servicePrice = null;
       priceElement.textContent = "Currently unavailable";
       submitBtn.disabled = true;
-      showMessage("NIN Tracking is currently unavailable.", "error");
+
+      showMessage(
+        messageBox,
+        "NIN Tracking is currently unavailable.",
+        "error"
+      );
+
       return;
     }
 
@@ -408,7 +483,6 @@
     submitBtn.disabled = false;
   }
 
-  /* ADD RESULT ROW SAFELY */
   function addResultRow(container, label, value) {
     const row = document.createElement("div");
     row.className = "result-row";
@@ -417,6 +491,7 @@
     left.textContent = label;
 
     const right = document.createElement("strong");
+
     right.textContent =
       value === null || value === undefined || value === ""
         ? "Not provided"
@@ -427,7 +502,6 @@
     container.appendChild(row);
   }
 
-  /* DISPLAY RESULT */
   function displayResult(data, reportID, reference) {
     const resultCard = document.getElementById("resultCard");
     const resultDetails = document.getElementById("resultDetails");
@@ -460,7 +534,6 @@
       addResultRow(resultDetails, field[0], field[1]);
     });
 
-    /* DISPLAY PHOTO ONLY IF PROVIDER RETURNS BASE64 */
     if (
       typeof data.photo === "string" &&
       data.photo.length > 0 &&
@@ -477,7 +550,6 @@
     resultCard.style.display = "block";
   }
 
-  /* READ ERROR DETAILS */
   async function getFunctionErrorMessage(error) {
     if (error && error.context) {
       try {
@@ -488,7 +560,7 @@
           if (body && body.error) return body.error;
         }
       } catch (e) {
-        // Keep generic message if response cannot be read.
+        // Use the generic message.
       }
     }
 
@@ -497,7 +569,10 @@
       : "Unable to process your request.";
   }
 
-  /* SUBMIT TRACKING REQUEST */
+  // ======================================
+  // SUBMIT TRACKING ID
+  // ======================================
+
   trackingForm.addEventListener("submit", async function(event) {
     event.preventDefault();
 
@@ -509,19 +584,24 @@
     }
 
     if (servicePrice === null || !Number.isFinite(servicePrice)) {
-      showMessage("Service price is unavailable. Please refresh the page.", "error");
+      showMessage(
+        messageBox,
+        "Service price is unavailable. Please refresh the page.",
+        "error"
+      );
       return;
     }
 
     const trackingID = trackingInput.value.trim();
 
     if (trackingID.length < 4 || trackingID.length > 60) {
-      showMessage("Please enter a valid Tracking ID.", "error");
+      showMessage(messageBox, "Please enter a valid Tracking ID.", "error");
       return;
     }
 
     if (!/^[A-Za-z0-9_-]+$/.test(trackingID)) {
       showMessage(
+        messageBox,
         "Your Tracking ID contains invalid characters. Check the original slip.",
         "error"
       );
@@ -542,18 +622,15 @@
     trackingInput.disabled = true;
 
     document.getElementById("resultCard").style.display = "none";
-    hideMessage();
+    hideMessage(messageBox);
 
     showMessage(
-      "Your request is being processed. Please do not close this page or submit again.",
+      messageBox,
+      "Your request is being processed. Please do not submit again.",
       "pending"
     );
 
     try {
-      /*
-       * CALL THE SUPABASE EDGE FUNCTION.
-       * Payment and provider verification are handled on the server.
-       */
       const { data, error } = await supabaseClient.functions.invoke(
         "nin-tracking",
         {
@@ -567,10 +644,9 @@
         const errorMessage = await getFunctionErrorMessage(error);
 
         showMessage(
-          "We could not confirm the result of this request. " +
-          "Please do not submit again immediately. Contact support " +
-          "with your request details if the issue continues. " +
-          "Details: " + errorMessage,
+          messageBox,
+          "We could not confirm the result. Please check your payment reference using the Check Status section before submitting again. " +
+          errorMessage,
           "pending"
         );
 
@@ -580,19 +656,27 @@
 
       if (!data) {
         showMessage(
-          "No confirmation was received. Please contact support before trying again.",
+          messageBox,
+          "No confirmation was received. Please check your status before trying again.",
           "pending"
         );
+
         await loadWallet();
         return;
       }
 
       if (data.pending) {
         showMessage(
-          "Your request is still being processed. Please do not submit the same Tracking ID again. " +
-          "Reference: " + (data.reference || "Not available"),
+          messageBox,
+          "Your request is still being processed. Reference: " +
+          (data.reference || "Not available") +
+          ". Use Check Status below.",
           "pending"
         );
+
+        if (data.reference) {
+          referenceInput.value = data.reference;
+        }
 
         await loadWallet();
         return;
@@ -605,7 +689,12 @@
           data.reference || ""
         );
 
+        if (data.reference) {
+          referenceInput.value = data.reference;
+        }
+
         showMessage(
+          messageBox,
           "NIN Tracking completed successfully.",
           "success"
         );
@@ -614,39 +703,36 @@
         return;
       }
 
-      if (data.refunded === true || data.refund_status === "refunded") {
+      if (data.refunded === true) {
         showMessage(
-          "Your NIN Tracking request was unsuccessful. Your wallet has been refunded.",
+          messageBox,
+          "Verification unsuccessful. Your wallet has been refunded. Reference: " +
+          (data.reference || "Not available"),
           "error"
         );
 
-        await loadWallet();
-        return;
-      }
-
-      if (data.success === false) {
-        showMessage(
-          data.message ||
-          "NIN Tracking could not be completed. Check the response before making another request.",
-          data.pending ? "pending" : "error"
-        );
+        if (data.reference) {
+          referenceInput.value = data.reference;
+        }
 
         await loadWallet();
         return;
       }
 
       showMessage(
-        "The server returned an unexpected response. Please contact support before submitting again.",
-        "pending"
+        messageBox,
+        data.message || "NIN Tracking could not be completed.",
+        "error"
       );
 
       await loadWallet();
 
     } catch (error) {
-      console.error("NIN Tracking request error:", error);
+      console.error("NIN Tracking error:", error);
 
       showMessage(
-        "We could not confirm your request. Please do not submit again until its status has been checked.",
+        messageBox,
+        "We could not confirm your request. Please check its status before submitting again.",
         "pending"
       );
 
@@ -654,13 +740,160 @@
 
     } finally {
       requestInProgress = false;
-      submitBtn.disabled = false;
+      submitBtn.disabled = servicePrice === null;
       submitBtn.textContent = "Submit Tracking ID";
       trackingInput.disabled = false;
     }
   });
 
-  /* START PAGE */
+  // ======================================
+  // CHECK PAYMENT / REQUEST STATUS
+  // ======================================
+
+  statusForm.addEventListener("submit", async function(event) {
+    event.preventDefault();
+
+    if (statusInProgress) return;
+
+    if (!currentUser) {
+      window.location.href = "login.html";
+      return;
+    }
+
+    const reference = referenceInput.value.trim();
+
+    if (!reference || reference.length > 100) {
+      showMessage(
+        statusMessage,
+        "Please enter a valid payment reference.",
+        "error"
+      );
+      return;
+    }
+
+    statusInProgress = true;
+    statusBtn.disabled = true;
+    statusBtn.textContent = "Checking...";
+    hideMessage(statusMessage);
+
+    try {
+      const { data, error } = await supabaseClient.functions.invoke(
+        "nin-tracking",
+        {
+          body: {
+            action: "status",
+            reference: reference
+          }
+        }
+      );
+
+      if (error) {
+        const errorMessage = await getFunctionErrorMessage(error);
+
+        showMessage(
+          statusMessage,
+          errorMessage,
+          "error"
+        );
+
+        return;
+      }
+
+      if (!data || !data.success) {
+        showMessage(
+          statusMessage,
+          data && data.message
+            ? data.message
+            : "Unable to retrieve request status.",
+          "error"
+        );
+
+        return;
+      }
+
+      const status = String(data.status || "").toLowerCase();
+
+      if (status === "completed") {
+        showMessage(
+          statusMessage,
+          "Status: COMPLETED. Your NIN Tracking result is available below.",
+          "success"
+        );
+
+        if (data.data) {
+          displayResult(
+            data.data,
+            data.reportID || "",
+            data.reference || reference
+          );
+        } else {
+          showMessage(
+            statusMessage,
+            "Your request is marked completed, but its saved result is unavailable. Please contact support with your reference.",
+            "pending"
+          );
+        }
+
+      } else if (status === "pending" || status === "processing") {
+        document.getElementById("resultCard").style.display = "none";
+
+        showMessage(
+          statusMessage,
+          "Status: " + status.toUpperCase() +
+          ". Your request has not been completed yet. Please check again later. Reference: " +
+          data.reference,
+          "pending"
+        );
+
+      } else if (status === "failed") {
+        document.getElementById("resultCard").style.display = "none";
+
+        if (data.refund_status === "refunded") {
+          showMessage(
+            statusMessage,
+            "Status: FAILED. Refund status: REFUNDED. Your wallet refund has been completed.",
+            "error"
+          );
+        } else {
+          showMessage(
+            statusMessage,
+            "Status: FAILED. Refund status: " +
+            String(data.refund_status || "Not confirmed") +
+            ". Please contact support if your wallet has not been refunded.",
+            "error"
+          );
+        }
+
+      } else {
+        showMessage(
+          statusMessage,
+          "Request status: " + (data.status || "Unknown"),
+          "pending"
+        );
+      }
+
+      await loadWallet();
+
+    } catch (error) {
+      console.error("Status check error:", error);
+
+      showMessage(
+        statusMessage,
+        "Unable to check status. Please try again.",
+        "error"
+      );
+
+    } finally {
+      statusInProgress = false;
+      statusBtn.disabled = false;
+      statusBtn.textContent = "Check Status";
+    }
+  });
+
+  // ======================================
+  // START PAGE
+  // ======================================
+
   async function startPage() {
     const loggedIn = await checkLogin();
 
@@ -677,6 +910,7 @@
   } else {
     startPage();
   }
+
 </script>
 
 </body>
