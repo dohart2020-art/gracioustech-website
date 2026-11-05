@@ -76,9 +76,9 @@
       padding: 20px;
     }
 
-    /* LIVE NIGERIA DIGITAL CLOCK */
+    /* NIGERIA CLOCK */
     .nigeria-clock-card {
-      background: #ffffff;
+      background: #fff;
       border-left: 5px solid #063b2b;
       border-radius: 14px;
       padding: 18px 20px;
@@ -112,6 +112,7 @@
     .welcome h2 { color: #063b2b; margin-bottom: 5px; }
     .welcome p { color: #666; font-size: 14px; }
 
+    /* WALLET */
     .wallet {
       background: #063b2b;
       color: white;
@@ -128,7 +129,11 @@
       margin: 8px 0 15px;
     }
 
-    .wallet-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+    .wallet-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
 
     .fund-btn, .refresh-btn {
       display: inline-block;
@@ -158,7 +163,10 @@
       box-shadow: 0 2px 10px rgba(0,0,0,.06);
     }
 
-    .account-card h3 { color: #063b2b; margin-bottom: 12px; }
+    .account-card h3 {
+      color: #063b2b;
+      margin-bottom: 12px;
+    }
 
     .account-row {
       display: flex;
@@ -177,7 +185,10 @@
       word-break: break-word;
     }
 
-    .section-title { margin: 25px 0 12px; color: #063b2b; }
+    .section-title {
+      margin: 25px 0 12px;
+      color: #063b2b;
+    }
 
     .services {
       display: grid;
@@ -192,7 +203,10 @@
       box-shadow: 0 2px 10px rgba(0,0,0,.06);
     }
 
-    .service-card h3 { color: #063b2b; margin-bottom: 8px; }
+    .service-card h3 {
+      color: #063b2b;
+      margin-bottom: 8px;
+    }
 
     .service-card p {
       color: #666;
@@ -229,6 +243,34 @@
       cursor: not-allowed;
     }
 
+    /* FLOATING NIN TRACKING NEW BADGE */
+    .nin-tracking-card {
+      position: relative;
+      margin-top: 25px;
+      border: 1px solid #d5eadc;
+    }
+
+    .nin-tracking-new {
+      position: absolute;
+      top: -17px;
+      right: 15px;
+      background: #ff9800;
+      color: white;
+      padding: 6px 16px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: bold;
+      letter-spacing: 1px;
+      box-shadow: 0 3px 10px rgba(0,0,0,.2);
+      animation: floatNew 1.5s ease-in-out infinite;
+      z-index: 2;
+    }
+
+    @keyframes floatNew {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-7px); }
+    }
+
     .quick-links {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -259,6 +301,7 @@
       margin-top: 10px;
     }
 
+    /* REFERRAL */
     .referral-description {
       color: #666;
       line-height: 1.6;
@@ -299,7 +342,10 @@
     }
 
     .referral-button:hover { opacity: .9; }
-    .referral-button:disabled { opacity: .55; cursor: not-allowed; }
+    .referral-button:disabled {
+      opacity: .55;
+      cursor: not-allowed;
+    }
 
     #referralMessage {
       margin-top: 10px;
@@ -308,12 +354,13 @@
       overflow-wrap: anywhere;
     }
 
+    /* ANNOUNCEMENT POPUP */
     .announcement-overlay {
       position: fixed;
       inset: 0;
       width: 100%;
       height: 100%;
-      background: rgba(0, 0, 0, 0.70);
+      background: rgba(0, 0, 0, .70);
       display: none;
       align-items: center;
       justify-content: center;
@@ -362,7 +409,11 @@
       flex-shrink: 0;
     }
 
-    .announcement-header h2 { font-size: 19px; line-height: 1.3; }
+    .announcement-header h2 {
+      font-size: 19px;
+      line-height: 1.3;
+    }
+
     .announcement-body { padding: 24px 20px 20px; }
 
     .announcement-title {
@@ -451,7 +502,7 @@
 
   <div class="container">
 
-    <!-- LIVE NIGERIA DIGITAL CLOCK -->
+    <!-- NIGERIA CLOCK -->
     <div class="nigeria-clock-card" aria-label="Current Nigeria time">
       <div class="nigeria-clock-label">NIGERIA TIME</div>
       <div class="nigeria-clock-time" id="nigeriaClockTime">Loading time...</div>
@@ -600,6 +651,25 @@
         <a href="bvn-verification.html" class="service-btn">Verify BVN</a>
       </div>
 
+      <!-- NEW NIN TRACKING SERVICE -->
+      <div class="service-card nin-tracking-card" id="ninTrackingCard">
+        <span class="nin-tracking-new">NEW</span>
+
+        <h3>NIN Tracking</h3>
+
+        <p>
+          Retrieve your NIN using the Tracking ID on your original NIN registration slip.
+        </p>
+
+        <div class="price" id="ninTrackingPrice">Loading price...</div>
+
+        <a href="nin-tracking.html"
+           class="service-btn"
+           id="ninTrackingBtn">
+          Track NIN
+        </a>
+      </div>
+
     </div>
 
     <!-- IPE CLEARANCE -->
@@ -646,7 +716,7 @@
       recopay: false
     };
 
-    /* LIVE NIGERIA DIGITAL CLOCK */
+    /* NIGERIA CLOCK */
     function updateNigeriaClock() {
       const now = new Date();
 
@@ -946,7 +1016,7 @@
       details.style.display = "block";
     }
 
-    /* SERVICE PRICES — INCLUDING IPE CLEARANCE */
+    /* SERVICE PRICES */
     async function loadServicePrices() {
       const { data, error } = await supabaseClient
         .from("service_settings")
@@ -955,7 +1025,11 @@
       if (error) {
         console.error("Service price error:", error);
 
-        ["ninValidationPrice", "ipeClearancePrice"].forEach(function(id) {
+        [
+          "ninValidationPrice",
+          "ipeClearancePrice",
+          "ninTrackingPrice"
+        ].forEach(function(id) {
           const element = document.getElementById(id);
 
           if (element) {
@@ -1020,6 +1094,16 @@
         services.find(item => item.service_code === "ipe_clearance"),
         "ipe-clearance.html",
         "Open IPE Clearance"
+      );
+
+      /* NEW NIN TRACKING PRICE */
+      updateServiceCard(
+        "ninTrackingCard",
+        "ninTrackingPrice",
+        "ninTrackingBtn",
+        services.find(item => item.service_code === "nin_tracking"),
+        "nin-tracking.html",
+        "Track NIN"
       );
     }
 
