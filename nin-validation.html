@@ -101,6 +101,15 @@
       accent-color: #087f3d;
     }
 
+    .option input:disabled {
+      cursor: not-allowed;
+    }
+
+    .option:has(input:disabled) {
+      opacity: 0.55;
+      cursor: not-allowed;
+    }
+
     .option-text {
       flex: 1;
       line-height: 1.5;
@@ -239,7 +248,7 @@
               <span class="option-title">No Record Found</span><br>
               Check the No Record validation option.
             </span>
-            <span class="price">₦1,200</span>
+            <span class="price" id="noRecordPrice">Loading...</span>
           </label>
 
           <label class="option">
@@ -252,23 +261,23 @@
               <span class="option-title">Update Details</span><br>
               Select this option for Update Record validation.
             </span>
-            <span class="price">₦1,500</span>
+            <span class="price" id="updateRecordPrice">Loading...</span>
           </label>
         </div>
 
         <div class="summary">
           <div class="summary-row">
             <span>Service</span>
-            <strong id="selectedService">No Record Found</strong>
+            <strong id="selectedService">Loading...</strong>
           </div>
           <div class="summary-row summary-total">
             <span>Amount to Pay</span>
-            <span id="selectedPrice">₦1,200</span>
+            <span id="selectedPrice">Loading...</span>
           </div>
         </div>
 
-        <button id="submitBtn" type="submit">
-          Pay ₦1,200 & Continue
+        <button id="submitBtn" type="submit" disabled>
+          Loading prices...
         </button>
       </form>
 
@@ -301,9 +310,9 @@
       SUPABASE_ANON_KEY
     );
 
-    const PRICES = {
-      no_record: 1200,
-      update_record: 1500
+    const SERVICE_CODES = {
+      no_record: "nin_validation_no_record",
+      update_record: "nin_validation_update_record"
     };
 
     const form = document.getElementById("validationForm");
@@ -314,29 +323,20 @@
     const messageBox = document.getElementById("message");
 
     let currentBalance = 0;
+    let servicePrices = {};
+    let pricesLoaded = false;
+    let processing = false;
 
     function money(amount) {
       return "₦" + Number(amount).toLocaleString("en-NG");
     }
 
     function selectedType() {
-      return document.querySelector(
+      const selected = document.querySelector(
         'input[name="validationType"]:checked'
-      ).value;
-    }
+      );
 
-    function updatePrice() {
-      const type = selectedType();
-      const amount = PRICES[type];
-
-      document.getElementById("selectedService").textContent =
-        type === "no_record" ? "No Record Found" : "Update Details";
-
-      document.getElementById("selectedPrice").textContent =
-        money(amount);
-
-      submitBtn.textContent =
-        "Pay " + money(amount) + " & Continue";
+      return selected ? selected.value : null;
     }
 
     function showMessage(text, type) {
@@ -349,8 +349,62 @@
       messageBox.className = "message";
     }
 
+    function getService(type) {
+      return servicePrices[type] || null;
+    }
+
+    function updatePrice() {
+      const type = selectedType();
+      const service = getService(type);
+
+      const selectedService =
+        document.getElementById("selectedService");
+
+      const selectedPrice =
+        document.getElementById("selectedPrice");
+
+      const radios = document.querySelectorAll(
+        'input[name="validationType"]'
+      );
+
+      radios.forEach((radio) => {
+        const item = getService(radio.value);
+        radio.disabled =
+          !pricesLoaded || !item || !item.active;
+      });
+
+      if (!pricesLoaded) {
+        selectedService.textContent = "Loading...";
+        selectedPrice.textContent = "Loading...";
+        submitBtn.textContent = "Loading prices...";
+        submitBtn.disabled = true;
+        return;
+      }
+
+      if (!service || !service.active) {
+        selectedService.textContent = "Unavailable";
+        selectedPrice.textContent = "Unavailable";
+        submitBtn.textContent = "Service unavailable";
+        submitBtn.disabled = true;
+        return;
+      }
+
+      selectedService.textContent =
+        type === "no_record"
+          ? "No Record Found"
+          : "Update Details";
+
+      selectedPrice.textContent = money(service.price);
+
+      submitBtn.textContent =
+        "Pay " + money(service.price) + " & Continue";
+
+      submitBtn.disabled = processing;
+    }
+
     async function requireLogin() {
-      const { data, error } = await supabaseClient.auth.getSession();
+      const { data, error } =
+        await supabaseClient.auth.getSession();
 
       if (error || !data.session) {
         window.location.href = "login.html";
@@ -358,6 +412,111 @@
       }
 
       return data.session;
+    }
+
+    async function loadServicePrices() {
+      pricesLoaded = false;
+
+      document.getElementById("noRecordPrice").textContent =
+        "Loading...";
+
+      document.getElementById("updateRecordPrice").textContent =
+        "Loading...";
+
+      updatePrice();
+
+      const { data, error } = await supabaseClient
+        .from("service_settings")
+        .select("service_code, price, is_active")
+        .in("service_code", [
+          "nin_validation_no_record",
+          "nin_validation_update_record"
+        ]);
+
+      if (error) {
+        showMessage(
+          "Unable to load current NIN Validation prices. Please refresh the page or contact support.",
+          "error"
+        );
+
+        document.getElementById("noRecordPrice").textContent =
+          "Unavailable";
+
+        document.getElementById("updateRecordPrice").textContent =
+          "Unavailable";
+
+        servicePrices = {};
+        updatePrice();
+        return false;
+      }
+
+      servicePrices = {};
+
+      (data || []).forEach((item) => {
+        let type = null;
+
+        if (item.service_code === SERVICE_CODES.no_record) {
+          type = "no_record";
+        }
+
+        if (item.service_code === SERVICE_CODES.update_record) {
+          type = "update_record";
+        }
+
+        if (!type) return;
+
+        const price = Number(item.price);
+
+        servicePrices[type] = {
+          price: price,
+          active: item.is_active === true &&
+            Number.isFinite(price) &&
+            price > 0
+        };
+      });
+
+      const noRecord = getService("no_record");
+      const updateRecord = getService("update_record");
+
+      document.getElementById("noRecordPrice").textContent =
+        noRecord && noRecord.active
+          ? money(noRecord.price)
+          : "Unavailable";
+
+      document.getElementById("updateRecordPrice").textContent =
+        updateRecord && updateRecord.active
+          ? money(updateRecord.price)
+          : "Unavailable";
+
+      pricesLoaded = true;
+
+      const availableTypes = [
+        "no_record",
+        "update_record"
+      ].filter((type) => {
+        const item = getService(type);
+        return item && item.active;
+      });
+
+      if (availableTypes.length === 0) {
+        showMessage(
+          "Both NIN Validation options are currently unavailable. Please contact support.",
+          "error"
+        );
+
+        updatePrice();
+        return false;
+      }
+
+      if (!getService(selectedType())?.active) {
+        document.querySelector(
+          'input[name="validationType"][value="' +
+          availableTypes[0] + '"]'
+        ).checked = true;
+      }
+
+      updatePrice();
+      return true;
     }
 
     async function loadWallet() {
@@ -386,22 +545,45 @@
     });
 
     ninInput.addEventListener("input", () => {
-      ninInput.value = ninInput.value.replace(/\D/g, "").slice(0, 11);
+      ninInput.value = ninInput.value
+        .replace(/\D/g, "")
+        .slice(0, 11);
     });
 
     form.addEventListener("submit", async (event) => {
       event.preventDefault();
       clearMessage();
 
+      if (!pricesLoaded) {
+        showMessage(
+          "Prices are not available yet. Please refresh the page.",
+          "error"
+        );
+        return;
+      }
+
       const session = await requireLogin();
       if (!session) return;
 
       const nin = ninInput.value.trim();
       const validationType = selectedType();
-      const amount = PRICES[validationType];
+      const service = getService(validationType);
+
+      if (!service || !service.active) {
+        showMessage(
+          "This validation service is currently unavailable.",
+          "error"
+        );
+        return;
+      }
+
+      const amount = service.price;
 
       if (!/^\d{11}$/.test(nin)) {
-        showMessage("Please enter a valid 11-digit NIN.", "error");
+        showMessage(
+          "Please enter a valid 11-digit NIN.",
+          "error"
+        );
         return;
       }
 
@@ -425,6 +607,7 @@
 
       if (!confirmed) return;
 
+      processing = true;
       submitBtn.disabled = true;
       statusBtn.disabled = true;
       submitBtn.textContent = "Processing...";
@@ -475,15 +658,18 @@
         );
 
         await loadWallet();
+
       } catch (error) {
         showMessage(
           error.message ||
           "Something went wrong. Check the request status before trying again.",
           "error"
         );
+
         await loadWallet();
+
       } finally {
-        submitBtn.disabled = false;
+        processing = false;
         statusBtn.disabled = false;
         updatePrice();
       }
@@ -522,20 +708,23 @@
 
         if (error) {
           throw new Error(
-            data?.message || error.message ||
+            data?.message ||
+            error.message ||
             "Unable to check status."
           );
         }
 
         if (!data || data.success !== true) {
           showMessage(
-            data?.message || "Could not retrieve request status.",
+            data?.message ||
+            "Could not retrieve request status.",
             "error"
           );
           return;
         }
 
         const request = data.request || {};
+
         showMessage(
           (data.message || "Status retrieved.") +
           "\nRequest status: " +
@@ -548,19 +737,30 @@
         );
 
         await loadWallet();
+
       } catch (error) {
         showMessage(
           error.message || "Unable to check status.",
           "error"
         );
+
       } finally {
         statusBtn.disabled = false;
         statusBtn.textContent = "Check Validation Status";
       }
     });
 
-    updatePrice();
-    loadWallet();
+    async function initializePage() {
+      const session = await requireLogin();
+      if (!session) return;
+
+      await Promise.all([
+        loadServicePrices(),
+        loadWallet()
+      ]);
+    }
+
+    initializePage();
   </script>
 </body>
 </html>
