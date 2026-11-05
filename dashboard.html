@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dashboard - Gracioustec</title>
+  <meta name="theme-color" content="#063b2b">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <style>
@@ -31,7 +32,11 @@
       z-index: 100;
     }
 
-    .logo { font-size: 20px; font-weight: bold; }
+    .logo {
+      font-size: 20px;
+      font-weight: bold;
+      letter-spacing: .5px;
+    }
 
     .menu-btn {
       background: transparent;
@@ -53,9 +58,12 @@
       overflow: hidden;
     }
 
-    .menu.show { display: block; }
+    .menu.show {
+      display: block;
+    }
 
-    .menu a, .menu button {
+    .menu a,
+    .menu button {
       display: block;
       width: 100%;
       padding: 14px 16px;
@@ -68,12 +76,15 @@
       cursor: pointer;
     }
 
-    .menu a:hover, .menu button:hover { background: #f1f1f1; }
+    .menu a:hover,
+    .menu button:hover {
+      background: #f1f1f1;
+    }
 
     .container {
-      max-width: 1000px;
+      max-width: 1100px;
       margin: auto;
-      padding: 20px;
+      padding: 22px;
     }
 
     /* NIGERIA CLOCK */
@@ -108,20 +119,35 @@
       margin-top: 8px;
     }
 
-    .welcome { margin-bottom: 20px; }
-    .welcome h2 { color: #063b2b; margin-bottom: 5px; }
-    .welcome p { color: #666; font-size: 14px; }
+    /* WELCOME */
+    .welcome {
+      margin-bottom: 20px;
+    }
+
+    .welcome h2 {
+      color: #063b2b;
+      margin-bottom: 5px;
+    }
+
+    .welcome p {
+      color: #666;
+      font-size: 14px;
+    }
 
     /* WALLET */
     .wallet {
       background: #063b2b;
       color: white;
-      padding: 22px;
-      border-radius: 15px;
+      padding: 24px;
+      border-radius: 16px;
       margin-bottom: 20px;
+      box-shadow: 0 5px 16px rgba(6,59,43,.12);
     }
 
-    .wallet-title { font-size: 14px; opacity: .9; }
+    .wallet-title {
+      font-size: 14px;
+      opacity: .9;
+    }
 
     .wallet-balance {
       font-size: 30px;
@@ -135,7 +161,8 @@
       flex-wrap: wrap;
     }
 
-    .fund-btn, .refresh-btn {
+    .fund-btn,
+    .refresh-btn {
       display: inline-block;
       padding: 11px 18px;
       border-radius: 8px;
@@ -145,7 +172,10 @@
       border: none;
     }
 
-    .fund-btn { background: white; color: #063b2b; }
+    .fund-btn {
+      background: white;
+      color: #063b2b;
+    }
 
     .refresh-btn {
       background: rgba(255,255,255,.15);
@@ -153,12 +183,15 @@
       border: 1px solid rgba(255,255,255,.35);
     }
 
-    .refresh-btn:hover, .fund-btn:hover { opacity: .9; }
+    .refresh-btn:hover,
+    .fund-btn:hover {
+      opacity: .9;
+    }
 
     .account-card {
       background: white;
       border-radius: 14px;
-      padding: 18px;
+      padding: 20px;
       margin-bottom: 20px;
       box-shadow: 0 2px 10px rgba(0,0,0,.06);
     }
@@ -176,8 +209,13 @@
       gap: 10px;
     }
 
-    .account-row:last-child { border-bottom: none; }
-    .account-label { color: #777; }
+    .account-row:last-child {
+      border-bottom: none;
+    }
+
+    .account-label {
+      color: #777;
+    }
 
     .account-value {
       font-weight: bold;
@@ -185,57 +223,88 @@
       word-break: break-word;
     }
 
+    /* SERVICE SECTION HEADINGS */
     .section-title {
-      margin: 25px 0 12px;
+      margin: 32px 0 15px;
+      padding-left: 12px;
+      border-left: 4px solid #087f3d;
       color: #063b2b;
+      font-size: 20px;
+      font-weight: 700;
     }
 
+    /* PROFESSIONAL SERVICE GRID */
     .services {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 15px;
+      grid-template-columns: repeat(
+        auto-fit,
+        minmax(min(100%, 230px), 1fr)
+      );
+      gap: 20px;
+      align-items: stretch;
     }
 
     .service-card {
-      background: white;
-      padding: 20px;
-      border-radius: 14px;
-      box-shadow: 0 2px 10px rgba(0,0,0,.06);
+      background: #fff;
+      padding: 22px;
+      border: 1px solid #e7eee9;
+      border-radius: 16px;
+      box-shadow: 0 4px 14px rgba(6,59,43,.07);
+      display: flex;
+      flex-direction: column;
+      min-height: 215px;
+      position: relative;
+      transition: transform .2s ease, box-shadow .2s ease;
+    }
+
+    .service-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 22px rgba(6,59,43,.12);
     }
 
     .service-card h3 {
       color: #063b2b;
-      margin-bottom: 8px;
+      font-size: 17px;
+      margin-bottom: 10px;
+      line-height: 1.4;
     }
 
     .service-card p {
-      color: #666;
+      color: #68736d;
       font-size: 14px;
-      line-height: 1.5;
-      min-height: 42px;
+      line-height: 1.6;
+      min-height: 45px;
     }
 
     .price {
-      font-size: 20px;
+      font-size: 19px;
       font-weight: bold;
-      margin: 12px 0;
+      margin: 16px 0;
       color: #111;
     }
 
     .service-btn {
-      display: inline-block;
+      display: block;
       width: 100%;
       text-align: center;
       background: #063b2b;
       color: white;
-      padding: 11px;
-      border-radius: 8px;
+      padding: 12px;
+      border-radius: 9px;
       text-decoration: none;
       font-weight: bold;
+      font-size: 14px;
+      margin-top: auto;
+      transition: background .2s ease;
     }
 
-    .service-btn:hover { opacity: .9; }
-    .service-card.disabled { opacity: .65; }
+    .service-btn:hover {
+      background: #087f3d;
+    }
+
+    .service-card.disabled {
+      opacity: .65;
+    }
 
     .service-btn.disabled-btn {
       background: #999;
@@ -243,34 +312,40 @@
       cursor: not-allowed;
     }
 
-    /* FLOATING NIN TRACKING NEW BADGE */
+    /* FLOATING RED NEW BADGE */
     .nin-tracking-card {
       position: relative;
-      margin-top: 25px;
-      border: 1px solid #d5eadc;
+      margin-top: 8px;
+      border: 1px solid #f2caca;
     }
 
     .nin-tracking-new {
       position: absolute;
-      top: -17px;
+      top: -12px;
       right: 15px;
-      background: #ff9800;
-      color: white;
-      padding: 6px 16px;
+      background: #e00000;
+      color: #fff;
+      padding: 7px 16px;
       border-radius: 20px;
       font-size: 11px;
-      font-weight: bold;
+      font-weight: 800;
       letter-spacing: 1px;
-      box-shadow: 0 3px 10px rgba(0,0,0,.2);
+      box-shadow: 0 4px 12px rgba(224,0,0,.25);
       animation: floatNew 1.5s ease-in-out infinite;
       z-index: 2;
     }
 
     @keyframes floatNew {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-7px); }
+      0%, 100% {
+        transform: translateY(0);
+      }
+
+      50% {
+        transform: translateY(-5px);
+      }
     }
 
+    /* QUICK LINKS */
     .quick-links {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -287,12 +362,28 @@
       font-weight: bold;
       text-align: center;
       box-shadow: 0 2px 8px rgba(0,0,0,.05);
+      transition: background .2s ease;
     }
 
-    .quick-link:hover { background: #eef5f2; }
-    .loading { color: #777; font-size: 14px; }
-    .error { color: #b00020; font-size: 14px; }
-    .success-message { color: #087443; font-size: 14px; margin-top: 8px; }
+    .quick-link:hover {
+      background: #eef5f2;
+    }
+
+    .loading {
+      color: #777;
+      font-size: 14px;
+    }
+
+    .error {
+      color: #b00020;
+      font-size: 14px;
+    }
+
+    .success-message {
+      color: #087443;
+      font-size: 14px;
+      margin-top: 8px;
+    }
 
     .account-note {
       color: #777;
@@ -341,7 +432,10 @@
       transition: background .2s ease, opacity .2s ease;
     }
 
-    .referral-button:hover { opacity: .9; }
+    .referral-button:hover {
+      opacity: .9;
+    }
+
     .referral-button:disabled {
       opacity: .55;
       cursor: not-allowed;
@@ -360,7 +454,7 @@
       inset: 0;
       width: 100%;
       height: 100%;
-      background: rgba(0, 0, 0, .70);
+      background: rgba(0,0,0,.70);
       display: none;
       align-items: center;
       justify-content: center;
@@ -368,7 +462,9 @@
       z-index: 2147483647;
     }
 
-    .announcement-overlay.show { display: flex !important; }
+    .announcement-overlay.show {
+      display: flex !important;
+    }
 
     .announcement-box {
       width: 100%;
@@ -382,8 +478,15 @@
     }
 
     @keyframes announcementIn {
-      from { opacity: 0; transform: translateY(-25px) scale(.96); }
-      to { opacity: 1; transform: translateY(0) scale(1); }
+      from {
+        opacity: 0;
+        transform: translateY(-25px) scale(.96);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
     }
 
     .announcement-header {
@@ -414,7 +517,9 @@
       line-height: 1.3;
     }
 
-    .announcement-body { padding: 24px 20px 20px; }
+    .announcement-body {
+      padding: 24px 20px 20px;
+    }
 
     .announcement-title {
       color: #063b2b;
@@ -430,7 +535,9 @@
       word-break: break-word;
     }
 
-    .announcement-footer { padding: 0 20px 20px; }
+    .announcement-footer {
+      padding: 0 20px 20px;
+    }
 
     .announcement-close {
       width: 100%;
@@ -444,18 +551,64 @@
       cursor: pointer;
     }
 
-    .announcement-close:hover { opacity: .9; }
+    .announcement-close:hover {
+      opacity: .9;
+    }
 
+    /* MOBILE RESPONSIVENESS */
     @media (max-width: 600px) {
-      .container { padding: 15px; }
-      .wallet-balance { font-size: 26px; }
-      .account-row { flex-direction: column; }
-      .account-value { text-align: left; }
-      .announcement-box { max-width: 100%; }
-      .announcement-title { font-size: 19px; }
-      .announcement-message { font-size: 14px; }
-      .nigeria-clock-time { font-size: 27px; }
-      .nigeria-clock-card { padding: 16px 12px; }
+      .container {
+        padding: 15px;
+      }
+
+      .wallet {
+        padding: 20px;
+      }
+
+      .wallet-balance {
+        font-size: 26px;
+      }
+
+      .account-row {
+        flex-direction: column;
+      }
+
+      .account-value {
+        text-align: left;
+      }
+
+      .announcement-box {
+        max-width: 100%;
+      }
+
+      .announcement-title {
+        font-size: 19px;
+      }
+
+      .announcement-message {
+        font-size: 14px;
+      }
+
+      .nigeria-clock-time {
+        font-size: 27px;
+      }
+
+      .nigeria-clock-card {
+        padding: 16px 12px;
+      }
+
+      .services {
+        grid-template-columns: 1fr;
+        gap: 16px;
+      }
+
+      .service-card {
+        min-height: 200px;
+      }
+
+      .section-title {
+        font-size: 19px;
+      }
     }
   </style>
 </head>
@@ -465,21 +618,30 @@
   <!-- ANNOUNCEMENT POPUP -->
   <div id="announcementOverlay" class="announcement-overlay">
     <div class="announcement-box">
+
       <div class="announcement-header">
         <div class="announcement-icon">!</div>
         <h2>Gracioustec Announcement</h2>
       </div>
 
       <div class="announcement-body">
-        <div id="announcementTitle" class="announcement-title">Announcement</div>
+        <div id="announcementTitle" class="announcement-title">
+          Announcement
+        </div>
+
         <div id="announcementMessage" class="announcement-message"></div>
       </div>
 
       <div class="announcement-footer">
-        <button id="announcementCloseBtn" class="announcement-close" type="button">
+        <button
+          id="announcementCloseBtn"
+          class="announcement-close"
+          type="button"
+        >
           Continue to Dashboard
         </button>
       </div>
+
     </div>
   </div>
 
@@ -487,7 +649,12 @@
   <header>
     <div class="logo">GRACIOUSTEC</div>
 
-    <button class="menu-btn" id="menuBtn" type="button" aria-label="Open menu">
+    <button
+      class="menu-btn"
+      id="menuBtn"
+      type="button"
+      aria-label="Open menu"
+    >
       ☰
     </button>
 
@@ -505,8 +672,12 @@
     <!-- NIGERIA CLOCK -->
     <div class="nigeria-clock-card" aria-label="Current Nigeria time">
       <div class="nigeria-clock-label">NIGERIA TIME</div>
-      <div class="nigeria-clock-time" id="nigeriaClockTime">Loading time...</div>
-      <div class="nigeria-clock-date" id="nigeriaClockDate">Loading date...</div>
+      <div class="nigeria-clock-time" id="nigeriaClockTime">
+        Loading time...
+      </div>
+      <div class="nigeria-clock-date" id="nigeriaClockDate">
+        Loading date...
+      </div>
     </div>
 
     <!-- WELCOME -->
@@ -524,7 +695,9 @@
         Share your link with friends and family to introduce them to our services.
       </p>
 
-      <label for="referralLink" class="referral-label">Your referral link</label>
+      <label for="referralLink" class="referral-label">
+        Your referral link
+      </label>
 
       <input
         type="text"
@@ -535,7 +708,12 @@
         aria-label="Your personal referral link"
       >
 
-      <button type="button" id="copyReferralBtn" class="referral-button" disabled>
+      <button
+        type="button"
+        id="copyReferralBtn"
+        class="referral-button"
+        disabled
+      >
         Loading Referral Link...
       </button>
 
@@ -547,23 +725,39 @@
     <!-- WALLET -->
     <div class="wallet">
       <div class="wallet-title">Wallet Balance</div>
-      <div class="wallet-balance" id="walletBalance">₦0.00</div>
+
+      <div class="wallet-balance" id="walletBalance">
+        ₦0.00
+      </div>
 
       <div class="wallet-actions">
         <a href="fund-wallet.html" class="fund-btn">Fund Wallet</a>
-        <button type="button" class="refresh-btn" id="refreshBtn">↻ Refresh</button>
+
+        <button
+          type="button"
+          class="refresh-btn"
+          id="refreshBtn"
+        >
+          ↻ Refresh
+        </button>
       </div>
 
-      <div id="refreshMessage" style="font-size:13px;margin-top:10px;opacity:.9;"></div>
+      <div
+        id="refreshMessage"
+        style="font-size:13px;margin-top:10px;opacity:.9;"
+      ></div>
     </div>
 
     <!-- DEDICATED ACCOUNT -->
     <div class="account-card" id="paymentPointCard">
       <h3>My Dedicated Account</h3>
 
-      <div id="accountLoading" class="loading">Checking account...</div>
+      <div id="accountLoading" class="loading">
+        Checking account...
+      </div>
 
       <div id="accountDetails" style="display:none;">
+
         <div class="account-row">
           <span class="account-label">Account Name</span>
           <span class="account-value" id="accountName">---</span>
@@ -582,6 +776,7 @@
         <div class="account-note">
           Transfer money to this dedicated account to fund your Gracioustec wallet.
         </div>
+
       </div>
 
       <div id="accountError" class="error"></div>
@@ -591,38 +786,82 @@
     <h2 class="section-title">NIN Services</h2>
 
     <div class="services">
+
       <div class="service-card" id="ninStandardCard">
         <h3>NIN Reprinting</h3>
         <p>Get your NIN slip reprinted quickly.</p>
         <div class="price" id="ninStandardPrice">Loading price...</div>
-        <a href="nin.html" class="service-btn" id="ninStandardBtn">Continue</a>
+        <a href="nin.html" class="service-btn" id="ninStandardBtn">
+          Continue
+        </a>
       </div>
 
       <div class="service-card" id="ninLostCard">
         <h3>NIN Lost Slip</h3>
         <p>Reprint your NIN slip if the original is lost.</p>
         <div class="price" id="ninLostPrice">Loading price...</div>
-        <a href="nin.html" class="service-btn" id="ninLostBtn">Continue</a>
+        <a href="nin.html" class="service-btn" id="ninLostBtn">
+          Continue
+        </a>
       </div>
 
       <div class="service-card" id="ninPremiumCard">
         <h3>Premium / Foreigner Slip</h3>
         <p>Premium NIN slip service.</p>
         <div class="price" id="ninPremiumPrice">Loading price...</div>
-        <a href="nin.html" class="service-btn" id="ninPremiumBtn">Continue</a>
+        <a href="nin.html" class="service-btn" id="ninPremiumBtn">
+          Continue
+        </a>
       </div>
+
+      <!-- NIN PERSONALISATION -->
+      <div
+        class="service-card nin-tracking-card"
+        id="ninPersonalisationCard"
+        style="display:none;"
+      >
+        <span class="nin-tracking-new">NEW</span>
+
+        <h3>NIN Personalisation</h3>
+
+        <p>
+          Submit your IJOVIA NIN Personalisation request using your
+          15-character tracking ID.
+        </p>
+
+        <div class="price" id="ninPersonalisationStandardPrice">
+          Standard: Loading...
+        </div>
+
+        <div class="price" id="ninPersonalisationPremiumPrice">
+          Premium: Loading...
+        </div>
+
+        <a
+          href="nin-personalisation.html"
+          class="service-btn"
+          id="ninPersonalisationBtn"
+        >
+          Open NIN Personalisation
+        </a>
+      </div>
+
     </div>
 
     <!-- BVN SERVICES -->
     <h2 class="section-title">BVN Services</h2>
 
     <div class="services">
+
       <div class="service-card" id="bvnCard">
         <h3>BVN Reprinting</h3>
         <p>Verify and reprint your BVN slip.</p>
         <div class="price" id="bvnPrice">Loading price...</div>
-        <a href="bvn.html" class="service-btn" id="bvnBtn">Continue</a>
+        <a href="bvn.html" class="service-btn" id="bvnBtn">
+          Continue
+        </a>
       </div>
+
     </div>
 
     <!-- VERIFICATION -->
@@ -632,9 +871,15 @@
 
       <div class="service-card" id="ninValidationCard">
         <h3>NIN Validation</h3>
-        <p>Submit a NIN validation request and check its processing status.</p>
+        <p>
+          Submit a NIN validation request and check its processing status.
+        </p>
         <div class="price" id="ninValidationPrice">Loading price...</div>
-        <a href="nin-validation.html" class="service-btn" id="ninValidationBtn">
+        <a
+          href="nin-validation.html"
+          class="service-btn"
+          id="ninValidationBtn"
+        >
           Open NIN Validation
         </a>
       </div>
@@ -642,31 +887,16 @@
       <div class="service-card">
         <h3>NIN Verification</h3>
         <p>Verify NIN information and view available details.</p>
-        <a href="nin-verification.html" class="service-btn">Verify NIN</a>
+        <a href="nin-verification.html" class="service-btn">
+          Verify NIN
+        </a>
       </div>
 
       <div class="service-card">
         <h3>BVN Verification</h3>
         <p>Verify BVN information.</p>
-        <a href="bvn-verification.html" class="service-btn">Verify BVN</a>
-      </div>
-
-      <!-- NEW NIN TRACKING SERVICE -->
-      <div class="service-card nin-tracking-card" id="ninTrackingCard">
-        <span class="nin-tracking-new">NEW</span>
-
-        <h3>NIN Tracking</h3>
-
-        <p>
-          Retrieve your NIN using the Tracking ID on your original NIN registration slip.
-        </p>
-
-        <div class="price" id="ninTrackingPrice">Loading price...</div>
-
-        <a href="nin-tracking.html"
-           class="service-btn"
-           id="ninTrackingBtn">
-          Track NIN
+        <a href="bvn-verification.html" class="service-btn">
+          Verify BVN
         </a>
       </div>
 
@@ -676,33 +906,53 @@
     <h2 class="section-title">IPE Clearance</h2>
 
     <div class="services">
+
       <div class="service-card" id="ipeClearanceCard">
         <h3>IPE Clearance</h3>
+
         <p>
           Submit your IPE Clearance tracking ID and check your clearance request status.
         </p>
+
         <div class="price" id="ipeClearancePrice">Loading price...</div>
-        <a href="ipe-clearance.html" class="service-btn" id="ipeClearanceBtn">
+
+        <a
+          href="ipe-clearance.html"
+          class="service-btn"
+          id="ipeClearanceBtn"
+        >
           Open IPE Clearance
         </a>
       </div>
+
     </div>
 
     <!-- QUICK LINKS -->
     <h2 class="section-title">Quick Links</h2>
 
     <div class="quick-links">
-      <a href="transactions.html" class="quick-link">Transaction History</a>
-      <a href="fund-wallet.html" class="quick-link">Fund Wallet</a>
-      <a href="profile.html" class="quick-link">My Profile</a>
+      <a href="transactions.html" class="quick-link">
+        Transaction History
+      </a>
+
+      <a href="fund-wallet.html" class="quick-link">
+        Fund Wallet
+      </a>
+
+      <a href="profile.html" class="quick-link">
+        My Profile
+      </a>
     </div>
 
   </div>
 
   <script>
     /* SUPABASE */
-    const SUPABASE_URL = "https://iknhifndgpwibkfidggq.supabase.co";
-    const SUPABASE_KEY = "sb_publishable_xELauxOMm7eMkNrPz55Mrw_LVkRoASn";
+    const SUPABASE_URL =
+      "https://iknhifndgpwibkfidggq.supabase.co";
+
+    const SUPABASE_KEY =
+      "sb_publishable_xELauxOMm7eMkNrPz55Mrw_LVkRoASn";
 
     const supabaseClient = window.supabase.createClient(
       SUPABASE_URL,
@@ -720,57 +970,71 @@
     function updateNigeriaClock() {
       const now = new Date();
 
-      const timeElement = document.getElementById("nigeriaClockTime");
-      const dateElement = document.getElementById("nigeriaClockDate");
+      const timeElement =
+        document.getElementById("nigeriaClockTime");
+
+      const dateElement =
+        document.getElementById("nigeriaClockDate");
 
       if (!timeElement || !dateElement) return;
 
-      timeElement.textContent = new Intl.DateTimeFormat("en-NG", {
-        timeZone: "Africa/Lagos",
-        hour: "2-digit",
-        minute: "2-digit",
-        second: "2-digit",
-        hour12: true
-      }).format(now);
+      timeElement.textContent =
+        new Intl.DateTimeFormat("en-NG", {
+          timeZone: "Africa/Lagos",
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit",
+          hour12: true
+        }).format(now);
 
-      dateElement.textContent = new Intl.DateTimeFormat("en-NG", {
-        timeZone: "Africa/Lagos",
-        weekday: "long",
-        day: "numeric",
-        month: "long",
-        year: "numeric"
-      }).format(now);
+      dateElement.textContent =
+        new Intl.DateTimeFormat("en-NG", {
+          timeZone: "Africa/Lagos",
+          weekday: "long",
+          day: "numeric",
+          month: "long",
+          year: "numeric"
+        }).format(now);
     }
 
     updateNigeriaClock();
     setInterval(updateNigeriaClock, 1000);
 
     /* MENU */
-    document.getElementById("menuBtn").addEventListener("click", function () {
-      document.getElementById("menu").classList.toggle("show");
-    });
+    document.getElementById("menuBtn").addEventListener(
+      "click",
+      function () {
+        document.getElementById("menu").classList.toggle("show");
+      }
+    );
 
     document.addEventListener("click", function (event) {
       const menu = document.getElementById("menu");
       const menuBtn = document.getElementById("menuBtn");
 
-      if (!menu.contains(event.target) && !menuBtn.contains(event.target)) {
+      if (
+        !menu.contains(event.target) &&
+        !menuBtn.contains(event.target)
+      ) {
         menu.classList.remove("show");
       }
     });
 
     /* LOGOUT */
-    document.getElementById("logoutBtn").addEventListener("click", async function () {
-      const { error } = await supabaseClient.auth.signOut();
+    document.getElementById("logoutBtn").addEventListener(
+      "click",
+      async function () {
+        const { error } = await supabaseClient.auth.signOut();
 
-      if (error) {
-        console.error("Logout error:", error);
-        alert("Unable to log out. Please try again.");
-        return;
+        if (error) {
+          console.error("Logout error:", error);
+          alert("Unable to log out. Please try again.");
+          return;
+        }
+
+        window.location.href = "login.html";
       }
-
-      window.location.href = "login.html";
-    });
+    );
 
     /* MONEY */
     function formatMoney(amount) {
@@ -782,7 +1046,8 @@
 
     /* LOAD USER */
     async function loadUser() {
-      const { data, error } = await supabaseClient.auth.getUser();
+      const { data, error } =
+        await supabaseClient.auth.getUser();
 
       if (error || !data || !data.user) {
         window.location.href = "login.html";
@@ -790,16 +1055,23 @@
       }
 
       currentUser = data.user;
-      document.getElementById("userEmail").textContent = data.user.email || "";
+
+      document.getElementById("userEmail").textContent =
+        data.user.email || "";
 
       return data.user;
     }
 
     /* LOAD REFERRAL LINK */
     async function loadReferralLink(user) {
-      const input = document.getElementById("referralLink");
-      const button = document.getElementById("copyReferralBtn");
-      const message = document.getElementById("referralMessage");
+      const input =
+        document.getElementById("referralLink");
+
+      const button =
+        document.getElementById("copyReferralBtn");
+
+      const message =
+        document.getElementById("referralMessage");
 
       input.value = "";
       button.disabled = true;
@@ -824,28 +1096,35 @@
         if (!data || !data.referral_code) {
           input.value = "";
           button.textContent = "Referral Link Unavailable";
+
           message.textContent =
             "Your referral code has not been created yet. Please contact support.";
+
           message.style.color = "#b00020";
           return;
         }
 
-        const referralCode = String(data.referral_code).trim();
+        const referralCode =
+          String(data.referral_code).trim();
 
         if (!/^[A-Z0-9_-]+$/i.test(referralCode)) {
           throw new Error("The referral code is invalid.");
         }
 
-        const referralURL = new URL("https://gracioustec.com.ng/register.html");
+        const referralURL =
+          new URL("https://gracioustec.com.ng/register.html");
+
         referralURL.searchParams.set("ref", referralCode);
 
         input.value = referralURL.toString();
+
         button.disabled = false;
         button.textContent = "Copy Referral Link";
         button.style.background = "#063b2b";
 
         message.textContent =
           "Your referral link is ready. Share it with friends and family.";
+
         message.style.color = "#087443";
 
       } catch (error) {
@@ -858,68 +1137,91 @@
 
         message.textContent =
           "Unable to load your referral link. Please refresh the page or contact support.";
+
         message.style.color = "#b00020";
       }
     }
 
     /* COPY REFERRAL LINK */
-    document.getElementById("copyReferralBtn").addEventListener("click", async function () {
-      const input = document.getElementById("referralLink");
-      const button = document.getElementById("copyReferralBtn");
-      const message = document.getElementById("referralMessage");
+    document.getElementById("copyReferralBtn").addEventListener(
+      "click",
+      async function () {
+        const input =
+          document.getElementById("referralLink");
 
-      if (!input.value ||
-          !input.value.startsWith("https://gracioustec.com.ng/register.html?ref=")) {
-        message.textContent = "Your referral link is not ready yet.";
-        message.style.color = "#b00020";
-        return;
-      }
+        const button =
+          document.getElementById("copyReferralBtn");
 
-      button.disabled = true;
-      let copySucceeded = false;
+        const message =
+          document.getElementById("referralMessage");
 
-      try {
-        if (navigator.clipboard &&
-            typeof navigator.clipboard.writeText === "function") {
-          await navigator.clipboard.writeText(input.value);
-          copySucceeded = true;
+        if (
+          !input.value ||
+          !input.value.startsWith(
+            "https://gracioustec.com.ng/register.html?ref="
+          )
+        ) {
+          message.textContent =
+            "Your referral link is not ready yet.";
+
+          message.style.color = "#b00020";
+          return;
         }
-      } catch (error) {
-        console.warn("Clipboard API unavailable:", error);
-      }
 
-      if (!copySucceeded) {
+        button.disabled = true;
+
+        let copySucceeded = false;
+
         try {
-          input.focus();
-          input.select();
-          input.setSelectionRange(0, input.value.length);
-          copySucceeded = document.execCommand("copy");
+          if (
+            navigator.clipboard &&
+            typeof navigator.clipboard.writeText === "function"
+          ) {
+            await navigator.clipboard.writeText(input.value);
+            copySucceeded = true;
+          }
         } catch (error) {
-          console.error("Copy error:", error);
+          console.warn("Clipboard API unavailable:", error);
         }
-      }
 
-      if (copySucceeded) {
-        button.textContent = "Copied ✓";
-        button.style.background = "#087443";
-        message.textContent =
-          "Referral link copied successfully! Share it with friends.";
-        message.style.color = "#087443";
+        if (!copySucceeded) {
+          try {
+            input.focus();
+            input.select();
+            input.setSelectionRange(0, input.value.length);
+            copySucceeded = document.execCommand("copy");
+          } catch (error) {
+            console.error("Copy error:", error);
+          }
+        }
 
-        setTimeout(function () {
+        if (copySucceeded) {
+          button.textContent = "Copied ✓";
+          button.style.background = "#087443";
+
+          message.textContent =
+            "Referral link copied successfully! Share it with friends.";
+
+          message.style.color = "#087443";
+
+          setTimeout(function () {
+            button.textContent = "Copy Referral Link";
+            button.style.background = "#063b2b";
+            button.disabled = false;
+          }, 2000);
+
+        } else {
           button.textContent = "Copy Referral Link";
           button.style.background = "#063b2b";
           button.disabled = false;
-        }, 2000);
-      } else {
-        button.textContent = "Copy Referral Link";
-        button.style.background = "#063b2b";
-        button.disabled = false;
-        message.textContent =
-          "Automatic copying failed. Select the link above and copy it manually.";
-        message.style.color = "#b00020";
+
+          message.textContent =
+            "Automatic copying failed. Select the link above and copy it manually.";
+
+          message.style.color = "#b00020";
+        }
       }
-    });
+    );
 
     /* LOAD WALLET */
     async function loadWallet(user) {
@@ -931,7 +1233,10 @@
 
       if (error) {
         console.error("Wallet error:", error);
-        document.getElementById("walletBalance").textContent = "Unable to load";
+
+        document.getElementById("walletBalance").textContent =
+          "Unable to load";
+
         return;
       }
 
@@ -958,21 +1263,30 @@
 
       (data || []).forEach(method => {
         if (method.method_code === "paymentpoint") {
-          paymentMethods.paymentpoint = Boolean(method.is_active);
+          paymentMethods.paymentpoint =
+            Boolean(method.is_active);
         }
 
         if (method.method_code === "recopay") {
-          paymentMethods.recopay = Boolean(method.is_active);
+          paymentMethods.recopay =
+            Boolean(method.is_active);
         }
       });
     }
 
     /* DEDICATED ACCOUNT */
     async function loadPaymentPointAccount(user) {
-      const card = document.getElementById("paymentPointCard");
-      const loading = document.getElementById("accountLoading");
-      const details = document.getElementById("accountDetails");
-      const errorBox = document.getElementById("accountError");
+      const card =
+        document.getElementById("paymentPointCard");
+
+      const loading =
+        document.getElementById("accountLoading");
+
+      const details =
+        document.getElementById("accountDetails");
+
+      const errorBox =
+        document.getElementById("accountError");
 
       loading.style.display = "none";
       details.style.display = "none";
@@ -999,19 +1313,28 @@
 
       if (error) {
         console.error("PaymentPoint account error:", error);
-        errorBox.textContent = "Unable to load dedicated account.";
+
+        errorBox.textContent =
+          "Unable to load dedicated account.";
+
         return;
       }
 
       if (!data) {
         errorBox.textContent =
           "No dedicated account found. Please open Fund Wallet to create or view your account.";
+
         return;
       }
 
-      document.getElementById("accountName").textContent = data.account_name || "---";
-      document.getElementById("bankName").textContent = data.bank_name || "---";
-      document.getElementById("accountNumber").textContent = data.account_number || "---";
+      document.getElementById("accountName").textContent =
+        data.account_name || "---";
+
+      document.getElementById("bankName").textContent =
+        data.bank_name || "---";
+
+      document.getElementById("accountNumber").textContent =
+        data.account_number || "---";
 
       details.style.display = "block";
     }
@@ -1026,10 +1349,15 @@
         console.error("Service price error:", error);
 
         [
+          "ninStandardPrice",
+          "ninLostPrice",
+          "ninPremiumPrice",
+          "bvnPrice",
           "ninValidationPrice",
           "ipeClearancePrice",
-          "ninTrackingPrice"
-        ].forEach(function(id) {
+          "ninPersonalisationStandardPrice",
+          "ninPersonalisationPremiumPrice"
+        ].forEach(function (id) {
           const element = document.getElementById(id);
 
           if (element) {
@@ -1037,77 +1365,157 @@
           }
         });
 
+        const personalisationButton =
+          document.getElementById("ninPersonalisationBtn");
+
+        personalisationButton.classList.add("disabled-btn");
+        personalisationButton.removeAttribute("href");
+
         return;
       }
 
       const services = data || [];
 
+      /* NIN STANDARD */
       updateServiceCard(
         "ninStandardCard",
         "ninStandardPrice",
         "ninStandardBtn",
-        services.find(item => item.service_code === "nin_standard"),
+        services.find(item =>
+          item.service_code === "nin_standard"
+        ),
         "nin.html",
         "Continue"
       );
 
+      /* NIN LOST */
       updateServiceCard(
         "ninLostCard",
         "ninLostPrice",
         "ninLostBtn",
-        services.find(item => item.service_code === "nin_lost"),
+        services.find(item =>
+          item.service_code === "nin_lost"
+        ),
         "nin.html",
         "Continue"
       );
 
+      /* NIN PREMIUM */
       updateServiceCard(
         "ninPremiumCard",
         "ninPremiumPrice",
         "ninPremiumBtn",
-        services.find(item => item.service_code === "nin_premium"),
+        services.find(item =>
+          item.service_code === "nin_premium"
+        ),
         "nin.html",
         "Continue"
       );
 
+      /* BVN REPRINT */
       updateServiceCard(
         "bvnCard",
         "bvnPrice",
         "bvnBtn",
-        services.find(item => item.service_code === "bvn_reprint"),
+        services.find(item =>
+          item.service_code === "bvn_reprint"
+        ),
         "bvn.html",
         "Continue"
       );
 
+      /* NIN VALIDATION */
       updateServiceCard(
         "ninValidationCard",
         "ninValidationPrice",
         "ninValidationBtn",
-        services.find(item => item.service_code === "nin_validation"),
+        services.find(item =>
+          item.service_code === "nin_validation"
+        ),
         "nin-validation.html",
         "Open NIN Validation"
       );
 
+      /* IPE CLEARANCE */
       updateServiceCard(
         "ipeClearanceCard",
         "ipeClearancePrice",
         "ipeClearanceBtn",
-        services.find(item => item.service_code === "ipe_clearance"),
+        services.find(item =>
+          item.service_code === "ipe_clearance"
+        ),
         "ipe-clearance.html",
         "Open IPE Clearance"
       );
 
-      /* NEW NIN TRACKING PRICE */
-      updateServiceCard(
-        "ninTrackingCard",
-        "ninTrackingPrice",
-        "ninTrackingBtn",
-        services.find(item => item.service_code === "nin_tracking"),
-        "nin-tracking.html",
-        "Track NIN"
-      );
+      /* NIN PERSONALISATION */
+      updateNinPersonalisationCard(services);
     }
 
-    /* UPDATE SERVICE CARD */
+    /* UPDATE NIN PERSONALISATION CARD */
+    function updateNinPersonalisationCard(services) {
+      const card =
+        document.getElementById("ninPersonalisationCard");
+
+      const standardPrice =
+        document.getElementById("ninPersonalisationStandardPrice");
+
+      const premiumPrice =
+        document.getElementById("ninPersonalisationPremiumPrice");
+
+      const button =
+        document.getElementById("ninPersonalisationBtn");
+
+      const standardService = services.find(item =>
+        item.service_code === "nin_personalisation_standard"
+      );
+
+      const premiumService = services.find(item =>
+        item.service_code === "nin_personalisation_premium"
+      );
+
+      card.style.display = "block";
+
+      const bothServicesActive =
+        standardService &&
+        premiumService &&
+        standardService.is_active &&
+        premiumService.is_active;
+
+      if (!bothServicesActive) {
+        card.classList.add("disabled");
+
+        standardPrice.textContent =
+          standardService && standardService.is_active
+            ? "Standard: " + formatMoney(standardService.price)
+            : "Standard: Currently unavailable";
+
+        premiumPrice.textContent =
+          premiumService && premiumService.is_active
+            ? "Premium: " + formatMoney(premiumService.price)
+            : "Premium: Currently unavailable";
+
+        button.textContent = "Currently Unavailable";
+        button.classList.add("disabled-btn");
+        button.removeAttribute("href");
+
+        return;
+      }
+
+      card.classList.remove("disabled");
+
+      standardPrice.textContent =
+        "Standard: " + formatMoney(standardService.price);
+
+      premiumPrice.textContent =
+        "Premium: " + formatMoney(premiumService.price);
+
+      button.textContent = "Open NIN Personalisation";
+      button.classList.remove("disabled-btn");
+      button.href = "nin-personalisation.html";
+    }
+
+    /* UPDATE OTHER SERVICE CARDS */
     function updateServiceCard(
       cardId,
       priceId,
@@ -1124,22 +1532,30 @@
 
       if (!service) {
         card.style.display = "none";
-        console.warn("Service setting not found for card:", cardId);
+
+        console.warn(
+          "Service setting not found for card:",
+          cardId
+        );
+
         return;
       }
 
-      card.style.display = "block";
+      card.style.display = "flex";
 
       if (!service.is_active) {
         card.classList.add("disabled");
+
         price.textContent = "Currently unavailable";
         button.textContent = "Unavailable";
         button.classList.add("disabled-btn");
         button.removeAttribute("href");
+
         return;
       }
 
       card.classList.remove("disabled");
+
       price.textContent = formatMoney(service.price);
       button.textContent = activeButtonText;
       button.classList.remove("disabled-btn");
@@ -1148,9 +1564,14 @@
 
     /* ANNOUNCEMENT */
     async function loadAnnouncement() {
-      const overlay = document.getElementById("announcementOverlay");
-      const title = document.getElementById("announcementTitle");
-      const message = document.getElementById("announcementMessage");
+      const overlay =
+        document.getElementById("announcementOverlay");
+
+      const title =
+        document.getElementById("announcementTitle");
+
+      const message =
+        document.getElementById("announcementMessage");
 
       if (!overlay || !title || !message) return;
 
@@ -1169,14 +1590,19 @@
 
       if (!data) return;
 
-      title.textContent = data.title || "Gracioustec Announcement";
+      title.textContent =
+        data.title || "Gracioustec Announcement";
+
       message.textContent = data.message || "";
+
       overlay.classList.add("show");
     }
 
     /* CLOSE ANNOUNCEMENT */
     function closeAnnouncement() {
-      const overlay = document.getElementById("announcementOverlay");
+      const overlay =
+        document.getElementById("announcementOverlay");
+
       overlay.classList.remove("show");
       overlay.style.display = "none";
     }
@@ -1190,8 +1616,11 @@
     async function refreshDashboard() {
       if (!currentUser) return;
 
-      const button = document.getElementById("refreshBtn");
-      const message = document.getElementById("refreshMessage");
+      const button =
+        document.getElementById("refreshBtn");
+
+      const message =
+        document.getElementById("refreshMessage");
 
       button.disabled = true;
       button.textContent = "↻ Refreshing...";
@@ -1208,6 +1637,7 @@
         ]);
 
         message.textContent = "Updated successfully.";
+
       } catch (error) {
         console.error("Refresh error:", error);
         message.textContent = "Unable to refresh.";
@@ -1229,6 +1659,7 @@
     /* START DASHBOARD */
     async function startDashboard() {
       const user = await loadUser();
+
       if (!user) return;
 
       await loadPaymentMethods();
@@ -1243,10 +1674,14 @@
     }
 
     if (document.readyState === "loading") {
-      document.addEventListener("DOMContentLoaded", startDashboard);
+      document.addEventListener(
+        "DOMContentLoaded",
+        startDashboard
+      );
     } else {
       startDashboard();
     }
   </script>
+
 </body>
-</html>
+                                  </html>
