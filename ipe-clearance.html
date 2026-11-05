@@ -182,6 +182,72 @@
       color: #805600;
     }
 
+    /* IJOVIA-style API response */
+
+    #apiResponse {
+      display: none;
+      margin-top: 20px;
+      padding: 17px;
+      border: 1px solid #d9e5dc;
+      border-radius: 9px;
+      background: #fff;
+      overflow-wrap: anywhere;
+    }
+
+    #apiResponse.visible {
+      display: block;
+    }
+
+    .response-heading {
+      color: #087f3d;
+      font-size: 17px;
+      font-weight: bold;
+      margin-bottom: 17px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid #e5e5e5;
+    }
+
+    .clearance-heading {
+      color: #087f3d;
+      font-size: 16px;
+      font-weight: bold;
+      margin-bottom: 15px;
+    }
+
+    .response-row {
+      margin-bottom: 13px;
+      line-height: 1.5;
+      font-size: 14px;
+    }
+
+    .response-label {
+      display: block;
+      color: #555;
+      font-weight: bold;
+      margin-bottom: 3px;
+    }
+
+    .response-value {
+      display: block;
+      color: #222;
+      overflow-wrap: anywhere;
+    }
+
+    .response-status {
+      color: #087f3d;
+      font-weight: bold;
+    }
+
+    .response-processing {
+      color: #946200;
+      font-weight: bold;
+    }
+
+    .response-failed {
+      color: #b42318;
+      font-weight: bold;
+    }
+
     .small {
       font-size: 12px;
       color: #777;
@@ -224,7 +290,6 @@
     type="button"
     class="submit-btn"
     id="submitBtn"
-    onclick="submitRequest()"
   >
     Submit IPE Clearance
   </button>
@@ -233,7 +298,6 @@
     type="button"
     class="status-btn"
     id="statusBtn"
-    onclick="checkStatus()"
   >
     Check Existing Request Status
   </button>
@@ -248,6 +312,49 @@
   </div>
 
   <div id="message"></div>
+
+  <div id="apiResponse">
+    <div class="response-heading">
+      Live API Status Response
+    </div>
+
+    <div id="clearanceHeading" class="clearance-heading"></div>
+
+    <div class="response-row">
+      <span class="response-label">Name:</span>
+      <span class="response-value" id="resultName">Not available</span>
+    </div>
+
+    <div class="response-row">
+      <span class="response-label">Batch:</span>
+      <span class="response-value" id="resultBatch">N/A</span>
+    </div>
+
+    <div class="response-row">
+      <span class="response-label">Old Tracking ID:</span>
+      <span class="response-value" id="resultOldTracking">Not available</span>
+    </div>
+
+    <div class="response-row">
+      <span class="response-label">Status:</span>
+      <span class="response-value" id="resultStatus">Processing</span>
+    </div>
+
+    <div class="response-row">
+      <span class="response-label">Reply:</span>
+      <span class="response-value" id="resultReply">Not available</span>
+    </div>
+
+    <div class="response-row">
+      <span class="response-label">Price:</span>
+      <span class="response-value" id="resultPrice">Not available</span>
+    </div>
+
+    <div class="response-row">
+      <span class="response-label">Date:</span>
+      <span class="response-value" id="resultDate">Not available</span>
+    </div>
+  </div>
 
   <a href="dashboard.html" class="back-btn">
     Back to Dashboard
@@ -278,6 +385,7 @@
   const messageBox = document.getElementById("message");
   const submitBtn = document.getElementById("submitBtn");
   const statusBtn = document.getElementById("statusBtn");
+  const apiResponse = document.getElementById("apiResponse");
 
   function showMessage(message, type) {
     messageBox.className = type;
@@ -287,6 +395,10 @@
   function hideMessage() {
     messageBox.className = "";
     messageBox.textContent = "";
+  }
+
+  function hideApiResponse() {
+    apiResponse.classList.remove("visible");
   }
 
   function formatMoney(amount) {
@@ -302,6 +414,158 @@
 
   function isValidTrackingId(trackingId) {
     return /^[A-Za-z0-9]{1,15}$/.test(trackingId);
+  }
+
+  function cleanValue(value, fallback = "Not available") {
+    if (
+      value === null ||
+      value === undefined ||
+      String(value).trim() === ""
+    ) {
+      return fallback;
+    }
+
+    return String(value).trim();
+  }
+
+  function setResponseValue(id, value, fallback) {
+    document.getElementById(id).textContent =
+      cleanValue(value, fallback);
+  }
+
+  function isSuccessfulStatus(status) {
+    return [
+      "successful",
+      "success",
+      "completed",
+      "complete",
+      "cleared"
+    ].includes(String(status || "").toLowerCase().trim());
+  }
+
+  function buildReply(details, successful) {
+    let reply = cleanValue(details.reply, "");
+
+    const replyCode = cleanValue(details.reply_code, "");
+    const formerNin = cleanValue(details.former_nin, "");
+    const formerDob = cleanValue(details.former_dob, "");
+
+    // Use the full provider details when available.
+    if (replyCode) {
+      const ninText =
+        successful && formerNin
+          ? formerNin
+          : "Not available";
+
+      const dobText = formerDob || "Not available";
+
+      return "Reply: " + replyCode +
+        " | NIN: " + ninText +
+        " | DOB: " + dobText;
+    }
+
+    // If the provider already supplied the complete reply, use it.
+    if (reply) {
+      return reply;
+    }
+
+    return "Not available";
+  }
+
+  function showApiResponse(result) {
+    const details = result.details || {};
+
+    const transaction = result.transaction || {};
+
+    const status =
+      details.status ||
+      transaction.status ||
+      (result.pending
+        ? "Processing"
+        : result.refunded
+          ? "Refunded"
+          : result.success
+            ? "Successful"
+            : "Processing");
+
+    const successful =
+      !result.pending &&
+      !result.refunded &&
+      (
+        isSuccessfulStatus(status) ||
+        result.success === true
+      );
+
+    const processing = result.pending === true;
+
+    document.getElementById("clearanceHeading").textContent =
+      successful
+        ? "Clearance Successful!"
+        : processing
+          ? "Clearance Processing..."
+          : result.refunded
+            ? "Clearance Refunded"
+            : "Clearance Status Response";
+
+    setResponseValue(
+      "resultName",
+      details.name,
+      "Not available"
+    );
+
+    setResponseValue(
+      "resultBatch",
+      details.batch,
+      "N/A"
+    );
+
+    setResponseValue(
+      "resultOldTracking",
+      details.old_tracking_id,
+      "Not available"
+    );
+
+    const statusElement = document.getElementById("resultStatus");
+
+    statusElement.textContent = cleanValue(status, "Processing");
+
+    statusElement.className = "response-value " +
+      (
+        successful
+          ? "response-status"
+          : processing
+            ? "response-processing"
+            : result.refunded
+              ? "response-failed"
+              : ""
+      );
+
+    // The former NIN is included in the reply only after success.
+    setResponseValue(
+      "resultReply",
+      buildReply(details, successful),
+      processing ? "Awaiting provider response" : "Not available"
+    );
+
+    const providerPrice =
+      details.price ??
+      details.provider_price ??
+      transaction.provider_amount;
+
+    setResponseValue(
+      "resultPrice",
+      providerPrice !== null && providerPrice !== undefined
+        ? formatMoney(providerPrice)
+        : "Not available"
+    );
+
+    setResponseValue(
+      "resultDate",
+      details.date,
+      "Not available"
+    );
+
+    apiResponse.classList.add("visible");
   }
 
   async function loadWallet() {
@@ -344,6 +608,7 @@
     }
 
     currentPrice = Number(data.price);
+
     serviceActive =
       data.is_active === true &&
       Number.isFinite(currentPrice) &&
@@ -415,6 +680,7 @@
 
   async function submitRequest() {
     hideMessage();
+    hideApiResponse();
 
     const trackingId = getTrackingId();
 
@@ -448,8 +714,19 @@
     statusBtn.disabled = true;
     submitBtn.textContent = "Processing...";
 
+    // Show processing immediately while the request is submitted.
+    showApiResponse({
+      pending: true,
+      success: false,
+      details: {
+        status: "Processing"
+      }
+    });
+
     try {
       const result = await callIPEFunction("submit", trackingId);
+
+      showApiResponse(result);
 
       if (result.refunded) {
         showMessage(
@@ -499,6 +776,7 @@
 
   async function checkStatus() {
     hideMessage();
+    hideApiResponse();
 
     const trackingId = getTrackingId();
 
@@ -521,6 +799,8 @@
 
     try {
       const result = await callIPEFunction("status", trackingId);
+
+      showApiResponse(result);
 
       if (result.refunded) {
         showMessage(
@@ -564,6 +844,9 @@
       statusBtn.textContent = "Check Existing Request Status";
     }
   }
+
+  submitBtn.addEventListener("click", submitRequest);
+  statusBtn.addEventListener("click", checkStatus);
 
   initializePage();
 </script>
