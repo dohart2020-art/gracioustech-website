@@ -1,10 +1,10 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>IPE Clearance - Gracioustec</title>
+  <meta name="theme-color" content="#087f3d">
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
@@ -217,6 +217,7 @@
     id="trackingId"
     placeholder="Enter your IPE tracking ID"
     autocomplete="off"
+    maxlength="15"
   >
 
   <button
@@ -299,6 +300,10 @@
     return document.getElementById("trackingId").value.trim();
   }
 
+  function isValidTrackingId(trackingId) {
+    return /^[A-Za-z0-9]{1,15}$/.test(trackingId);
+  }
+
   async function loadWallet() {
     const { data, error } = await db
       .from("wallets")
@@ -327,28 +332,33 @@
       document.getElementById("servicePrice").textContent =
         "Unavailable";
 
+      serviceActive = false;
+      submitBtn.disabled = true;
+
       showMessage(
-        "Unable to load the IPE Clearance service settings. Please try again later.",
+        "Unable to load IPE Clearance service settings. Please try again later.",
         "error"
       );
 
-      submitBtn.disabled = true;
       return;
     }
 
     currentPrice = Number(data.price);
-    serviceActive = data.is_active === true;
+    serviceActive =
+      data.is_active === true &&
+      Number.isFinite(currentPrice) &&
+      currentPrice > 0;
 
     document.getElementById("servicePrice").textContent =
       formatMoney(currentPrice);
+
+    submitBtn.disabled = !serviceActive;
 
     if (!serviceActive) {
       showMessage(
         "IPE Clearance is currently unavailable. Please check back later.",
         "error"
       );
-
-      submitBtn.disabled = true;
     }
   }
 
@@ -418,9 +428,9 @@
       return;
     }
 
-    if (!/^[A-Za-z0-9_-]{5,100}$/.test(trackingId)) {
+    if (!isValidTrackingId(trackingId)) {
       showMessage(
-        "Please enter a valid tracking ID. Use 5 to 100 letters, numbers, hyphens or underscores.",
+        "Please enter a valid tracking ID containing only letters and numbers, with a maximum of 15 characters.",
         "error"
       );
       return;
@@ -441,29 +451,30 @@
     try {
       const result = await callIPEFunction("submit", trackingId);
 
-      if (result.ok === true ||
-          result.status === "success" ||
-          result.status === "pending") {
+      if (result.refunded) {
+        showMessage(
+          result.message || "The request failed and your refund was processed.",
+          "error"
+        );
 
-        if (result.status === "pending") {
-          showMessage(
-            result.message ||
-            "Your request is still being processed. Check its status using the button below. Do not submit it again.",
-            "pending"
-          );
-        } else {
-          showMessage(
-            result.message ||
-            "Your IPE Clearance request has been submitted successfully. You can check its status without paying again.",
-            "success"
-          );
-        }
+      } else if (result.pending) {
+        showMessage(
+          result.message ||
+          "Your request is being processed. Check its status later. Do not submit it again.",
+          "pending"
+        );
+
+      } else if (result.success) {
+        showMessage(
+          result.message ||
+          "Your IPE Clearance request was successful.",
+          "success"
+        );
 
       } else {
         showMessage(
           result.message ||
-          result.error ||
-          "The request could not be completed. Please check the message before trying again.",
+          "The request could not be completed. Please check the status before trying again.",
           "error"
         );
       }
@@ -473,7 +484,7 @@
     } catch (error) {
       showMessage(
         error.message +
-        " If you are unsure whether payment was processed, check the existing request status before submitting again.",
+        " Check the existing request status before submitting again.",
         "error"
       );
 
@@ -496,9 +507,9 @@
       return;
     }
 
-    if (!/^[A-Za-z0-9_-]{5,100}$/.test(trackingId)) {
+    if (!isValidTrackingId(trackingId)) {
       showMessage(
-        "Enter the tracking ID of the request you want to check.",
+        "Enter a valid tracking ID containing only letters and numbers, with a maximum of 15 characters.",
         "error"
       );
       return;
@@ -511,38 +522,31 @@
     try {
       const result = await callIPEFunction("status", trackingId);
 
-      if (result.status === "success") {
-        const clearance = result.clearance_status ||
-          result.data?.clearance_status ||
-          "Status received";
-
+      if (result.refunded) {
         showMessage(
-          "Status check completed. Clearance status: " + clearance +
-          (result.reference ? ". Reference: " + result.reference : ""),
-          "success"
+          result.message || "This request was refunded.",
+          "error"
         );
 
-      } else if (result.status === "pending") {
+      } else if (result.pending) {
         showMessage(
           result.message ||
-          "Your request is still pending. Please check again later.",
+          "Your request is still being processed. Please check again later.",
           "pending"
         );
 
-      } else if (result.status === "failed" ||
-                 result.status === "refunded") {
+      } else if (result.success) {
         showMessage(
           result.message ||
-          "This request failed or was refunded. Check your wallet balance.",
-          "error"
+          "IPE Clearance status received successfully.",
+          "success"
         );
 
       } else {
         showMessage(
           result.message ||
-          result.error ||
-          "Unable to confirm the request status. Please try again later.",
-          "pending"
+          "Unable to confirm the request status.",
+          "error"
         );
       }
 
