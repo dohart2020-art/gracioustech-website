@@ -1,0 +1,312 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NIN Modification - Gracioustec</title>
+<meta name="theme-color" content="#087f3d">
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:#f3f7f4;
+  color:#222;
+}
+header{
+  background:#087f3d;
+  color:white;
+  padding:20px;
+  text-align:center;
+}
+header h2{margin:0}
+.container{
+  max-width:600px;
+  margin:25px auto;
+  padding:15px;
+}
+.card{
+  background:white;
+  padding:22px;
+  border-radius:12px;
+  box-shadow:0 3px 12px rgba(0,0,0,.07);
+}
+h3{color:#087f3d;margin-top:0}
+label{
+  display:block;
+  margin:15px 0 7px;
+  font-weight:bold;
+}
+input,select,textarea{
+  width:100%;
+  padding:13px;
+  border:1px solid #ccc;
+  border-radius:7px;
+  font-size:15px;
+  background:white;
+}
+textarea{min-height:90px;resize:vertical}
+button{
+  width:100%;
+  padding:15px;
+  margin-top:20px;
+  border:0;
+  border-radius:7px;
+  background:#087f3d;
+  color:white;
+  font-size:16px;
+  font-weight:bold;
+}
+button:disabled{opacity:.6}
+.notice{
+  background:#e9f5ed;
+  padding:12px;
+  border-radius:7px;
+  font-size:13px;
+  line-height:1.6;
+}
+#message{
+  margin-top:15px;
+  padding:12px;
+  border-radius:7px;
+  display:none;
+  line-height:1.5;
+  overflow-wrap:anywhere;
+}
+.success{background:#e0f5e5;color:#08652e}
+.error{background:#ffe8e8;color:#a00000}
+.back{
+  display:block;
+  text-align:center;
+  margin-top:20px;
+  color:#087f3d;
+  text-decoration:none;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <h2>GRACIOUSTEC</h2>
+  <p>NIN Modification Service</p>
+</header>
+
+<div class="container">
+<div class="card">
+
+<h3>Submit NIN Modification Request</h3>
+
+<div class="notice">
+  Select the modification you need and provide your correct details.
+  Your wallet will be charged after successful payment processing.
+</div>
+
+<form id="modificationForm">
+
+<label>Modification Type</label>
+<select id="modificationType" required>
+  <option value="">Select modification type</option>
+  <option value="name">Name Modification</option>
+  <option value="date_of_birth">Date of Birth Modification</option>
+  <option value="phone_number">Phone Number Modification</option>
+  <option value="address">Address Modification</option>
+</select>
+
+<label>NIN</label>
+<input
+  type="text"
+  id="nin"
+  inputmode="numeric"
+  maxlength="11"
+  pattern="[0-9]{11}"
+  placeholder="Enter your 11-digit NIN"
+  required
+>
+
+<label>Current Information</label>
+<input
+  type="text"
+  id="currentValue"
+  placeholder="Enter your current information"
+  required
+>
+
+<label>Correct Information</label>
+<input
+  type="text"
+  id="newValue"
+  placeholder="Enter the correct information"
+  required
+>
+
+<label>Reason for Modification</label>
+<textarea
+  id="reason"
+  placeholder="Explain why you need this modification"
+  required
+></textarea>
+
+<div class="notice">
+  Please ensure that all information is correct before submitting.
+  Supporting document upload will be added after the secure
+  Supabase storage setup.
+</div>
+
+<button type="submit" id="submitBtn">
+  Submit Modification Request
+</button>
+
+</form>
+
+<div id="message"></div>
+
+<a href="dashboard.html" class="back">
+  Back to Dashboard
+</a>
+
+</div>
+</div>
+
+<script>
+const SUPABASE_URL =
+  "https://iknhifndgpwibkfidggq.supabase.co";
+
+const SUPABASE_ANON_KEY =
+  "PASTE_YOUR_EXISTING_SUPABASE_ANON_KEY_HERE";
+
+const supabase = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_ANON_KEY
+);
+
+const form = document.getElementById("modificationForm");
+const button = document.getElementById("submitBtn");
+const message = document.getElementById("message");
+
+function showMessage(text, type) {
+  message.style.display = "block";
+  message.className = type;
+  message.textContent = text;
+}
+
+async function checkLogin() {
+  const { data, error } = await supabase.auth.getUser();
+
+  if (error || !data.user) {
+    alert("Please login to continue.");
+    window.location.href = "login.html";
+    return false;
+  }
+
+  return true;
+}
+
+checkLogin();
+
+form.addEventListener("submit", async function(e) {
+  e.preventDefault();
+
+  button.disabled = true;
+  button.textContent = "Processing...";
+  message.style.display = "none";
+
+  try {
+    const { data: authData, error: authError } =
+      await supabase.auth.getUser();
+
+    if (authError || !authData.user) {
+      window.location.href = "login.html";
+      return;
+    }
+
+    const modificationType =
+      document.getElementById("modificationType").value;
+
+    const nin =
+      document.getElementById("nin").value.trim();
+
+    const currentValue =
+      document.getElementById("currentValue").value.trim();
+
+    const newValue =
+      document.getElementById("newValue").value.trim();
+
+    const reason =
+      document.getElementById("reason").value.trim();
+
+    if (!/^[0-9]{11}$/.test(nin)) {
+      throw new Error("Please enter a valid 11-digit NIN.");
+    }
+
+    if (currentValue === newValue) {
+      throw new Error(
+        "Your current and correct information cannot be the same."
+      );
+    }
+
+    const requestDetails = {
+      nin: nin,
+      current_value: currentValue,
+      new_value: newValue,
+      reason: reason
+    };
+
+    const { data, error } = await supabase.functions.invoke(
+      "nin-modification",
+      {
+        body: {
+          action: "submit",
+          modification_type: modificationType,
+          request_details: requestDetails
+        }
+      }
+    );
+
+    if (error) {
+      let serverMessage = error.message;
+
+      if (error.context) {
+        try {
+          const response = await error.context.json();
+          serverMessage = response.message || serverMessage;
+        } catch (_) {}
+      }
+
+      throw new Error(serverMessage);
+    }
+
+    if (!data || !data.success) {
+      throw new Error(
+        data?.message || "Request submission failed."
+      );
+    }
+
+    form.reset();
+
+    showMessage(
+      "SUCCESS! Your NIN Modification request has been submitted. " +
+      "Reference: " + data.payment_reference +
+      ". Amount: ₦" + data.amount,
+      "success"
+    );
+
+  } catch (error) {
+    showMessage(
+      error.message || "Something went wrong. Please try again.",
+      "error"
+    );
+
+  } finally {
+    button.disabled = false;
+    button.textContent = "Submit Modification Request";
+  }
+});
+</script>
+
+</body>
+</html>
