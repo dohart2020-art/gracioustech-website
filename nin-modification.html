@@ -1,212 +1,193 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>NIN Modification - Gracioustec</title>
 <meta name="theme-color" content="#087f3d">
-
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
 *{box-sizing:border-box}
-body{
-  margin:0;
-  font-family:Arial,sans-serif;
-  background:#f3f7f4;
-  color:#222;
-}
-header{
-  background:#087f3d;
-  color:white;
-  padding:20px;
-  text-align:center;
-}
+body{margin:0;font-family:Arial,sans-serif;background:#f3f7f4;color:#222}
+header{background:#087f3d;color:white;text-align:center;padding:22px}
 header h2{margin:0}
-.container{
-  max-width:600px;
-  margin:25px auto;
-  padding:15px;
-}
-.card{
-  background:white;
-  padding:22px;
-  border-radius:12px;
-  box-shadow:0 3px 12px rgba(0,0,0,.07);
-}
+.container{max-width:600px;margin:25px auto;padding:15px}
+.card{background:white;padding:22px;border-radius:12px;box-shadow:0 3px 12px #00000010}
 h3{color:#087f3d;margin-top:0}
-label{
-  display:block;
-  margin:15px 0 7px;
-  font-weight:bold;
-}
-input,select,textarea{
-  width:100%;
-  padding:13px;
-  border:1px solid #ccc;
-  border-radius:7px;
-  font-size:15px;
-  background:white;
-}
-textarea{min-height:90px;resize:vertical}
-button{
-  width:100%;
-  padding:15px;
-  margin-top:20px;
-  border:0;
-  border-radius:7px;
-  background:#087f3d;
-  color:white;
-  font-size:16px;
-  font-weight:bold;
-}
+label{display:block;margin:16px 0 7px;font-weight:bold}
+input,select,textarea{width:100%;padding:13px;border:1px solid #ccc;border-radius:7px;font-size:15px;background:white}
+textarea{min-height:85px;resize:vertical}
+.price-list{background:#edf7f0;padding:14px;border-radius:8px;margin:18px 0}
+.price-row{display:flex;justify-content:space-between;gap:10px;padding:9px 0;border-bottom:1px solid #d5e7d9;font-size:14px}
+.price-row:last-child{border:0}
+.selected-price{background:#e0f3e6;padding:15px;border-radius:8px;margin-top:15px;color:#087f3d;font-weight:bold;text-align:center}
+.notice{background:#fff5dc;padding:12px;border-radius:7px;font-size:13px;line-height:1.6;margin:15px 0}
+button{width:100%;padding:15px;margin-top:20px;border:0;border-radius:7px;background:#087f3d;color:white;font-size:16px;font-weight:bold}
 button:disabled{opacity:.6}
-.notice{
-  background:#e9f5ed;
-  padding:12px;
-  border-radius:7px;
-  font-size:13px;
-  line-height:1.6;
-}
-#message{
-  margin-top:15px;
-  padding:12px;
-  border-radius:7px;
-  display:none;
-  line-height:1.5;
-  overflow-wrap:anywhere;
-}
-.success{background:#e0f5e5;color:#08652e}
-.error{background:#ffe8e8;color:#a00000}
-.back{
-  display:block;
-  text-align:center;
-  margin-top:20px;
-  color:#087f3d;
-  text-decoration:none;
-}
+#message{display:none;margin-top:15px;padding:13px;border-radius:7px;line-height:1.6;overflow-wrap:anywhere}
+.success{display:block!important;background:#e0f5e5;color:#08652e}
+.error{display:block!important;background:#ffe8e8;color:#a00000}
+.back{display:block;text-align:center;margin-top:20px;color:#087f3d;text-decoration:none}
 </style>
 </head>
 
 <body>
-
 <header>
-  <h2>GRACIOUSTEC</h2>
-  <p>NIN Modification Service</p>
+<h2>GRACIOUSTEC</h2>
+<p>NIN Modification Service</p>
 </header>
 
 <div class="container">
 <div class="card">
 
-<h3>Submit NIN Modification Request</h3>
+<h3>NIN Modification Application</h3>
 
-<div class="notice">
-  Select the modification you need and provide your correct details.
-  Your wallet will be charged after successful payment processing.
+<p>Select the service you need. The correct price will be displayed automatically.</p>
+
+<div class="price-list">
+<strong>Our Modification Prices</strong>
+<div class="price-row"><span>Name Modification</span><strong id="namePrice">₦11,000</strong></div>
+<div class="price-row"><span>Date of Birth</span><strong id="dobPrice">₦85,000</strong></div>
+<div class="price-row"><span>Phone Number</span><strong id="phonePrice">₦10,500</strong></div>
+<div class="price-row"><span>Address</span><strong id="addressPrice">₦10,500</strong></div>
 </div>
 
 <form id="modificationForm">
 
 <label>Modification Type</label>
 <select id="modificationType" required>
-  <option value="">Select modification type</option>
-  <option value="name">Name Modification</option>
-  <option value="date_of_birth">Date of Birth Modification</option>
-  <option value="phone_number">Phone Number Modification</option>
-  <option value="address">Address Modification</option>
+<option value="">Select modification type</option>
+<option value="name">Name Modification</option>
+<option value="date_of_birth">Date of Birth Modification</option>
+<option value="phone_number">Phone Number Modification</option>
+<option value="address">Address Modification</option>
 </select>
 
-<label>NIN</label>
-<input
-  type="text"
-  id="nin"
-  inputmode="numeric"
-  maxlength="11"
-  pattern="[0-9]{11}"
-  placeholder="Enter your 11-digit NIN"
-  required
->
-
-<label>Current Information</label>
-<input
-  type="text"
-  id="currentValue"
-  placeholder="Enter your current information"
-  required
->
-
-<label>Correct Information</label>
-<input
-  type="text"
-  id="newValue"
-  placeholder="Enter the correct information"
-  required
->
-
-<label>Reason for Modification</label>
-<textarea
-  id="reason"
-  placeholder="Explain why you need this modification"
-  required
-></textarea>
-
-<div class="notice">
-  Please ensure that all information is correct before submitting.
-  Supporting document upload will be added after the secure
-  Supabase storage setup.
+<div class="selected-price" id="selectedPrice">
+Select a service to see its price.
 </div>
 
-<button type="submit" id="submitBtn">
-  Submit Modification Request
-</button>
+<label>NIN</label>
+<input id="nin" type="text" inputmode="numeric" maxlength="11" pattern="[0-9]{11}" placeholder="Enter your 11-digit NIN" required>
+
+<label>Current Information</label>
+<input id="currentValue" type="text" placeholder="Enter current information" required>
+
+<label>Correct Information</label>
+<input id="newValue" type="text" placeholder="Enter correct information" required>
+
+<label>Reason for Modification</label>
+<textarea id="reason" placeholder="Explain why you need this modification" required></textarea>
+
+<div class="notice">
+Please check your information carefully before submitting. Supporting document upload will be enabled after secure storage is configured.
+</div>
+
+<button type="submit" id="submitBtn">Submit Modification Request</button>
 
 </form>
 
 <div id="message"></div>
 
-<a href="dashboard.html" class="back">
-  Back to Dashboard
-</a>
+<a href="dashboard.html" class="back">Back to Dashboard</a>
 
 </div>
 </div>
 
 <script>
-const SUPABASE_URL =
-  "https://iknhifndgpwibkfidggq.supabase.co";
+const SUPABASE_URL = "https://iknhifndgpwibkfidggq.supabase.co";
+const SUPABASE_ANON_KEY = "PASTE_YOUR_EXISTING_SUPABASE_ANON_KEY_HERE";
 
-const SUPABASE_ANON_KEY =
-  "PASTE_YOUR_EXISTING_SUPABASE_ANON_KEY_HERE";
-
-const supabase = window.supabase.createClient(
+const db = window.supabase.createClient(
   SUPABASE_URL,
   SUPABASE_ANON_KEY
 );
 
+const prices = {
+  name: {code:"nin_modification_name", element:"namePrice"},
+  date_of_birth: {code:"nin_modification_dob", element:"dobPrice"},
+  phone_number: {code:"nin_modification_phone", element:"phonePrice"},
+  address: {code:"nin_modification_address", element:"addressPrice"}
+};
+
+let currentPrices = {};
+
 const form = document.getElementById("modificationForm");
-const button = document.getElementById("submitBtn");
+const typeInput = document.getElementById("modificationType");
+const selectedPrice = document.getElementById("selectedPrice");
 const message = document.getElementById("message");
+const button = document.getElementById("submitBtn");
 
 function showMessage(text, type) {
-  message.style.display = "block";
   message.className = type;
   message.textContent = text;
 }
 
-async function checkLogin() {
-  const { data, error } = await supabase.auth.getUser();
+function money(value) {
+  return "₦" + Number(value).toLocaleString("en-NG");
+}
+
+async function loadPrices() {
+  const {data, error} = await db
+    .from("service_settings")
+    .select("service_code,price,is_active")
+    .in("service_code", Object.values(prices).map(x => x.code));
+
+  if (error) throw error;
+
+  for (const item of data || []) {
+    const key = Object.keys(prices).find(
+      k => prices[k].code === item.service_code
+    );
+
+    if (key && item.is_active && Number(item.price) > 0) {
+      currentPrices[key] = Number(item.price);
+      document.getElementById(prices[key].element).textContent =
+        money(item.price);
+    }
+  }
+
+  updateSelectedPrice();
+}
+
+function updateSelectedPrice() {
+  const type = typeInput.value;
+
+  if (!type) {
+    selectedPrice.textContent = "Select a service to see its price.";
+    return;
+  }
+
+  if (currentPrices[type] === undefined) {
+    selectedPrice.textContent = "This service is currently unavailable.";
+    return;
+  }
+
+  selectedPrice.textContent =
+    "Amount payable: " + money(currentPrices[type]);
+}
+
+typeInput.addEventListener("change", updateSelectedPrice);
+
+async function initialize() {
+  const {data, error} = await db.auth.getUser();
 
   if (error || !data.user) {
     alert("Please login to continue.");
-    window.location.href = "login.html";
-    return false;
+    location.href = "login.html";
+    return;
   }
 
-  return true;
+  try {
+    await loadPrices();
+  } catch (error) {
+    showMessage(
+      "Unable to load service prices. Please refresh the page.",
+      "error"
+    );
+  }
 }
-
-checkLogin();
 
 form.addEventListener("submit", async function(e) {
   e.preventDefault();
@@ -216,97 +197,80 @@ form.addEventListener("submit", async function(e) {
   message.style.display = "none";
 
   try {
-    const { data: authData, error: authError } =
-      await supabase.auth.getUser();
+    const {data: authData, error: authError} =
+      await db.auth.getUser();
 
     if (authError || !authData.user) {
-      window.location.href = "login.html";
-      return;
+      throw new Error("Please login again.");
     }
 
-    const modificationType =
-      document.getElementById("modificationType").value;
-
-    const nin =
-      document.getElementById("nin").value.trim();
-
-    const currentValue =
-      document.getElementById("currentValue").value.trim();
-
-    const newValue =
-      document.getElementById("newValue").value.trim();
-
-    const reason =
-      document.getElementById("reason").value.trim();
+    const type = typeInput.value;
+    const nin = document.getElementById("nin").value.trim();
+    const currentValue = document.getElementById("currentValue").value.trim();
+    const newValue = document.getElementById("newValue").value.trim();
+    const reason = document.getElementById("reason").value.trim();
 
     if (!/^[0-9]{11}$/.test(nin)) {
-      throw new Error("Please enter a valid 11-digit NIN.");
+      throw new Error("Enter a valid 11-digit NIN.");
+    }
+
+    if (!type || currentPrices[type] === undefined) {
+      throw new Error("Please select an available modification service.");
     }
 
     if (currentValue === newValue) {
-      throw new Error(
-        "Your current and correct information cannot be the same."
-      );
+      throw new Error("Current and new information cannot be the same.");
     }
 
-    const requestDetails = {
-      nin: nin,
-      current_value: currentValue,
-      new_value: newValue,
-      reason: reason
-    };
-
-    const { data, error } = await supabase.functions.invoke(
+    const {data, error} = await db.functions.invoke(
       "nin-modification",
       {
         body: {
           action: "submit",
-          modification_type: modificationType,
-          request_details: requestDetails
+          modification_type: type,
+          request_details: {
+            nin,
+            current_value: currentValue,
+            new_value: newValue,
+            reason
+          }
         }
       }
     );
 
     if (error) {
       let serverMessage = error.message;
-
-      if (error.context) {
-        try {
-          const response = await error.context.json();
-          serverMessage = response.message || serverMessage;
-        } catch (_) {}
-      }
-
+      try {
+        const response = await error.context.json();
+        serverMessage = response.message || serverMessage;
+      } catch (_) {}
       throw new Error(serverMessage);
     }
 
     if (!data || !data.success) {
-      throw new Error(
-        data?.message || "Request submission failed."
-      );
+      throw new Error(data?.message || "Submission failed.");
     }
 
     form.reset();
+    updateSelectedPrice();
 
     showMessage(
-      "SUCCESS! Your NIN Modification request has been submitted. " +
-      "Reference: " + data.payment_reference +
-      ". Amount: ₦" + data.amount,
+      "Request submitted successfully!\n" +
+      "Reference: " + data.payment_reference + "\n" +
+      "Amount paid: " + money(data.amount) + "\n" +
+      "New wallet balance: " + money(data.balance),
       "success"
     );
 
   } catch (error) {
-    showMessage(
-      error.message || "Something went wrong. Please try again.",
-      "error"
-    );
-
+    showMessage(error.message || "An unexpected error occurred.", "error");
   } finally {
     button.disabled = false;
     button.textContent = "Submit Modification Request";
   }
 });
-</script>
 
+initialize();
+</script>
 </body>
 </html>
