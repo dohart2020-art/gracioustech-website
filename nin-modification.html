@@ -2,61 +2,55 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>NIN Modification - Gracioustec</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#087f3d">
+<title>NIN Modification - Gracioustec</title>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
 *{box-sizing:border-box}
-body{margin:0;font-family:Arial,sans-serif;background:#f3f7f4;color:#222}
-header{background:#087f3d;color:white;text-align:center;padding:22px}
-header h2{margin:0}
-.container{max-width:600px;margin:25px auto;padding:15px}
-.card{background:white;padding:22px;border-radius:12px;box-shadow:0 3px 12px #00000010}
-h3{color:#087f3d;margin-top:0}
-label{display:block;margin:16px 0 7px;font-weight:bold}
-input,select,textarea{width:100%;padding:13px;border:1px solid #ccc;border-radius:7px;font-size:15px;background:white}
+body{margin:0;background:#f4f7f5;color:#17231b;font-family:Arial,sans-serif}
+header{background:#087f3d;color:white;text-align:center;padding:20px}
+header h1{margin:0 0 5px;font-size:23px}
+main{max-width:720px;margin:20px auto;padding:0 14px 35px}
+.card{background:white;padding:18px;border-radius:13px;margin-bottom:16px;box-shadow:0 3px 12px #0000000d}
+h2{font-size:18px;color:#087f3d;margin:0 0 12px}
+label{display:block;font-weight:bold;font-size:14px;margin:14px 0 7px}
+input,select,textarea{width:100%;padding:13px;border:1px solid #ccd6ce;border-radius:9px;font-size:15px;background:white}
 textarea{min-height:85px;resize:vertical}
-.price-list{background:#edf7f0;padding:14px;border-radius:8px;margin:18px 0}
-.price-row{display:flex;justify-content:space-between;gap:10px;padding:9px 0;border-bottom:1px solid #d5e7d9;font-size:14px}
-.price-row:last-child{border:0}
-.selected-price{background:#e0f3e6;padding:15px;border-radius:8px;margin-top:15px;color:#087f3d;font-weight:bold;text-align:center}
-.notice{background:#fff5dc;padding:12px;border-radius:7px;font-size:13px;line-height:1.6;margin:15px 0}
-button{width:100%;padding:15px;margin-top:20px;border:0;border-radius:7px;background:#087f3d;color:white;font-size:16px;font-weight:bold}
+.hint{font-size:13px;color:#647268;line-height:1.5}
+.price{font-size:19px;font-weight:bold;color:#087f3d;margin-top:12px}
+.upload-box{background:#f9fcfa;border:1px dashed #9aafa0;border-radius:10px;padding:13px;margin-top:12px}
+button{width:100%;border:0;border-radius:9px;padding:14px;font-size:15px;font-weight:bold;background:#087f3d;color:white;margin-top:14px}
+.secondary{background:#e8f4ec;color:#087f3d;border:1px solid #b9d8c2}
 button:disabled{opacity:.6}
-#message{display:none;margin-top:15px;padding:13px;border-radius:7px;line-height:1.6;overflow-wrap:anywhere}
-.success{display:block!important;background:#e0f5e5;color:#08652e}
-.error{display:block!important;background:#ffe8e8;color:#a00000}
-.back{display:block;text-align:center;margin-top:20px;color:#087f3d;text-decoration:none}
+.preview{display:none;width:100%;max-height:350px;object-fit:contain;background:#edf2ee;border-radius:9px;margin-top:12px}
+.filename{font-size:13px;color:#34483a;margin-top:8px;overflow-wrap:anywhere}
+.notice{background:#fff8e7;border-left:4px solid #d89b18;padding:12px;border-radius:6px;font-size:13px;line-height:1.5}
+.success{color:#087f3d;font-weight:bold}
+.error{color:#b42318;font-weight:bold}
 </style>
 </head>
 
 <body>
+
 <header>
-<h2>GRACIOUSTEC</h2>
+<h1>GRACIOUSTEC</h1>
 <p>NIN Modification Service</p>
 </header>
 
-<div class="container">
+<main>
+
 <div class="card">
+<h2>NIN Modification Request</h2>
 
-<h3>NIN Modification Application</h3>
-
-<p>Select the service you need. The correct price will be displayed automatically.</p>
-
-<div class="price-list">
-<strong>Our Modification Prices</strong>
-<div class="price-row"><span>Name Modification</span><strong id="namePrice">₦11,000</strong></div>
-<div class="price-row"><span>Date of Birth</span><strong id="dobPrice">₦85,000</strong></div>
-<div class="price-row"><span>Phone Number</span><strong id="phonePrice">₦10,500</strong></div>
-<div class="price-row"><span>Address</span><strong id="addressPrice">₦10,500</strong></div>
+<div class="notice">
+Enter your details correctly. You must provide a face photograph and supporting document before submitting your request.
 </div>
 
-<form id="modificationForm">
-
 <label>Modification Type</label>
-<select id="modificationType" required>
+<select id="modificationType">
 <option value="">Select modification type</option>
 <option value="name">Name Modification</option>
 <option value="date_of_birth">Date of Birth Modification</option>
@@ -64,213 +58,597 @@ button:disabled{opacity:.6}
 <option value="address">Address Modification</option>
 </select>
 
-<div class="selected-price" id="selectedPrice">
-Select a service to see its price.
-</div>
+<div class="price" id="servicePrice">Select a service to see the price.</div>
 
-<label>NIN</label>
-<input id="nin" type="text" inputmode="numeric" maxlength="11" pattern="[0-9]{11}" placeholder="Enter your 11-digit NIN" required>
+<label>11-Digit NIN</label>
+<input id="nin" type="text" inputmode="numeric" maxlength="11" placeholder="Enter your NIN">
 
-<label>Current Information</label>
-<input id="currentValue" type="text" placeholder="Enter current information" required>
+<label>Current Details</label>
+<textarea id="currentValue" placeholder="Enter the details currently on your NIN"></textarea>
 
-<label>Correct Information</label>
-<input id="newValue" type="text" placeholder="Enter correct information" required>
+<label>Correct Details</label>
+<textarea id="newValue" placeholder="Enter the correct details you want updated"></textarea>
 
 <label>Reason for Modification</label>
-<textarea id="reason" placeholder="Explain why you need this modification" required></textarea>
+<textarea id="reason" placeholder="Explain why you need this modification"></textarea>
+</div>
 
+
+<div class="card">
+<h2>1. Take Your Face Photograph</h2>
+
+<p class="hint">
+Take a clear photograph of yourself showing your face, head and shoulders. Face the camera directly. Use good lighting and remove hats or sunglasses. You can take a new photograph or choose one saved on your phone.
+</p>
+
+<div class="upload-box">
+
+<label>Take a New Face Photograph</label>
+<input id="faceCamera" type="file" accept="image/*" capture="user">
+
+<p class="hint">This asks your phone to open its camera. Your phone may choose the front camera if available.</p>
+
+<label>Or Choose a Face Photograph from Your Phone</label>
+<input id="faceGallery" type="file" accept="image/jpeg,image/png,image/webp">
+
+<img id="facePreview" class="preview" alt="Face photograph preview">
+
+<div id="faceName" class="filename">No face photograph selected.</div>
+
+<button type="button" class="secondary" id="retakeFace">
+Retake or Change Face Photograph
+</button>
+
+</div>
+</div>
+
+
+<div class="card">
+<h2>2. Supporting Details or Document</h2>
+
+<p class="hint">
+Take a clear picture of the document or details supporting your requested modification. Make sure the writing is visible and readable. You can also upload a saved image or PDF.
+</p>
+
+<div class="upload-box">
+
+<label>Take a Picture of Your Supporting Details</label>
+<input id="documentCamera" type="file" accept="image/*" capture="environment">
+
+<p class="hint">This asks your phone to use its camera where supported.</p>
+
+<label>Or Upload an Existing Image or PDF</label>
+<input id="documentGallery" type="file" accept="image/jpeg,image/png,image/webp,application/pdf">
+
+<img id="documentPreview" class="preview" alt="Supporting document preview">
+
+<div id="documentName" class="filename">No supporting document selected.</div>
+
+<button type="button" class="secondary" id="retakeDocument">
+Retake or Change Supporting Document
+</button>
+
+</div>
+</div>
+
+
+<div class="card">
 <div class="notice">
-Please check your information carefully before submitting. Supporting document upload will be enabled after secure storage is configured.
+Accepted files: JPG, PNG, WEBP and PDF. Each file must not exceed 8 MB. Your uploads are stored in a private Supabase bucket.
 </div>
 
-<button type="submit" id="submitBtn">Submit Modification Request</button>
+<button type="button" id="submitBtn">Submit NIN Modification</button>
 
-</form>
-
-<div id="message"></div>
-
-<a href="dashboard.html" class="back">Back to Dashboard</a>
-
+<p id="message" aria-live="polite"></p>
 </div>
-</div>
+
+</main>
+
 
 <script>
-const SUPABASE_URL = "https://iknhifndgpwibkfidggq.supabase.co";
-const SUPABASE_KEY="sb_publishable_xELauxOMm7eMkNrPz55Mrw_LVkRoASn";
+(() => {
+
+const SUPABASE_URL =
+"https://iknhifndgpwibkfidggq.supabase.co";
+
+// Your existing Supabase Publishable key.
+// Do not replace it with your service role key.
+const SUPABASE_PUBLISHABLE_KEY =
+"sb_publishable_xELauxOMm7eMkNrPz55Mrw_LVkRoASn";
+
+const BUCKET = "nin-modification-documents";
+const MAX_SIZE = 8 * 1024 * 1024;
+
+const IMAGE_TYPES = [
+"image/jpeg",
+"image/png",
+"image/webp"
+];
+
+const DOCUMENT_TYPES = [
+"image/jpeg",
+"image/png",
+"image/webp",
+"application/pdf"
+];
 
 const db = window.supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_KEY
+SUPABASE_URL,
+SUPABASE_PUBLISHABLE_KEY
 );
 
-const prices = {
-  name: {code:"nin_modification_name", element:"namePrice"},
-  date_of_birth: {code:"nin_modification_dob", element:"dobPrice"},
-  phone_number: {code:"nin_modification_phone", element:"phonePrice"},
-  address: {code:"nin_modification_address", element:"addressPrice"}
-};
+const el = id => document.getElementById(id);
 
-let currentPrices = {};
+let currentUser = null;
+let faceFile = null;
+let documentFile = null;
+let faceURL = null;
+let documentURL = null;
+let prices = {};
 
-const form = document.getElementById("modificationForm");
-const typeInput = document.getElementById("modificationType");
-const selectedPrice = document.getElementById("selectedPrice");
-const message = document.getElementById("message");
-const button = document.getElementById("submitBtn");
 
-function showMessage(text, type) {
-  message.className = type;
-  message.textContent = text;
+function message(text, error = false) {
+el("message").textContent = text;
+el("message").className = error ? "error" : "success";
 }
 
-function money(value) {
-  return "₦" + Number(value).toLocaleString("en-NG");
+
+function clearPreview(kind) {
+
+if (kind === "face") {
+if (faceURL) URL.revokeObjectURL(faceURL);
+faceURL = null;
+faceFile = null;
+el("facePreview").removeAttribute("src");
+el("facePreview").style.display = "none";
+el("faceName").textContent = "No face photograph selected.";
+} else {
+if (documentURL) URL.revokeObjectURL(documentURL);
+documentURL = null;
+documentFile = null;
+el("documentPreview").removeAttribute("src");
+el("documentPreview").style.display = "none";
+el("documentName").textContent = "No supporting document selected.";
 }
+
+}
+
+
+function showPreview(file, kind) {
+
+if (kind === "face") {
+if (faceURL) URL.revokeObjectURL(faceURL);
+faceFile = file;
+} else {
+if (documentURL) URL.revokeObjectURL(documentURL);
+documentFile = file;
+}
+
+const nameElement = kind === "face"
+? el("faceName")
+: el("documentName");
+
+const imageElement = kind === "face"
+? el("facePreview")
+: el("documentPreview");
+
+nameElement.textContent =
+file.name + " (" + (file.size / 1024 / 1024).toFixed(2) + " MB)";
+
+if (file.type.startsWith("image/")) {
+
+const url = URL.createObjectURL(file);
+
+if (kind === "face") faceURL = url;
+else documentURL = url;
+
+imageElement.src = url;
+imageElement.style.display = "block";
+
+} else {
+
+imageElement.style.display = "none";
+imageElement.removeAttribute("src");
+nameElement.textContent += " — PDF selected";
+
+}
+
+}
+
+
+function checkFile(file, allowedTypes, label) {
+
+if (!file) {
+message("Please select " + label + ".", true);
+return false;
+}
+
+if (!allowedTypes.includes(file.type)) {
+message("The selected file type is not supported for " + label + ".", true);
+return false;
+}
+
+if (file.size > MAX_SIZE) {
+message(label + " must not be larger than 8 MB.", true);
+return false;
+}
+
+if (file.size === 0) {
+message("The selected " + label + " is empty.", true);
+return false;
+}
+
+return true;
+
+}
+
+
+async function loadUser() {
+
+const {data, error} = await db.auth.getUser();
+
+if (error || !data.user) {
+window.location.href = "login.html";
+return;
+}
+
+currentUser = data.user;
+
+}
+
 
 async function loadPrices() {
-  const {data, error} = await db
-    .from("service_settings")
-    .select("service_code,price,is_active")
-    .in("service_code", Object.values(prices).map(x => x.code));
 
-  if (error) throw error;
+const codes = [
+"nin_modification_name",
+"nin_modification_dob",
+"nin_modification_phone",
+"nin_modification_address"
+];
 
-  for (const item of data || []) {
-    const key = Object.keys(prices).find(
-      k => prices[k].code === item.service_code
-    );
+const {data, error} = await db
+.from("service_settings")
+.select("service_code,price,is_active")
+.in("service_code", codes);
 
-    if (key && item.is_active && Number(item.price) > 0) {
-      currentPrices[key] = Number(item.price);
-      document.getElementById(prices[key].element).textContent =
-        money(item.price);
-    }
-  }
-
-  updateSelectedPrice();
+if (error) {
+el("servicePrice").textContent =
+"Unable to load prices. Please refresh.";
+console.error(error);
+return;
 }
 
-function updateSelectedPrice() {
-  const type = typeInput.value;
+prices = {};
 
-  if (!type) {
-    selectedPrice.textContent = "Select a service to see its price.";
-    return;
-  }
-
-  if (currentPrices[type] === undefined) {
-    selectedPrice.textContent = "This service is currently unavailable.";
-    return;
-  }
-
-  selectedPrice.textContent =
-    "Amount payable: " + money(currentPrices[type]);
+(data || []).forEach(row => {
+if (row.is_active) {
+prices[row.service_code] = Number(row.price);
 }
-
-typeInput.addEventListener("change", updateSelectedPrice);
-
-async function initialize() {
-  const {data, error} = await db.auth.getUser();
-
-  if (error || !data.user) {
-    alert("Please login to continue.");
-    location.href = "login.html";
-    return;
-  }
-
-  try {
-    await loadPrices();
-  } catch (error) {
-    showMessage(
-      "Unable to load service prices. Please refresh the page.",
-      "error"
-    );
-  }
-}
-
-form.addEventListener("submit", async function(e) {
-  e.preventDefault();
-
-  button.disabled = true;
-  button.textContent = "Processing...";
-  message.style.display = "none";
-
-  try {
-    const {data: authData, error: authError} =
-      await db.auth.getUser();
-
-    if (authError || !authData.user) {
-      throw new Error("Please login again.");
-    }
-
-    const type = typeInput.value;
-    const nin = document.getElementById("nin").value.trim();
-    const currentValue = document.getElementById("currentValue").value.trim();
-    const newValue = document.getElementById("newValue").value.trim();
-    const reason = document.getElementById("reason").value.trim();
-
-    if (!/^[0-9]{11}$/.test(nin)) {
-      throw new Error("Enter a valid 11-digit NIN.");
-    }
-
-    if (!type || currentPrices[type] === undefined) {
-      throw new Error("Please select an available modification service.");
-    }
-
-    if (currentValue === newValue) {
-      throw new Error("Current and new information cannot be the same.");
-    }
-
-    const {data, error} = await db.functions.invoke(
-      "nin-modification",
-      {
-        body: {
-          action: "submit",
-          modification_type: type,
-          request_details: {
-            nin,
-            current_value: currentValue,
-            new_value: newValue,
-            reason
-          }
-        }
-      }
-    );
-
-    if (error) {
-      let serverMessage = error.message;
-      try {
-        const response = await error.context.json();
-        serverMessage = response.message || serverMessage;
-      } catch (_) {}
-      throw new Error(serverMessage);
-    }
-
-    if (!data || !data.success) {
-      throw new Error(data?.message || "Submission failed.");
-    }
-
-    form.reset();
-    updateSelectedPrice();
-
-    showMessage(
-      "Request submitted successfully!\n" +
-      "Reference: " + data.payment_reference + "\n" +
-      "Amount paid: " + money(data.amount) + "\n" +
-      "New wallet balance: " + money(data.balance),
-      "success"
-    );
-
-  } catch (error) {
-    showMessage(error.message || "An unexpected error occurred.", "error");
-  } finally {
-    button.disabled = false;
-    button.textContent = "Submit Modification Request";
-  }
 });
 
-initialize();
+updatePrice();
+
+}
+
+
+function priceCode() {
+
+const codes = {
+name: "nin_modification_name",
+date_of_birth: "nin_modification_dob",
+phone_number: "nin_modification_phone",
+address: "nin_modification_address"
+};
+
+return codes[el("modificationType").value];
+
+}
+
+
+function updatePrice() {
+
+const code = priceCode();
+
+if (!code) {
+el("servicePrice").textContent =
+"Select a modification type to see the price.";
+return;
+}
+
+if (prices[code] === undefined) {
+el("servicePrice").textContent =
+"This service is currently unavailable.";
+return;
+}
+
+el("servicePrice").textContent =
+"Service Price: ₦" + prices[code].toLocaleString("en-NG");
+
+}
+
+
+function extension(file) {
+
+const extensions = {
+"image/jpeg": "jpg",
+"image/png": "png",
+"image/webp": "webp",
+"application/pdf": "pdf"
+};
+
+return extensions[file.type] || "file";
+
+}
+
+
+async function uploadFile(file, label) {
+
+const path =
+currentUser.id + "/" +
+crypto.randomUUID() + "-" +
+label + "." + extension(file);
+
+const {error} = await db.storage
+.from(BUCKET)
+.upload(path, file, {
+cacheControl: "3600",
+upsert: false,
+contentType: file.type
+});
+
+if (error) {
+throw new Error("File upload failed: " + error.message);
+}
+
+return path;
+
+}
+
+
+async function submitRequest() {
+
+if (!currentUser) {
+message("Please log in again.", true);
+return;
+}
+
+const type = el("modificationType").value;
+const nin = el("nin").value.trim();
+const currentValue = el("currentValue").value.trim();
+const newValue = el("newValue").value.trim();
+const reason = el("reason").value.trim();
+
+if (!type) return message("Select a modification type.", true);
+
+if (!/^[0-9]{11}$/.test(nin)) {
+return message("Enter your correct 11-digit NIN.", true);
+}
+
+if (!currentValue || !newValue || !reason) {
+return message("Complete all the modification details.", true);
+}
+
+if (currentValue === newValue) {
+return message("Current details and corrected details cannot be the same.", true);
+}
+
+if (!checkFile(faceFile, IMAGE_TYPES, "your face photograph")) return;
+
+if (!checkFile(documentFile, DOCUMENT_TYPES, "your supporting document")) return;
+
+const code = priceCode();
+
+if (!code || prices[code] === undefined) {
+return message("Service price unavailable. Please refresh the page.", true);
+}
+
+const button = el("submitBtn");
+button.disabled = true;
+button.textContent = "Uploading your files...";
+
+let uploadedPaths = [];
+
+try {
+
+const facePath = await uploadFile(faceFile, "face-photo");
+uploadedPaths.push(facePath);
+
+const supportingPath = await uploadFile(
+documentFile,
+"supporting-document"
+);
+uploadedPaths.push(supportingPath);
+
+button.textContent = "Submitting your application...";
+
+const {data, error} = await db.functions.invoke(
+"nin-modification",
+{
+body: {
+action: "submit",
+modification_type: type,
+request_details: {
+nin: nin,
+current_value: currentValue,
+new_value: newValue,
+reason: reason,
+passport_photo_path: facePath,
+supporting_document_path: supportingPath
+}
+}
+}
+);
+
+if (error) {
+
+let errorMessage = error.message || "Submission failed.";
+
+if (error.context && typeof error.context.json === "function") {
+try {
+const responseBody = await error.context.json();
+if (responseBody.message) {
+errorMessage = responseBody.message;
+}
+} catch (_) {}
+}
+
+throw new Error(errorMessage);
+
+}
+
+if (!data || data.success !== true) {
+throw new Error(data?.message || "Your request was not completed.");
+}
+
+message(
+"Your NIN Modification request was submitted successfully. " +
+"Reference: " + (data.payment_reference || "Submitted") +
+". Amount: ₦" +
+Number(data.amount || prices[code]).toLocaleString("en-NG") +
+". Wallet balance: ₦" +
+Number(data.balance || 0).toLocaleString("en-NG")
+);
+
+button.textContent = "Submitted Successfully";
+return;
+
+} catch (error) {
+
+console.error("NIN modification error:", error);
+
+// Remove uploaded files if the request did not complete.
+if (uploadedPaths.length > 0) {
+const {error: cleanupError} = await db.storage
+.from(BUCKET)
+.remove(uploadedPaths);
+
+if (cleanupError) {
+console.error("Upload cleanup error:", cleanupError);
+}
+}
+
+message(error.message || "Unable to submit. Please try again.", true);
+
+} finally {
+
+if (button.textContent !== "Submitted Successfully") {
+button.disabled = false;
+button.textContent = "Submit NIN Modification";
+}
+
+}
+
+}
+
+
+// Face camera capture
+el("faceCamera").addEventListener("change", event => {
+
+const file = event.target.files?.[0];
+if (!file) return;
+
+el("faceGallery").value = "";
+
+if (!checkFile(file, IMAGE_TYPES, "your face photograph")) {
+event.target.value = "";
+return;
+}
+
+showPreview(file, "face");
+
+});
+
+
+// Face photo from gallery
+el("faceGallery").addEventListener("change", event => {
+
+const file = event.target.files?.[0];
+if (!file) return;
+
+el("faceCamera").value = "";
+
+if (!checkFile(file, IMAGE_TYPES, "your face photograph")) {
+event.target.value = "";
+return;
+}
+
+showPreview(file, "face");
+
+});
+
+
+// Supporting document camera
+el("documentCamera").addEventListener("change", event => {
+
+const file = event.target.files?.[0];
+if (!file) return;
+
+el("documentGallery").value = "";
+
+if (!checkFile(file, IMAGE_TYPES, "your supporting document")) {
+event.target.value = "";
+return;
+}
+
+showPreview(file, "document");
+
+});
+
+
+// Supporting document from gallery or PDF
+el("documentGallery").addEventListener("change", event => {
+
+const file = event.target.files?.[0];
+if (!file) return;
+
+el("documentCamera").value = "";
+
+if (!checkFile(file, DOCUMENT_TYPES, "your supporting document")) {
+event.target.value = "";
+return;
+}
+
+showPreview(file, "document");
+
+});
+
+
+// Retake face photo
+el("retakeFace").addEventListener("click", () => {
+
+el("faceCamera").value = "";
+el("faceGallery").value = "";
+clearPreview("face");
+el("faceCamera").click();
+
+});
+
+
+// Retake supporting document
+el("retakeDocument").addEventListener("click", () => {
+
+el("documentCamera").value = "";
+el("documentGallery").value = "";
+clearPreview("document");
+el("documentCamera").click();
+
+});
+
+
+el("modificationType").addEventListener("change", updatePrice);
+
+el("submitBtn").addEventListener("click", submitRequest);
+
+
+(async () => {
+await loadUser();
+if (currentUser) {
+await loadPrices();
+}
+})();
+
+})();
 </script>
+
 </body>
 </html>
