@@ -537,29 +537,41 @@
     </div>
 
     <!-- NIN MODIFICATION -->
-    <div class="section">
-      <h2>NIN Modification Requests</h2>
-      <p class="small">Review requests, view submitted documents, update paid requests and process refunds.</p>
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>Date</th>
-              <th>User</th>
-              <th>Reference</th>
-              <th>Modification</th>
-              <th>NIN</th>
-              <th>Amount</th>
-              <th>Payment</th>
-              <th>Request Status</th>
-              <th>Documents</th>
-              <th>Admin Actions</th>
-            </tr>
-          </thead>
-          <tbody id="modificationTable"></tbody>
-        </table>
-      </div>
-    </div>
+<div class="section">
+  <h2>NIN Modification Requests</h2>
+  <p class="small">
+    Review requests, view submitted documents, upload completed files,
+    update paid requests and process refunds.
+  </p>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>User</th>
+          <th>Reference</th>
+          <th>Modification</th>
+          <th>NIN</th>
+          <th>Amount</th>
+          <th>Payment</th>
+          <th>Request Status</th>
+          <th>Documents</th>
+          <th>Completed File Upload</th>
+          <th>Admin Actions</th>
+        </tr>
+      </thead>
+
+      <tbody id="modificationTable">
+        <tr>
+          <td colspan="11" class="empty">
+            Loading NIN Modification requests...
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
 
     <!-- IPE CLEARANCE -->
     <div class="section">
@@ -1433,6 +1445,73 @@ function renderPersonalisation(records) {
 // =====================================================
 // NIN MODIFICATION REQUESTS
 // =====================================================
+async function uploadModificationFile(requestId, file, button, statusEl) {
+  const allowedTypes = [
+    "application/pdf",
+    "image/jpeg",
+    "image/png",
+    "image/webp"
+  ];
+
+  if (!file || !allowedTypes.includes(file.type)) {
+    alert("Select a PDF, JPG, PNG or WEBP file.");
+    return;
+  }
+
+  if (file.size === 0 || file.size > 10 * 1024 * 1024) {
+    alert("The file must not exceed 10MB.");
+    return;
+  }
+
+  if (!confirm("Upload this completed NIN Modification file?")) return;
+
+  button.disabled = true;
+  button.textContent = "Uploading...";
+  statusEl.textContent = "Uploading file...";
+
+  try {
+    const { data, error } = await supabaseClient.auth.getSession();
+
+    if (error || !data.session) {
+      throw new Error("Please log in again.");
+    }
+
+    const formData = new FormData();
+    formData.append("action", "upload_completed_file");
+    formData.append("request_id", requestId);
+    formData.append("file", file);
+
+    const response = await fetch(
+      SUPABASE_URL + "/functions/v1/upload-nin-modification-file",
+      {
+        method: "POST",
+        headers: {
+          "Authorization": "Bearer " + data.session.access_token
+        },
+        body: formData
+      }
+    );
+
+    const result = await response.json();
+
+    if (!response.ok || !result.success) {
+      throw new Error(result.message || "Upload failed.");
+    }
+
+    statusEl.textContent = "Upload successful.";
+    showSuccess("Completed file uploaded successfully.");
+    await loadDashboard();
+
+  } catch (error) {
+    statusEl.textContent = error.message;
+    alert(error.message);
+
+  } finally {
+    button.disabled = false;
+    button.textContent = "Upload Completed File";
+  }
+}
+
 
 function renderModification(records) {
   const table = document.getElementById("modificationTable");
@@ -1440,7 +1519,7 @@ function renderModification(records) {
 
   if (!records.length) {
     table.innerHTML =
-      '<tr><td colspan="10" class="empty">No NIN Modification requests found.</td></tr>';
+      '<tr><td colspan="11" class="empty">No NIN Modification requests found.</td></tr>';
     return;
   }
 
@@ -1458,6 +1537,10 @@ function renderModification(records) {
       ? `<a href="${escapeHTML(item.supporting_document_url)}" target="_blank" rel="noopener">View Document</a>`
       : "Unavailable";
 
+    const uploadedFile = item.completed_file_name
+      ? `<strong>${escapeHTML(item.completed_file_name)}</strong>`
+      : "No completed file uploaded";
+
     row.innerHTML = `
       <td>${formatDate(item.created_at)}</td>
       <td>${escapeHTML(findUserEmail(item.user_id))}</td>
@@ -1472,6 +1555,19 @@ function renderModification(records) {
       </td>
       <td>${escapeHTML(item.request_status || "Pending")}</td>
       <td class="document-links">${passportLink}<br>${supportingLink}</td>
+      <td>
+        ${uploadedFile}
+        <br>
+        <input type="file" class="completed-file-input"
+          accept=".pdf,.jpg,.jpeg,.png,.webp"
+          ${paid ? "" : "disabled"}>
+        <br>
+        <button class="action-btn fund-btn upload-completed-btn"
+          ${paid ? "" : "disabled"}>
+          Upload Completed File
+        </button>
+        <div class="upload-status"></div>
+      </td>
       <td>
         <button class="action-btn fund-btn" data-action="update"
           ${paid ? "" : "disabled"}>Update</button>
@@ -1488,9 +1584,29 @@ function renderModification(records) {
       refundModificationRequest(item);
     });
 
+    const fileInput = row.querySelector(".completed-file-input");
+    const uploadButton = row.querySelector(".upload-completed-btn");
+    const uploadStatus = row.querySelector(".upload-status");
+
+    uploadButton.addEventListener("click", () => {
+      const file = fileInput.files[0];
+
+      if (!file) {
+        alert("Please select the completed file first.");
+        return;
+      }
+
+      uploadModificationFile(
+        item.id,
+        file,
+        uploadButton,
+        uploadStatus
+      );
+    });
+
     table.appendChild(row);
   });
-}
+  }
 
 
 // =====================================================
