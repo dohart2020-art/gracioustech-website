@@ -6,262 +6,1069 @@
 <title>Dashboard | Gracioustec</title>
 <meta name="theme-color" content="#087f3d">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <style>
-:root{--green:#087f3d;--dark:#063b2b;--light:#eaf5ee;--bg:#f5f8f6;--white:#fff;--text:#202b24;--muted:#78847c;--border:#e5ece7;--shadow:0 5px 22px rgba(6,59,43,.06)}
+:root{
+--green:#087f3d;--dark:#063b2b;--light:#eaf5ee;
+--bg:#f5f8f6;--white:#fff;--text:#202b24;
+--muted:#78847c;--border:#e5ece7;
+--shadow:0 5px 22px rgba(6,59,43,.06)
+}
 *{box-sizing:border-box;margin:0;padding:0;font-family:Arial,sans-serif}
 body{background:var(--bg);color:var(--text);padding-bottom:88px}
-a{text-decoration:none;color:inherit}button{cursor:pointer}
-header{height:64px;padding:0 16px;background:#fff;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:1000}
-.logo{font-size:19px;font-weight:900;color:var(--green);letter-spacing:.5px}.logo span{color:var(--dark)}
-.header-right{display:flex;align-items:center;gap:10px}.header-profile{width:38px;height:38px;border-radius:50%;background:var(--light);color:var(--green);display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:bold}
-.menu-btn{border:0;background:var(--light);color:var(--green);border-radius:10px;width:40px;height:40px;font-size:22px}
-.menu{display:none;position:absolute;right:14px;top:58px;width:230px;background:white;border:1px solid var(--border);border-radius:13px;overflow:hidden;box-shadow:0 12px 30px rgba(0,0,0,.13)}
-.menu.show{display:block}.menu a,.menu button{display:block;width:100%;border:0;background:white;text-align:left;padding:14px 17px;color:var(--text);font-size:14px}.menu a:hover,.menu button:hover{background:var(--light);color:var(--green)}
+a{text-decoration:none;color:inherit}
+button{cursor:pointer}
+header{
+height:64px;padding:0 16px;background:#fff;
+border-bottom:1px solid var(--border);
+display:flex;align-items:center;justify-content:space-between;
+position:sticky;top:0;z-index:1000
+}
+.logo{font-size:19px;font-weight:900;color:var(--green);letter-spacing:.5px}
+.logo span{color:var(--dark)}
+.header-right{display:flex;align-items:center;gap:10px}
+.header-profile{
+width:38px;height:38px;border-radius:50%;
+background:var(--light);color:var(--green);
+display:flex;align-items:center;justify-content:center;
+font-size:18px;font-weight:bold
+}
+.menu-btn{
+border:0;background:var(--light);color:var(--green);
+border-radius:10px;width:40px;height:40px;font-size:22px
+}
+.menu{
+display:none;position:absolute;right:14px;top:58px;width:230px;
+background:white;border:1px solid var(--border);
+border-radius:13px;overflow:hidden;
+box-shadow:0 12px 30px rgba(0,0,0,.13)
+}
+.menu.show{display:block}
+.menu a,.menu button{
+display:block;width:100%;border:0;background:white;
+text-align:left;padding:14px 17px;color:var(--text);font-size:14px
+}
+.menu a:hover,.menu button:hover{background:var(--light);color:var(--green)}
 .container{max-width:1100px;margin:auto;padding:17px 14px 30px}
-.welcome{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin:17px 0}
-.welcome h2{font-size:21px;color:var(--dark);margin-bottom:6px}.welcome p{color:var(--muted);font-size:12px;overflow-wrap:anywhere}
-.welcome-tag{background:var(--light);color:var(--green);padding:8px 11px;border-radius:30px;font-size:10px;font-weight:bold}
-.nigeria-clock-card{background:white;padding:11px 14px;border-radius:13px;border:1px solid var(--border);margin-bottom:14px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:7px}
-.nigeria-clock-label{color:var(--muted);font-size:11px;font-weight:bold}.nigeria-clock-time{color:var(--green);font-size:16px;font-weight:bold;font-variant-numeric:tabular-nums}.nigeria-clock-date{color:var(--muted);font-size:11px}
-.account-card{background:white;padding:16px;border:1px solid var(--border);border-radius:16px;box-shadow:var(--shadow);margin-bottom:17px}
+.welcome{
+display:flex;justify-content:space-between;align-items:center;
+flex-wrap:wrap;gap:10px;margin:17px 0
+}
+.welcome h2{font-size:21px;color:var(--dark);margin-bottom:6px}
+.welcome p{color:var(--muted);font-size:12px;overflow-wrap:anywhere}
+.welcome-tag{
+background:var(--light);color:var(--green);
+padding:8px 11px;border-radius:30px;font-size:10px;font-weight:bold
+}
+.nigeria-clock-card{
+background:white;padding:11px 14px;border-radius:13px;
+border:1px solid var(--border);margin-bottom:14px;
+display:flex;justify-content:space-between;align-items:center;
+flex-wrap:wrap;gap:7px
+}
+.nigeria-clock-label{color:var(--muted);font-size:11px;font-weight:bold}
+.nigeria-clock-time{
+color:var(--green);font-size:16px;font-weight:bold;
+font-variant-numeric:tabular-nums
+}
+.nigeria-clock-date{color:var(--muted);font-size:11px}
+.account-card{
+background:white;padding:16px;border:1px solid var(--border);
+border-radius:16px;box-shadow:var(--shadow);margin-bottom:17px
+}
 .account-card h3{color:var(--dark);font-size:16px;margin-bottom:12px}
-.account-row{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);font-size:13px}.account-row:last-child{border-bottom:0}
-.account-label{color:var(--muted)}.account-value{font-weight:bold;text-align:right;overflow-wrap:anywhere}
+.account-row{
+display:flex;justify-content:space-between;gap:12px;
+padding:10px 0;border-bottom:1px solid var(--border);font-size:13px
+}
+.account-row:last-child{border-bottom:0}
+.account-label{color:var(--muted)}
+.account-value{font-weight:bold;text-align:right;overflow-wrap:anywhere}
 .account-note{font-size:11px;color:var(--muted);margin-top:9px;line-height:1.6}
-.account-heading{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px}.account-heading h3{margin:0}.account-badge{background:var(--light);color:var(--green);font-size:10px;font-weight:bold;padding:6px 9px;border-radius:20px}
-.account-fund-link{display:block;text-align:center;background:var(--dark);color:#fff;padding:12px;border-radius:10px;font-size:13px;font-weight:bold;margin-top:13px}
-.section-title{font-size:17px;color:var(--dark);margin:23px 0 12px;display:flex;align-items:center;gap:9px}
-.section-title:before{content:"";width:4px;height:20px;border-radius:5px;background:var(--green)}
-.services{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0;margin-top:18px}
-.service-card{background:white;border:1px solid var(--border);padding:13px;border-radius:0;box-shadow:var(--shadow);min-width:0;min-height:190px;display:flex;flex-direction:column;position:relative}
-.service-icon{width:38px;height:38px;display:flex;align-items:center;justify-content:center;border-radius:11px;background:var(--light);font-size:20px;margin-bottom:11px}
-.service-card h3{color:var(--dark);font-size:14px;line-height:1.35;margin-bottom:7px}.service-card p{color:var(--muted);font-size:11px;line-height:1.5;flex-grow:1}
+.account-heading{
+display:flex;align-items:center;justify-content:space-between;
+gap:8px;margin-bottom:8px
+}
+.account-heading h3{margin:0}
+.account-badge{
+background:var(--light);color:var(--green);
+font-size:10px;font-weight:bold;padding:6px 9px;border-radius:20px
+}
+.account-fund-link{
+display:block;text-align:center;background:var(--dark);color:#fff;
+padding:12px;border-radius:10px;font-size:13px;font-weight:bold;margin-top:13px
+}
+.section-title{
+font-size:17px;color:var(--dark);margin:23px 0 12px;
+display:flex;align-items:center;gap:9px
+}
+.section-title:before{
+content:"";width:4px;height:20px;border-radius:5px;background:var(--green)
+}
+.services{
+display:grid;grid-template-columns:repeat(2,minmax(0,1fr));
+gap:0;margin-top:18px
+}
+.service-card{
+background:white;border:1px solid var(--border);padding:13px;
+border-radius:0;box-shadow:var(--shadow);min-width:0;min-height:190px;
+display:flex;flex-direction:column;position:relative
+}
+.service-icon{
+width:38px;height:38px;display:flex;align-items:center;
+justify-content:center;border-radius:11px;background:var(--light);
+font-size:20px;margin-bottom:11px
+}
+.service-card h3{color:var(--dark);font-size:14px;line-height:1.35;margin-bottom:7px}
+.service-card p{color:var(--muted);font-size:11px;line-height:1.5;flex-grow:1}
 .price{color:var(--green);font-weight:800;font-size:14px;margin:11px 0}
-.service-btn{display:block;text-align:center;padding:10px 5px;background:var(--green);color:white;border-radius:9px;font-size:11px;font-weight:bold;margin-top:auto}
-.service-btn.disabled-btn{background:#999;pointer-events:none}.service-card.disabled{opacity:.65}
-.nin-tracking-card{border-color:#f2caca;margin-top:3px}.nin-tracking-new{position:absolute;top:-9px;right:9px;background:#df2222;color:white;padding:4px 9px;border-radius:20px;font-size:9px;font-weight:bold}
-.referral-description{font-size:12px;color:var(--muted);line-height:1.7;margin-bottom:13px}.referral-label{display:block;font-size:12px;font-weight:bold;margin-bottom:7px}
-.referral-input{width:100%;padding:12px;border:1px solid var(--border);border-radius:9px;background:#f8faf8;font-size:12px;margin-bottom:9px;color:var(--text)}
-.referral-button{width:100%;padding:12px;background:var(--green);color:white;border:0;border-radius:9px;font-weight:bold;font-size:13px}.referral-button:disabled{opacity:.5}
+.service-btn{
+display:block;text-align:center;padding:10px 5px;background:var(--green);
+color:white;border-radius:9px;font-size:11px;font-weight:bold;margin-top:auto
+}
+.service-btn.disabled-btn{background:#999;pointer-events:none}
+.service-card.disabled{opacity:.65}
+.nin-tracking-card{border-color:#f2caca;margin-top:3px}
+.nin-tracking-new{
+position:absolute;top:-9px;right:9px;background:#df2222;color:white;
+padding:4px 9px;border-radius:20px;font-size:9px;font-weight:bold
+}
+.referral-description{font-size:12px;color:var(--muted);line-height:1.7;margin-bottom:13px}
+.referral-label{display:block;font-size:12px;font-weight:bold;margin-bottom:7px}
+.referral-input{
+width:100%;padding:12px;border:1px solid var(--border);
+border-radius:9px;background:#f8faf8;font-size:12px;
+margin-bottom:9px;color:var(--text)
+}
+.referral-button{
+width:100%;padding:12px;background:var(--green);color:white;
+border:0;border-radius:9px;font-weight:bold;font-size:13px
+}
+.referral-button:disabled{opacity:.5}
 #referralMessage{margin-top:9px;font-size:12px;overflow-wrap:anywhere}
 .quick-links{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:12px}
-.quick-link{background:white;padding:15px 9px;text-align:center;border:1px solid var(--border);border-radius:13px;color:var(--green);font-weight:bold;font-size:12px;box-shadow:var(--shadow)}
-.loading{color:var(--muted);font-size:12px}.error{color:#b00020;font-size:12px}
-.announcement-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);display:none;align-items:center;justify-content:center;padding:18px;z-index:99999}.announcement-overlay.show{display:flex}
-.announcement-box{width:100%;max-width:480px;background:white;border-radius:17px;overflow:hidden;box-shadow:0 15px 50px rgba(0,0,0,.25)}
-.announcement-header{background:var(--dark);color:white;padding:17px;display:flex;align-items:center;gap:12px}.announcement-icon{width:36px;height:36px;background:white;color:var(--green);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:21px;font-weight:bold}.announcement-header h2{font-size:16px}
-.announcement-body{padding:21px}.announcement-title{color:var(--dark);font-size:19px;font-weight:bold;margin-bottom:11px}.announcement-message{font-size:13px;line-height:1.7;color:#444}.announcement-footer{padding:0 18px 18px}.announcement-close{width:100%;padding:12px;border:0;border-radius:9px;background:var(--green);color:white;font-weight:bold}
-.footer{text-align:center;padding:22px 10px;color:var(--muted);font-size:11px;margin-top:24px;border-top:1px solid var(--border)}
-/* Fixed mobile navigation */
-.bottom-nav{position:fixed;left:0;right:0;bottom:0;height:68px;background:#fff;border-top:1px solid var(--border);display:grid;grid-template-columns:repeat(5,1fr);z-index:1500;padding-bottom:env(safe-area-inset-bottom);box-shadow:0 -5px 18px rgba(6,59,43,.08)}
-.bottom-nav a{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:#718078;font-size:10px;font-weight:bold}
-.bottom-nav a span:first-child{font-size:19px;line-height:1}.bottom-nav a.active{color:var(--green)}
-.whatsapp-float{position:fixed;right:15px;bottom:82px;width:52px;height:52px;border-radius:50%;background:#20bf60;color:white;display:flex;align-items:center;justify-content:center;font-size:27px;box-shadow:0 5px 16px rgba(0,0,0,.22);z-index:1400}
-@media(min-width:700px){body{padding-bottom:25px}.container{padding:25px 22px 35px}.welcome h2{font-size:25px}.services{grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}.service-card{padding:18px;min-height:205px}.service-card h3{font-size:16px}.service-card p{font-size:13px}.service-icon{width:43px;height:43px;font-size:22px}.price{font-size:17px}.service-btn{font-size:13px;padding:12px}.bottom-nav{display:none}.whatsapp-float{bottom:25px;right:25px}.account-card{padding:21px}}
-@media(max-width:360px){.container{padding-left:10px;padding-right:10px}.services{gap:0}.service-card{padding:10px;min-height:195px}.service-card h3{font-size:13px}.service-card p{font-size:10px}.service-btn{font-size:10px}}
+.quick-link{
+background:white;padding:15px 9px;text-align:center;
+border:1px solid var(--border);border-radius:13px;color:var(--green);
+font-weight:bold;font-size:12px;box-shadow:var(--shadow)
+}
+.loading{color:var(--muted);font-size:12px}
+.error{color:#b00020;font-size:12px}
+.announcement-overlay{
+position:fixed;inset:0;background:rgba(0,0,0,.7);
+display:none;align-items:center;justify-content:center;
+padding:18px;z-index:99999
+}
+.announcement-overlay.show{display:flex}
+.announcement-box{
+width:100%;max-width:480px;background:white;
+border-radius:17px;overflow:hidden;
+box-shadow:0 15px 50px rgba(0,0,0,.25)
+}
+.announcement-header{
+background:var(--dark);color:white;padding:17px;
+display:flex;align-items:center;gap:12px
+}
+.announcement-icon{
+width:36px;height:36px;background:white;color:var(--green);
+border-radius:50%;display:flex;align-items:center;
+justify-content:center;font-size:21px;font-weight:bold
+}
+.announcement-header h2{font-size:16px}
+.announcement-body{padding:21px}
+.announcement-title{color:var(--dark);font-size:19px;font-weight:bold;margin-bottom:11px}
+.announcement-message{font-size:13px;line-height:1.7;color:#444}
+.announcement-footer{padding:0 18px 18px}
+.announcement-close{
+width:100%;padding:12px;border:0;border-radius:9px;
+background:var(--green);color:white;font-weight:bold
+}
+.footer{
+text-align:center;padding:22px 10px;color:var(--muted);
+font-size:11px;margin-top:24px;border-top:1px solid var(--border)
+}
+.bottom-nav{
+position:fixed;left:0;right:0;bottom:0;height:68px;background:#fff;
+border-top:1px solid var(--border);display:grid;
+grid-template-columns:repeat(5,1fr);z-index:1500;
+padding-bottom:env(safe-area-inset-bottom);
+box-shadow:0 -5px 18px rgba(6,59,43,.08)
+}
+.bottom-nav a{
+display:flex;flex-direction:column;align-items:center;
+justify-content:center;gap:4px;color:#718078;font-size:10px;font-weight:bold
+}
+.bottom-nav a span:first-child{font-size:19px;line-height:1}
+.bottom-nav a.active{color:var(--green)}
+.whatsapp-float{
+position:fixed;right:15px;bottom:82px;width:52px;height:52px;
+border-radius:50%;background:#20bf60;color:white;
+display:flex;align-items:center;justify-content:center;
+font-size:27px;box-shadow:0 5px 16px rgba(0,0,0,.22);z-index:1400
+}
+
+/* NIN MODIFICATION TRACKING */
+.modification-tracking{
+background:#fff;border:1px solid var(--border);
+border-radius:15px;padding:15px;margin-top:12px;
+box-shadow:var(--shadow)
+}
+.modification-item{
+border:1px solid var(--border);border-radius:11px;
+padding:13px;margin-bottom:12px
+}
+.modification-item:last-child{margin-bottom:0}
+.modification-item h3{color:var(--dark);font-size:14px;margin-bottom:9px}
+.modification-info{
+font-size:12px;color:var(--muted);line-height:1.8;overflow-wrap:anywhere
+}
+.modification-status{
+display:inline-block;padding:6px 10px;border-radius:20px;
+background:#fff2d9;color:#946000;font-size:11px;
+font-weight:bold;margin:7px 0
+}
+.modification-status.completed{background:#e4f7eb;color:#087f3d}
+.modification-status.rejected{background:#fde8e8;color:#b00020}
+.modification-note{
+background:#f5f8f6;border-radius:8px;padding:10px;
+margin-top:9px;font-size:12px;line-height:1.6;
+overflow-wrap:anywhere
+}
+.modification-download{
+display:block;width:100%;background:var(--green);color:white;
+border:0;border-radius:9px;padding:12px;font-size:12px;
+font-weight:bold;margin-top:12px
+}
+.modification-download:disabled{opacity:.6}
+.modification-empty{color:var(--muted);font-size:12px;padding:12px 0;line-height:1.6}
+
+@media(min-width:700px){
+body{padding-bottom:25px}
+.container{padding:25px 22px 35px}
+.welcome h2{font-size:25px}
+.services{grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.service-card{padding:18px;min-height:205px}
+.service-card h3{font-size:16px}
+.service-card p{font-size:13px}
+.service-icon{width:43px;height:43px;font-size:22px}
+.price{font-size:17px}
+.service-btn{font-size:13px;padding:12px}
+.bottom-nav{display:none}
+.whatsapp-float{bottom:25px;right:25px}
+.account-card{padding:21px}
+}
+@media(max-width:360px){
+.container{padding-left:10px;padding-right:10px}
+.services{gap:0}
+.service-card{padding:10px;min-height:195px}
+.service-card h3{font-size:13px}
+.service-card p{font-size:10px}
+.service-btn{font-size:10px}
+}
 </style>
 </head>
+
 <body>
-<div id="announcementOverlay" class="announcement-overlay"><div class="announcement-box">
-  <div class="announcement-header"><div class="announcement-icon">!</div><h2>Gracioustec Announcement</h2></div>
-  <div class="announcement-body"><div id="announcementTitle" class="announcement-title">Announcement</div><div id="announcementMessage" class="announcement-message"></div></div>
-  <div class="announcement-footer"><button id="announcementCloseBtn" class="announcement-close" type="button">Continue to Dashboard</button></div>
-</div></div>
+<div id="announcementOverlay" class="announcement-overlay">
+<div class="announcement-box">
+<div class="announcement-header">
+<div class="announcement-icon">!</div>
+<h2>Gracioustec Announcement</h2>
+</div>
+<div class="announcement-body">
+<div id="announcementTitle" class="announcement-title">Announcement</div>
+<div id="announcementMessage" class="announcement-message"></div>
+</div>
+<div class="announcement-footer">
+<button id="announcementCloseBtn" class="announcement-close" type="button">Continue to Dashboard</button>
+</div>
+</div>
+</div>
 
 <header>
-  <div class="logo">GRACIOUS<span>TEC</span></div>
-  <div class="header-right"><div class="header-profile">G</div><button class="menu-btn" id="menuBtn" type="button" aria-label="Open menu">☰</button></div>
-  <div class="menu" id="menu">
-    <a href="dashboard.html">▦ Dashboard</a><a href="transactions.html">↗ Transaction History</a><a href="fund-wallet.html">＋ Fund Wallet</a><a href="profile.html">● My Profile</a><button type="button" id="logoutBtn">↪ Logout</button>
-  </div>
+<div class="logo">GRACIOUS<span>TEC</span></div>
+<div class="header-right">
+<div class="header-profile">G</div>
+<button class="menu-btn" id="menuBtn" type="button" aria-label="Open menu">☰</button>
+</div>
+<div class="menu" id="menu">
+<a href="dashboard.html">▦ Dashboard</a>
+<a href="transactions.html">↗ Transaction History</a>
+<a href="fund-wallet.html">＋ Fund Wallet</a>
+<a href="profile.html">● My Profile</a>
+<button type="button" id="logoutBtn">↪ Logout</button>
+</div>
 </header>
 
 <main class="container">
-  <!-- Dedicated account is deliberately placed first, as in the mobile reference -->
-  <div class="account-card" id="paymentPointCard">
-    <div class="account-heading"><h3>🏦 Dedicated Virtual Account</h3><span class="account-badge">WALLET FUNDING</span></div>
-    <div id="accountLoading" class="loading">Checking account...</div>
-    <div id="accountDetails" style="display:none">
-      <div class="account-row"><span class="account-label">Account Name</span><span class="account-value" id="accountName">---</span></div>
-      <div class="account-row"><span class="account-label">Bank</span><span class="account-value" id="bankName">---</span></div>
-      <div class="account-row"><span class="account-label">Account Number</span><span class="account-value" id="accountNumber">---</span></div>
-      <div class="account-note">Transfer money to this dedicated account to fund your Gracioustec wallet.</div>
-    </div>
-    <div id="accountError" class="error"></div>
-    <a href="fund-wallet.html" class="account-fund-link">＋ Fund Wallet / View Account</a>
-  </div>
 
-  <div class="welcome"><div><h2>Welcome Back! 👋</h2><p id="userEmail">Loading account...</p></div><div class="welcome-tag">● Account Dashboard</div></div>
-  <div class="nigeria-clock-card"><div class="nigeria-clock-label">🇳🇬 NIGERIA TIME</div><div class="nigeria-clock-time" id="nigeriaClockTime">Loading time...</div><div class="nigeria-clock-date" id="nigeriaClockDate">Loading date...</div></div>
+<div class="account-card" id="paymentPointCard">
+<div class="account-heading">
+<h3>🏦 Dedicated Virtual Account</h3>
+<span class="account-badge">WALLET FUNDING</span>
+</div>
+<div id="accountLoading" class="loading">Checking account...</div>
+<div id="accountDetails" style="display:none">
+<div class="account-row"><span class="account-label">Account Name</span><span class="account-value" id="accountName">---</span></div>
+<div class="account-row"><span class="account-label">Bank</span><span class="account-value" id="bankName">---</span></div>
+<div class="account-row"><span class="account-label">Account Number</span><span class="account-value" id="accountNumber">---</span></div>
+<div class="account-note">Transfer money to this dedicated account to fund your Gracioustec wallet.</div>
+</div>
+<div id="accountError" class="error"></div>
+<a href="fund-wallet.html" class="account-fund-link">＋ Fund Wallet / View Account</a>
+</div>
 
-  <div class="account-card" id="walletCard" style="background:linear-gradient(120deg,#063b2b,#087f3d);color:white;border:0;padding:20px">
-    <div style="font-size:13px;opacity:.9">Available Wallet Balance</div>
-    <div id="walletBalance" style="font-size:31px;font-weight:900;margin:12px 0 17px">₦0.00</div>
-    <div style="display:flex;gap:10px;flex-wrap:wrap">
-      <a href="fund-wallet.html" style="background:white;color:#087f3d;padding:11px 17px;border-radius:9px;font-size:12px;font-weight:bold">＋ Fund Wallet</a>
-      <button type="button" id="refreshBtn" style="background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.35);color:white;padding:11px 17px;border-radius:9px;font-size:12px;font-weight:bold">↻ Refresh</button>
-    </div>
-    <div id="refreshMessage" style="font-size:11px;margin-top:10px"></div>
-  </div>
+<div class="welcome">
+<div><h2>Welcome Back! 👋</h2><p id="userEmail">Loading account...</p></div>
+<div class="welcome-tag">● Account Dashboard</div>
+</div>
 
-  <div class="services">
-    <div class="service-card" id="ninStandardCard"><div class="service-icon">🪪</div><h3>NIN Reprinting</h3><p>Get your NIN slip reprinted quickly.</p><div class="price" id="ninStandardPrice">Loading price...</div><a href="nin.html" class="service-btn" id="ninStandardBtn">Continue</a></div>
-    <div class="service-card" id="ninLostCard"><div class="service-icon">📄</div><h3>NIN Lost Slip</h3><p>Reprint your NIN slip if the original is lost.</p><div class="price" id="ninLostPrice">Loading price...</div><a href="nin.html" class="service-btn" id="ninLostBtn">Continue</a></div>
-    <div class="service-card" id="ninPremiumCard"><div class="service-icon">⭐</div><h3>Premium / Foreigner Slip</h3><p>Premium NIN slip service.</p><div class="price" id="ninPremiumPrice">Loading price...</div><a href="nin.html" class="service-btn" id="ninPremiumBtn">Continue</a></div>
-    <div class="service-card nin-tracking-card" id="ninPersonalisationCard" style="display:none"><span class="nin-tracking-new">NEW</span><div class="service-icon">📝</div><h3>NIN Personalisation</h3><p>Submit your IJOVIA NIN Personalisation request using your 15-character tracking ID.</p><div class="price" id="ninPersonalisationStandardPrice">Standard: Loading...</div><div class="price" id="ninPersonalisationPremiumPrice">Premium: Loading...</div><a href="nin-personalisation.html" class="service-btn" id="ninPersonalisationBtn">Open NIN Personalisation</a></div>
-    <div class="service-card" id="bvnCard"><div class="service-icon">🔐</div><h3>BVN Reprinting</h3><p>Verify and reprint your BVN slip.</p><div class="price" id="bvnPrice">Loading price...</div><a href="bvn.html" class="service-btn" id="bvnBtn">Continue</a></div>
-    <div class="service-card" id="ninValidationCard"><div class="service-icon">📋</div><h3>NIN Validation</h3><p>Submit a NIN validation request and check its processing status.</p><div class="price" id="ninValidationPrice">Loading price...</div><a href="nin-validation.html" class="service-btn" id="ninValidationBtn">Open NIN Validation</a></div>
-    <div class="service-card"><div class="service-icon">✅</div><h3>NIN Verification</h3><p>Verify NIN information and view available details.</p><a href="nin-verification.html" class="service-btn">Verify NIN</a></div>
-    <div class="service-card"><div class="service-icon">🔎</div><h3>BVN Verification</h3><p>Verify BVN information.</p><a href="bvn-verification.html" class="service-btn">Verify BVN</a></div>
-    <div class="service-card" id="ipeClearanceCard"><div class="service-icon">📑</div><h3>IPE Clearance</h3><p>Submit your IPE Clearance tracking ID and check your clearance request status.</p><div class="price" id="ipeClearancePrice">Loading price...</div><a href="ipe-clearance.html" class="service-btn" id="ipeClearanceBtn">Open IPE Clearance</a></div>
-    <div class="service-card nin-tracking-card" id="ninModificationCard"><span class="nin-tracking-new">NEW</span><div class="service-icon">📝</div><h3>NIN Modification</h3><p>Request correction of your NIN name, date of birth, phone number or address.</p><div class="price">Prices from ₦10,500</div><a href="nin-modification.html" class="service-btn">Open NIN Modification</a></div>
-  </div>
+<div class="nigeria-clock-card">
+<div class="nigeria-clock-label">🇳🇬 NIGERIA TIME</div>
+<div class="nigeria-clock-time" id="nigeriaClockTime">Loading time...</div>
+<div class="nigeria-clock-date" id="nigeriaClockDate">Loading date...</div>
+</div>
 
-  <h2 class="section-title" id="referralHeading">🎁 Referral Hub</h2>
-  <div class="account-card" id="referralCard"><h3>Share Gracioustec with Friends</h3><p class="referral-description">Invite friends to join Gracioustec using your personal referral link. Share your link with friends and family to introduce them to our services.</p><label for="referralLink" class="referral-label">Your referral link</label><input type="text" id="referralLink" class="referral-input" readonly value="Loading your referral link..." aria-label="Your personal referral link"><button type="button" id="copyReferralBtn" class="referral-button" disabled>Loading Referral Link...</button><p id="referralMessage" role="status" aria-live="polite">Retrieving your referral link...</p></div>
+<div class="account-card" id="walletCard" style="background:linear-gradient(120deg,#063b2b,#087f3d);color:white;border:0;padding:20px">
+<div style="font-size:13px;opacity:.9">Available Wallet Balance</div>
+<div id="walletBalance" style="font-size:31px;font-weight:900;margin:12px 0 17px">₦0.00</div>
+<div style="display:flex;gap:10px;flex-wrap:wrap">
+<a href="fund-wallet.html" style="background:white;color:#087f3d;padding:11px 17px;border-radius:9px;font-size:12px;font-weight:bold">＋ Fund Wallet</a>
+<button type="button" id="refreshBtn" style="background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.35);color:white;padding:11px 17px;border-radius:9px;font-size:12px;font-weight:bold">↻ Refresh</button>
+</div>
+<div id="refreshMessage" style="font-size:11px;margin-top:10px"></div>
+</div>
 
-  <h2 class="section-title">⚡ Quick Links</h2>
-  <div class="quick-links"><a href="transactions.html" class="quick-link">📋 Transactions</a><a href="fund-wallet.html" class="quick-link">💳 Fund Wallet</a><a href="profile.html" class="quick-link">👤 My Profile</a></div>
-  <div class="footer">© 2026 GRACIOUSTEC. All rights reserved.</div>
+<div class="services">
+<div class="service-card" id="ninStandardCard">
+<div class="service-icon">🪪</div><h3>NIN Reprinting</h3>
+<p>Get your NIN slip reprinted quickly.</p>
+<div class="price" id="ninStandardPrice">Loading price...</div>
+<a href="nin.html" class="service-btn" id="ninStandardBtn">Continue</a>
+</div>
+
+<div class="service-card" id="ninLostCard">
+<div class="service-icon">📄</div><h3>NIN Lost Slip</h3>
+<p>Reprint your NIN slip if the original is lost.</p>
+<div class="price" id="ninLostPrice">Loading price...</div>
+<a href="nin.html" class="service-btn" id="ninLostBtn">Continue</a>
+</div>
+
+<div class="service-card" id="ninPremiumCard">
+<div class="service-icon">⭐</div><h3>Premium / Foreigner Slip</h3>
+<p>Premium NIN slip service.</p>
+<div class="price" id="ninPremiumPrice">Loading price...</div>
+<a href="nin.html" class="service-btn" id="ninPremiumBtn">Continue</a>
+</div>
+
+<div class="service-card nin-tracking-card" id="ninPersonalisationCard" style="display:none">
+<span class="nin-tracking-new">NEW</span>
+<div class="service-icon">📝</div><h3>NIN Personalisation</h3>
+<p>Submit your IJOVIA NIN Personalisation request using your 15-character tracking ID.</p>
+<div class="price" id="ninPersonalisationStandardPrice">Standard: Loading...</div>
+<div class="price" id="ninPersonalisationPremiumPrice">Premium: Loading...</div>
+<a href="nin-personalisation.html" class="service-btn" id="ninPersonalisationBtn">Open NIN Personalisation</a>
+</div>
+
+<div class="service-card" id="bvnCard">
+<div class="service-icon">🔐</div><h3>BVN Reprinting</h3>
+<p>Verify and reprint your BVN slip.</p>
+<div class="price" id="bvnPrice">Loading price...</div>
+<a href="bvn.html" class="service-btn" id="bvnBtn">Continue</a>
+</div>
+
+<div class="service-card" id="ninValidationCard">
+<div class="service-icon">📋</div><h3>NIN Validation</h3>
+<p>Submit a NIN validation request and check its processing status.</p>
+<div class="price" id="ninValidationPrice">Loading price...</div>
+<a href="nin-validation.html" class="service-btn" id="ninValidationBtn">Open NIN Validation</a>
+</div>
+
+<div class="service-card">
+<div class="service-icon">✅</div><h3>NIN Verification</h3>
+<p>Verify NIN information and view available details.</p>
+<a href="nin-verification.html" class="service-btn">Verify NIN</a>
+</div>
+
+<div class="service-card">
+<div class="service-icon">🔎</div><h3>BVN Verification</h3>
+<p>Verify BVN information.</p>
+<a href="bvn-verification.html" class="service-btn">Verify BVN</a>
+</div>
+
+<div class="service-card" id="ipeClearanceCard">
+<div class="service-icon">📑</div><h3>IPE Clearance</h3>
+<p>Submit your IPE Clearance tracking ID and check your clearance request status.</p>
+<div class="price" id="ipeClearancePrice">Loading price...</div>
+<a href="ipe-clearance.html" class="service-btn" id="ipeClearanceBtn">Open IPE Clearance</a>
+</div>
+
+<div class="service-card nin-tracking-card" id="ninModificationCard">
+<span class="nin-tracking-new">NEW</span>
+<div class="service-icon">📝</div><h3>NIN Modification</h3>
+<p>Request correction of your NIN name, date of birth, phone number or address.</p>
+<div class="price">Prices from ₦10,500</div>
+<a href="nin-modification.html" class="service-btn">Open NIN Modification</a>
+</div>
+</div>
+
+<!-- CUSTOMER NIN MODIFICATION UPDATES -->
+<h2 class="section-title">📋 My NIN Modification Updates</h2>
+<div class="modification-tracking">
+<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px">
+<h3 style="color:var(--dark);font-size:14px">My Modification Requests</h3>
+<button type="button" id="refreshModificationBtn" style="border:0;background:var(--light);color:var(--green);padding:8px 10px;border-radius:8px;font-size:11px;font-weight:bold">↻ Refresh</button>
+</div>
+<div id="modificationUpdates">
+<p class="modification-empty">Loading your modification requests...</p>
+</div>
+</div>
+
+<h2 class="section-title" id="referralHeading">🎁 Referral Hub</h2>
+<div class="account-card" id="referralCard">
+<h3>Share Gracioustec with Friends</h3>
+<p class="referral-description">Invite friends to join Gracioustec using your personal referral link. Share your link with friends and family to introduce them to our services.</p>
+<label for="referralLink" class="referral-label">Your referral link</label>
+<input type="text" id="referralLink" class="referral-input" readonly value="Loading your referral link..." aria-label="Your personal referral link">
+<button type="button" id="copyReferralBtn" class="referral-button" disabled>Loading Referral Link...</button>
+<p id="referralMessage" role="status" aria-live="polite">Retrieving your referral link...</p>
+</div>
+
+<h2 class="section-title">⚡ Quick Links</h2>
+<div class="quick-links">
+<a href="transactions.html" class="quick-link">📋 Transactions</a>
+<a href="fund-wallet.html" class="quick-link">💳 Fund Wallet</a>
+<a href="profile.html" class="quick-link">👤 My Profile</a>
+</div>
+
+<div class="footer">© 2026 GRACIOUSTEC. All rights reserved.</div>
 </main>
 
 <a class="whatsapp-float" href="https://wa.me/2349012946266" target="_blank" rel="noopener" aria-label="Chat with Gracioustec on WhatsApp">☏</a>
+
 <nav class="bottom-nav" aria-label="Main navigation">
-  <a href="dashboard.html" class="active"><span>⌂</span><span>Dashboard</span></a>
-  <a href="nin-verification.html"><span>✓</span><span>Verify</span></a>
-  <a href="#referralCard"><span>♧</span><span>Referrals</span></a>
-  <a href="fund-wallet.html"><span>▣</span><span>Wallet</span></a>
-  <a href="profile.html"><span>●</span><span>Profile</span></a>
+<a href="dashboard.html" class="active"><span>⌂</span><span>Dashboard</span></a>
+<a href="nin-verification.html"><span>✓</span><span>Verify</span></a>
+<a href="#referralCard"><span>♧</span><span>Referrals</span></a>
+<a href="fund-wallet.html"><span>▣</span><span>Wallet</span></a>
+<a href="profile.html"><span>●</span><span>Profile</span></a>
 </nav>
 
 <script>
 const SUPABASE_URL="https://iknhifndgpwibkfidggq.supabase.co";
 const SUPABASE_KEY="sb_publishable_xELauxOMm7eMkNrPz55Mrw_LVkRoASn";
 const supabaseClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+
 let currentUser=null;
 let paymentMethods={paymentpoint:false,recopay:false};
+let modificationFilePaths=new Map();
+let modificationLoading=false;
 
 function updateNigeriaClock(){
-  const now=new Date(),t=document.getElementById("nigeriaClockTime"),d=document.getElementById("nigeriaClockDate");
-  if(!t||!d)return;
-  t.textContent=new Intl.DateTimeFormat("en-NG",{timeZone:"Africa/Lagos",hour:"2-digit",minute:"2-digit",second:"2-digit",hour12:true}).format(now);
-  d.textContent=new Intl.DateTimeFormat("en-NG",{timeZone:"Africa/Lagos",weekday:"long",day:"numeric",month:"long",year:"numeric"}).format(now);
+const now=new Date();
+const t=document.getElementById("nigeriaClockTime");
+const d=document.getElementById("nigeriaClockDate");
+if(!t||!d)return;
+t.textContent=new Intl.DateTimeFormat("en-NG",{
+timeZone:"Africa/Lagos",hour:"2-digit",minute:"2-digit",
+second:"2-digit",hour12:true
+}).format(now);
+d.textContent=new Intl.DateTimeFormat("en-NG",{
+timeZone:"Africa/Lagos",weekday:"long",day:"numeric",
+month:"long",year:"numeric"
+}).format(now);
 }
-updateNigeriaClock();setInterval(updateNigeriaClock,1000);
+updateNigeriaClock();
+setInterval(updateNigeriaClock,1000);
 
-document.getElementById("menuBtn").addEventListener("click",()=>document.getElementById("menu").classList.toggle("show"));
+document.getElementById("menuBtn").addEventListener("click",()=>{
+document.getElementById("menu").classList.toggle("show");
+});
+
 document.addEventListener("click",event=>{
-  const menu=document.getElementById("menu"),btn=document.getElementById("menuBtn");
-  if(!menu.contains(event.target)&&!btn.contains(event.target))menu.classList.remove("show");
+const menu=document.getElementById("menu");
+const btn=document.getElementById("menuBtn");
+if(!menu.contains(event.target)&&!btn.contains(event.target)){
+menu.classList.remove("show");
+}
 });
+
 document.getElementById("logoutBtn").addEventListener("click",async()=>{
-  const {error}=await supabaseClient.auth.signOut();
-  if(error){console.error("Logout error:",error);alert("Unable to log out. Please try again.");return;}
-  window.location.href="login.html";
+const {error}=await supabaseClient.auth.signOut();
+if(error){
+console.error("Logout error:",error);
+alert("Unable to log out. Please try again.");
+return;
+}
+window.location.href="login.html";
 });
-function formatMoney(amount){return "₦"+Number(amount||0).toLocaleString("en-NG",{minimumFractionDigits:2,maximumFractionDigits:2});}
+
+function formatMoney(amount){
+return "₦"+Number(amount||0).toLocaleString("en-NG",{
+minimumFractionDigits:2,maximumFractionDigits:2
+});
+}
 
 async function loadUser(){
-  const {data,error}=await supabaseClient.auth.getUser();
-  if(error||!data||!data.user){window.location.href="login.html";return null;}
-  currentUser=data.user;document.getElementById("userEmail").textContent=data.user.email||"";return data.user;
+const {data,error}=await supabaseClient.auth.getUser();
+if(error||!data||!data.user){
+window.location.href="login.html";
+return null;
 }
+currentUser=data.user;
+document.getElementById("userEmail").textContent=data.user.email||"";
+return data.user;
+}
+
 async function loadReferralLink(user){
-  const input=document.getElementById("referralLink"),button=document.getElementById("copyReferralBtn"),message=document.getElementById("referralMessage");
-  input.value="";button.disabled=true;button.textContent="Loading Referral Link...";message.textContent="Retrieving your referral code...";message.style.color="#666";
-  try{
-    const {data,error}=await supabaseClient.from("referral_profiles").select("referral_code").eq("user_id",user.id).maybeSingle();
-    if(error){console.error("Referral profile error:",error);throw new Error("Unable to read your referral profile.");}
-    if(!data||!data.referral_code){button.textContent="Referral Link Unavailable";message.textContent="Your referral code has not been created yet. Please contact support.";message.style.color="#b00020";return;}
-    const code=String(data.referral_code).trim();if(!/^[A-Z0-9_-]+$/i.test(code))throw new Error("The referral code is invalid.");
-    const url=new URL("https://gracioustec.com.ng/register.html");url.searchParams.set("ref",code);
-    input.value=url.toString();button.disabled=false;button.textContent="Copy Referral Link";message.textContent="Your referral link is ready. Share it with friends and family.";message.style.color="#087443";
-  }catch(error){console.error("Load referral link error:",error);input.value="";button.disabled=true;button.textContent="Referral Link Unavailable";message.textContent="Unable to load your referral link. Please refresh the page or contact support.";message.style.color="#b00020";}
+const input=document.getElementById("referralLink");
+const button=document.getElementById("copyReferralBtn");
+const message=document.getElementById("referralMessage");
+
+input.value="";
+button.disabled=true;
+button.textContent="Loading Referral Link...";
+message.textContent="Retrieving your referral code...";
+message.style.color="#666";
+
+try{
+const {data,error}=await supabaseClient
+.from("referral_profiles")
+.select("referral_code")
+.eq("user_id",user.id)
+.maybeSingle();
+
+if(error)throw error;
+
+if(!data||!data.referral_code){
+button.textContent="Referral Link Unavailable";
+message.textContent="Your referral code has not been created yet. Please contact support.";
+message.style.color="#b00020";
+return;
 }
+
+const code=String(data.referral_code).trim();
+if(!/^[A-Z0-9_-]+$/i.test(code))throw new Error("Invalid referral code.");
+
+const url=new URL("https://gracioustec.com.ng/register.html");
+url.searchParams.set("ref",code);
+input.value=url.toString();
+button.disabled=false;
+button.textContent="Copy Referral Link";
+message.textContent="Your referral link is ready. Share it with friends and family.";
+message.style.color="#087443";
+
+}catch(error){
+console.error("Load referral link error:",error);
+button.disabled=true;
+button.textContent="Referral Link Unavailable";
+message.textContent="Unable to load your referral link. Please refresh the page or contact support.";
+message.style.color="#b00020";
+}
+}
+
 document.getElementById("copyReferralBtn").addEventListener("click",async()=>{
-  const input=document.getElementById("referralLink"),button=document.getElementById("copyReferralBtn"),message=document.getElementById("referralMessage");
-  if(!input.value||!input.value.startsWith("https://gracioustec.com.ng/register.html?ref=")){message.textContent="Your referral link is not ready yet.";message.style.color="#b00020";return;}
-  button.disabled=true;let copied=false;
-  try{if(navigator.clipboard&&typeof navigator.clipboard.writeText==="function"){await navigator.clipboard.writeText(input.value);copied=true;}}catch(e){console.warn("Clipboard API unavailable:",e);}
-  if(!copied){try{input.focus();input.select();input.setSelectionRange(0,input.value.length);copied=document.execCommand("copy");}catch(e){console.error("Copy error:",e);}}
-  if(copied){button.textContent="Copied ✓";message.textContent="Referral link copied successfully! Share it with friends.";message.style.color="#087443";setTimeout(()=>{button.textContent="Copy Referral Link";button.disabled=false;},2000);}
-  else{button.textContent="Copy Referral Link";button.disabled=false;message.textContent="Automatic copying failed. Select the link above and copy it manually.";message.style.color="#b00020";}
+const input=document.getElementById("referralLink");
+const button=document.getElementById("copyReferralBtn");
+const message=document.getElementById("referralMessage");
+
+if(!input.value||!input.value.startsWith("https://gracioustec.com.ng/register.html?ref=")){
+message.textContent="Your referral link is not ready yet.";
+message.style.color="#b00020";
+return;
+}
+
+button.disabled=true;
+let copied=false;
+
+try{
+if(navigator.clipboard&&typeof navigator.clipboard.writeText==="function"){
+await navigator.clipboard.writeText(input.value);
+copied=true;
+}
+}catch(e){console.warn("Clipboard unavailable:",e);}
+
+if(!copied){
+try{
+input.focus();
+input.select();
+input.setSelectionRange(0,input.value.length);
+copied=document.execCommand("copy");
+}catch(e){console.error("Copy error:",e);}
+}
+
+if(copied){
+button.textContent="Copied ✓";
+message.textContent="Referral link copied successfully! Share it with friends.";
+message.style.color="#087443";
+setTimeout(()=>{
+button.textContent="Copy Referral Link";
+button.disabled=false;
+},2000);
+}else{
+button.textContent="Copy Referral Link";
+button.disabled=false;
+message.textContent="Automatic copying failed. Select the link above and copy it manually.";
+message.style.color="#b00020";
+}
 });
+
 async function loadWallet(user){
-  const {data,error}=await supabaseClient.from("wallets").select("balance").eq("user_id",user.id).maybeSingle();
-  if(error){console.error("Wallet error:",error);document.getElementById("walletBalance").textContent="Unable to load";return;}
-  document.getElementById("walletBalance").textContent=formatMoney(data?data.balance:0);
+const {data,error}=await supabaseClient
+.from("wallets").select("balance")
+.eq("user_id",user.id).maybeSingle();
+
+if(error){
+console.error("Wallet error:",error);
+document.getElementById("walletBalance").textContent="Unable to load";
+return;
 }
+document.getElementById("walletBalance").textContent=formatMoney(data?data.balance:0);
+}
+
 async function loadPaymentMethods(){
-  const {data,error}=await supabaseClient.from("payment_methods").select("method_code,method_name,is_active").in("method_code",["paymentpoint","recopay"]);
-  if(error){console.error("Payment methods error:",error);return;}
-  paymentMethods={paymentpoint:false,recopay:false};
-  (data||[]).forEach(m=>{if(m.method_code==="paymentpoint")paymentMethods.paymentpoint=Boolean(m.is_active);if(m.method_code==="recopay")paymentMethods.recopay=Boolean(m.is_active);});
+const {data,error}=await supabaseClient
+.from("payment_methods")
+.select("method_code,method_name,is_active")
+.in("method_code",["paymentpoint","recopay"]);
+
+if(error){
+console.error("Payment methods error:",error);
+return;
 }
+
+paymentMethods={paymentpoint:false,recopay:false};
+(data||[]).forEach(m=>{
+if(m.method_code==="paymentpoint")paymentMethods.paymentpoint=Boolean(m.is_active);
+if(m.method_code==="recopay")paymentMethods.recopay=Boolean(m.is_active);
+});
+}
+
 async function loadPaymentPointAccount(user){
-  const card=document.getElementById("paymentPointCard"),loading=document.getElementById("accountLoading"),details=document.getElementById("accountDetails"),errorBox=document.getElementById("accountError");
-  loading.style.display="none";details.style.display="none";errorBox.textContent="";
-  if(!paymentMethods.paymentpoint){card.style.display="none";return;}
-  card.style.display="block";loading.style.display="block";loading.textContent="Loading dedicated account...";
-  const {data,error}=await supabaseClient.from("paymentpoint_accounts").select("account_name,bank_name,account_number,created_at").eq("user_id",user.id).order("created_at",{ascending:false}).limit(1).maybeSingle();
-  loading.style.display="none";
-  if(error){console.error("PaymentPoint account error:",error);errorBox.textContent="Unable to load dedicated account.";return;}
-  if(!data){errorBox.textContent="No dedicated account found. Please open Fund Wallet to create or view your account.";return;}
-  document.getElementById("accountName").textContent=data.account_name||"---";document.getElementById("bankName").textContent=data.bank_name||"---";document.getElementById("accountNumber").textContent=data.account_number||"---";details.style.display="block";
+const card=document.getElementById("paymentPointCard");
+const loading=document.getElementById("accountLoading");
+const details=document.getElementById("accountDetails");
+const errorBox=document.getElementById("accountError");
+
+loading.style.display="none";
+details.style.display="none";
+errorBox.textContent="";
+
+if(!paymentMethods.paymentpoint){
+card.style.display="none";
+return;
 }
+
+card.style.display="block";
+loading.style.display="block";
+loading.textContent="Loading dedicated account...";
+
+const {data,error}=await supabaseClient
+.from("paymentpoint_accounts")
+.select("account_name,bank_name,account_number,created_at")
+.eq("user_id",user.id)
+.order("created_at",{ascending:false})
+.limit(1)
+.maybeSingle();
+
+loading.style.display="none";
+
+if(error){
+console.error("PaymentPoint account error:",error);
+errorBox.textContent="Unable to load dedicated account.";
+return;
+}
+
+if(!data){
+errorBox.textContent="No dedicated account found. Please open Fund Wallet to create or view your account.";
+return;
+}
+
+document.getElementById("accountName").textContent=data.account_name||"---";
+document.getElementById("bankName").textContent=data.bank_name||"---";
+document.getElementById("accountNumber").textContent=data.account_number||"---";
+details.style.display="block";
+}
+
 async function loadServicePrices(){
-  const {data,error}=await supabaseClient.from("service_settings").select("service_code,price,is_active");
-  if(error){
-    console.error("Service price error:",error);
-    ["ninStandardPrice","ninLostPrice","ninPremiumPrice","bvnPrice","ninValidationPrice","ipeClearancePrice","ninPersonalisationStandardPrice","ninPersonalisationPremiumPrice"].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent="Unable to load price";});
-    const btn=document.getElementById("ninPersonalisationBtn");btn.classList.add("disabled-btn");btn.removeAttribute("href");return;
-  }
-  const services=data||[];
-  updateServiceCard("ninStandardCard","ninStandardPrice","ninStandardBtn",services.find(x=>x.service_code==="nin_standard"),"nin.html","Continue");
-  updateServiceCard("ninLostCard","ninLostPrice","ninLostBtn",services.find(x=>x.service_code==="nin_lost"),"nin.html","Continue");
-  updateServiceCard("ninPremiumCard","ninPremiumPrice","ninPremiumBtn",services.find(x=>x.service_code==="nin_premium"),"nin.html","Continue");
-  updateServiceCard("bvnCard","bvnPrice","bvnBtn",services.find(x=>x.service_code==="bvn_reprint"),"bvn.html","Continue");
-  updateServiceCard("ninValidationCard","ninValidationPrice","ninValidationBtn",services.find(x=>x.service_code==="nin_validation"),"nin-validation.html","Open NIN Validation");
-  updateServiceCard("ipeClearanceCard","ipeClearancePrice","ipeClearanceBtn",services.find(x=>x.service_code==="ipe_clearance"),"ipe-clearance.html","Open IPE Clearance");
-  updateNinPersonalisationCard(services);
+const {data,error}=await supabaseClient
+.from("service_settings")
+.select("service_code,price,is_active");
+
+if(error){
+console.error("Service price error:",error);
+[
+"ninStandardPrice","ninLostPrice","ninPremiumPrice",
+"bvnPrice","ninValidationPrice","ipeClearancePrice",
+"ninPersonalisationStandardPrice","ninPersonalisationPremiumPrice"
+].forEach(id=>{
+const el=document.getElementById(id);
+if(el)el.textContent="Unable to load price";
+});
+const btn=document.getElementById("ninPersonalisationBtn");
+btn.classList.add("disabled-btn");
+btn.removeAttribute("href");
+return;
 }
+
+const services=data||[];
+
+updateServiceCard("ninStandardCard","ninStandardPrice","ninStandardBtn",
+services.find(x=>x.service_code==="nin_standard"),"nin.html","Continue");
+
+updateServiceCard("ninLostCard","ninLostPrice","ninLostBtn",
+services.find(x=>x.service_code==="nin_lost"),"nin.html","Continue");
+
+updateServiceCard("ninPremiumCard","ninPremiumPrice","ninPremiumBtn",
+services.find(x=>x.service_code==="nin_premium"),"nin.html","Continue");
+
+updateServiceCard("bvnCard","bvnPrice","bvnBtn",
+services.find(x=>x.service_code==="bvn_reprint"),"bvn.html","Continue");
+
+updateServiceCard("ninValidationCard","ninValidationPrice","ninValidationBtn",
+services.find(x=>x.service_code==="nin_validation"),"nin-validation.html","Open NIN Validation");
+
+updateServiceCard("ipeClearanceCard","ipeClearancePrice","ipeClearanceBtn",
+services.find(x=>x.service_code==="ipe_clearance"),"ipe-clearance.html","Open IPE Clearance");
+
+updateNinPersonalisationCard(services);
+}
+
 function updateNinPersonalisationCard(services){
-  const card=document.getElementById("ninPersonalisationCard"),sp=document.getElementById("ninPersonalisationStandardPrice"),pp=document.getElementById("ninPersonalisationPremiumPrice"),btn=document.getElementById("ninPersonalisationBtn");
-  const standard=services.find(x=>x.service_code==="nin_personalisation_standard"),premium=services.find(x=>x.service_code==="nin_personalisation_premium");
-  card.style.display="flex";
-  const active=standard&&premium&&standard.is_active&&premium.is_active;
-  if(!active){card.classList.add("disabled");sp.textContent=standard&&standard.is_active?"Standard: "+formatMoney(standard.price):"Standard: Currently unavailable";pp.textContent=premium&&premium.is_active?"Premium: "+formatMoney(premium.price):"Premium: Currently unavailable";btn.textContent="Currently Unavailable";btn.classList.add("disabled-btn");btn.removeAttribute("href");return;}
-  card.classList.remove("disabled");sp.textContent="Standard: "+formatMoney(standard.price);pp.textContent="Premium: "+formatMoney(premium.price);btn.textContent="Open NIN Personalisation";btn.classList.remove("disabled-btn");btn.href="nin-personalisation.html";
+const card=document.getElementById("ninPersonalisationCard");
+const sp=document.getElementById("ninPersonalisationStandardPrice");
+const pp=document.getElementById("ninPersonalisationPremiumPrice");
+const btn=document.getElementById("ninPersonalisationBtn");
+
+const standard=services.find(x=>x.service_code==="nin_personalisation_standard");
+const premium=services.find(x=>x.service_code==="nin_personalisation_premium");
+
+card.style.display="flex";
+
+const active=standard&&premium&&standard.is_active&&premium.is_active;
+
+if(!active){
+card.classList.add("disabled");
+sp.textContent=standard&&standard.is_active?"Standard: "+formatMoney(standard.price):"Standard: Currently unavailable";
+pp.textContent=premium&&premium.is_active?"Premium: "+formatMoney(premium.price):"Premium: Currently unavailable";
+btn.textContent="Currently Unavailable";
+btn.classList.add("disabled-btn");
+btn.removeAttribute("href");
+return;
 }
+
+card.classList.remove("disabled");
+sp.textContent="Standard: "+formatMoney(standard.price);
+pp.textContent="Premium: "+formatMoney(premium.price);
+btn.textContent="Open NIN Personalisation";
+btn.classList.remove("disabled-btn");
+btn.href="nin-personalisation.html";
+}
+
 function updateServiceCard(cardId,priceId,buttonId,service,page,activeText="Continue"){
-  const card=document.getElementById(cardId),price=document.getElementById(priceId),button=document.getElementById(buttonId);if(!card||!price||!button)return;
-  if(!service){card.style.display="none";console.warn("Service setting not found for card:",cardId);return;}
-  card.style.display="flex";
-  if(!service.is_active){card.classList.add("disabled");price.textContent="Currently unavailable";button.textContent="Unavailable";button.classList.add("disabled-btn");button.removeAttribute("href");return;}
-  card.classList.remove("disabled");price.textContent=formatMoney(service.price);button.textContent=activeText;button.classList.remove("disabled-btn");button.href=page;
+const card=document.getElementById(cardId);
+const price=document.getElementById(priceId);
+const button=document.getElementById(buttonId);
+
+if(!card||!price||!button)return;
+
+if(!service){
+card.style.display="none";
+console.warn("Service setting not found:",cardId);
+return;
 }
+
+card.style.display="flex";
+
+if(!service.is_active){
+card.classList.add("disabled");
+price.textContent="Currently unavailable";
+button.textContent="Unavailable";
+button.classList.add("disabled-btn");
+button.removeAttribute("href");
+return;
+}
+
+card.classList.remove("disabled");
+price.textContent=formatMoney(service.price);
+button.textContent=activeText;
+button.classList.remove("disabled-btn");
+button.href=page;
+}
+
 async function loadAnnouncement(){
-  const overlay=document.getElementById("announcementOverlay"),title=document.getElementById("announcementTitle"),message=document.getElementById("announcementMessage");
-  const {data,error}=await supabaseClient.from("announcements").select("id,title,message,is_active,created_at").eq("is_active",true).order("created_at",{ascending:false}).limit(1).maybeSingle();
-  if(error){console.error("Announcement error:",error);return;}if(!data)return;
-  title.textContent=data.title||"Gracioustec Announcement";message.textContent=data.message||"";overlay.classList.add("show");
+const overlay=document.getElementById("announcementOverlay");
+const title=document.getElementById("announcementTitle");
+const message=document.getElementById("announcementMessage");
+
+const {data,error}=await supabaseClient
+.from("announcements")
+.select("id,title,message,is_active,created_at")
+.eq("is_active",true)
+.order("created_at",{ascending:false})
+.limit(1)
+.maybeSingle();
+
+if(error){
+console.error("Announcement error:",error);
+return;
 }
-function closeAnnouncement(){const overlay=document.getElementById("announcementOverlay");overlay.classList.remove("show");overlay.style.display="none";}
+
+if(!data)return;
+
+title.textContent=data.title||"Gracioustec Announcement";
+message.textContent=data.message||"";
+overlay.classList.add("show");
+}
+
+function closeAnnouncement(){
+document.getElementById("announcementOverlay").classList.remove("show");
+document.getElementById("announcementOverlay").style.display="none";
+}
 document.getElementById("announcementCloseBtn").addEventListener("click",closeAnnouncement);
+
+/* NIN MODIFICATION CUSTOMER TRACKING */
+
+function escapeModificationText(value){
+return String(value??"").replace(/[&<>"']/g,char=>({
+"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
+})[char]);
+}
+
+function modificationStatusLabel(status){
+return String(status||"Processing").trim()
+.replace(/[_-]+/g," ")
+.replace(/\b\w/g,letter=>letter.toUpperCase());
+}
+
+function modificationStatusClass(status){
+const value=String(status||"").toLowerCase();
+if(value.includes("complete")||value==="approved")return "completed";
+if(value.includes("reject")||value.includes("cancel"))return "rejected";
+return "";
+}
+
+function formatModificationDate(value){
+if(!value)return "Not available";
+const date=new Date(value);
+if(Number.isNaN(date.getTime()))return "Not available";
+return date.toLocaleString("en-NG",{dateStyle:"medium",timeStyle:"short"});
+}
+
+async function loadNinModificationRequests(){
+const container=document.getElementById("modificationUpdates");
+
+if(!currentUser||!container||modificationLoading)return;
+
+modificationLoading=true;
+
+try{
+const {data,error}=await supabaseClient
+.from("nin_modification_requests")
+.select(`
+id,
+user_id,
+modification_type,
+payment_reference,
+amount,
+payment_status,
+request_status,
+request_details,
+admin_note,
+created_at,
+updated_at,
+completed_file_path,
+completed_file_name,
+completed_file_uploaded_at
+`)
+.eq("user_id",currentUser.id)
+.order("updated_at",{ascending:false})
+.limit(30);
+
+if(error)throw error;
+
+modificationFilePaths.clear();
+
+if(!data||data.length===0){
+container.innerHTML=
+'<p class="modification-empty">You have not submitted any NIN Modification requests yet. Your requests will appear here after submission.</p>';
+return;
+}
+
+container.innerHTML=data.map(request=>{
+const status=request.request_status||"Processing";
+const statusClass=modificationStatusClass(status);
+const type=escapeModificationText(request.modification_type||"NIN Modification");
+const reference=escapeModificationText(request.payment_reference||"Not available");
+const payment=escapeModificationText(request.payment_status||"Not available");
+const note=String(request.admin_note||"").trim();
+const fileName=String(request.completed_file_name||"").trim();
+const hasFile=Boolean(request.completed_file_path);
+
+if(hasFile){
+modificationFilePaths.set(String(request.id),{
+path:request.completed_file_path,
+name:fileName||"NIN-Modification-Completed.pdf"
+});
+}
+
+const latestUpdate=request.updated_at||
+request.completed_file_uploaded_at||
+request.created_at;
+
+return `
+<div class="modification-item">
+<h3>${type}</h3>
+<div class="modification-info">
+Reference: ${reference}<br>
+Payment: ${payment}<br>
+Submitted: ${formatModificationDate(request.created_at)}
+</div>
+<div>
+<span class="modification-status ${statusClass}">
+${escapeModificationText(modificationStatusLabel(status))}
+</span>
+</div>
+<div class="modification-info">
+Last updated: ${formatModificationDate(latestUpdate)}
+</div>
+${note?`
+<div class="modification-note">
+<strong>Latest Admin Update:</strong><br>
+${escapeModificationText(note)}
+</div>`:""}
+${hasFile?`
+<div class="modification-note">
+<strong>Completed document uploaded:</strong><br>
+${escapeModificationText(fileName||"Your completed document is ready.")}
+</div>
+<button type="button" class="modification-download"
+data-download-request="${escapeModificationText(request.id)}">
+↓ Download Completed Document
+</button>
+`:`
+<p class="modification-info" style="margin-top:9px">
+Your completed document has not been uploaded yet.
+</p>
+`}
+</div>
+`;
+}).join("");
+
+}catch(error){
+console.error("NIN Modification tracking error:",error);
+container.innerHTML=
+'<p class="modification-empty">Unable to load your modification updates. Please refresh your dashboard.</p>';
+}finally{
+modificationLoading=false;
+}
+}
+
+async function downloadNinModificationFile(requestId,button){
+const file=modificationFilePaths.get(String(requestId));
+
+if(!file){
+alert("The completed document is not available. Please refresh your dashboard.");
+return;
+}
+
+button.disabled=true;
+button.textContent="Preparing download...";
+
+try{
+const {data,error}=await supabaseClient
+.storage
+.from("nin-modification-files")
+.createSignedUrl(file.path,60,{download:file.name});
+
+if(error)throw error;
+if(!data||!data.signedUrl)throw new Error("Download link unavailable.");
+
+window.location.href=data.signedUrl;
+button.textContent="Download Started";
+
+}catch(error){
+console.error("Modification download error:",error);
+alert("Unable to download your document. Please try again.");
+button.textContent="↓ Download Completed Document";
+}finally{
+button.disabled=false;
+}
+}
+
+document.getElementById("modificationUpdates")
+.addEventListener("click",event=>{
+const button=event.target.closest("[data-download-request]");
+if(!button)return;
+downloadNinModificationFile(button.getAttribute("data-download-request"),button);
+});
+
+document.getElementById("refreshModificationBtn")
+.addEventListener("click",loadNinModificationRequests);
+
 async function refreshDashboard(){
-  if(!currentUser)return;const btn=document.getElementById("refreshBtn"),msg=document.getElementById("refreshMessage");
-  btn.disabled=true;btn.textContent="↻ Refreshing...";msg.textContent="";
-  try{await loadPaymentMethods();await Promise.all([loadWallet(currentUser),loadPaymentPointAccount(currentUser),loadServicePrices(),loadReferralLink(currentUser)]);msg.textContent="Updated successfully.";}
-  catch(e){console.error("Refresh error:",e);msg.textContent="Unable to refresh.";}
-  btn.disabled=false;btn.textContent="↻ Refresh";setTimeout(()=>msg.textContent="",3000);
+if(!currentUser)return;
+
+const btn=document.getElementById("refreshBtn");
+const msg=document.getElementById("refreshMessage");
+
+btn.disabled=true;
+btn.textContent="↻ Refreshing...";
+msg.textContent="";
+
+try{
+await loadPaymentMethods();
+
+await Promise.all([
+loadWallet(currentUser),
+loadPaymentPointAccount(currentUser),
+loadServicePrices(),
+loadReferralLink(currentUser),
+loadNinModificationRequests()
+]);
+
+msg.textContent="Updated successfully.";
+}catch(error){
+console.error("Refresh error:",error);
+msg.textContent="Unable to refresh.";
 }
+
+btn.disabled=false;
+btn.textContent="↻ Refresh";
+setTimeout(()=>msg.textContent="",3000);
+}
+
 document.getElementById("refreshBtn").addEventListener("click",refreshDashboard);
+
 async function startDashboard(){
-  const user=await loadUser();if(!user)return;await loadPaymentMethods();await loadAnnouncement();
-  await Promise.all([loadWallet(user),loadPaymentPointAccount(user),loadServicePrices(),loadReferralLink(user)]);
+const user=await loadUser();
+if(!user)return;
+
+await loadPaymentMethods();
+await loadAnnouncement();
+
+await Promise.all([
+loadWallet(user),
+loadPaymentPointAccount(user),
+loadServicePrices(),
+loadReferralLink(user),
+loadNinModificationRequests()
+]);
 }
-if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",startDashboard);else startDashboard();
+
+if(document.readyState==="loading"){
+document.addEventListener("DOMContentLoaded",startDashboard);
+}else{
+startDashboard();
+}
+
+// Check for NIN Modification updates every 30 seconds.
+setInterval(()=>{
+if(currentUser){
+loadNinModificationRequests();
+}
+},30000);
+
 </script>
 </body>
 </html>
-
