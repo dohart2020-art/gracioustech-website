@@ -7,13 +7,10 @@
   <meta name="theme-color" content="#087f3d">
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.2/jspdf.umd.min.js"></script>
 
   <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
       font-family: Arial, sans-serif;
@@ -36,9 +33,7 @@
       margin-bottom: 18px;
     }
 
-    .header h2 {
-      margin-bottom: 8px;
-    }
+    .header h2 { margin-bottom: 8px; }
 
     .card {
       background: white;
@@ -63,9 +58,7 @@
       outline: none;
     }
 
-    input:focus, select:focus {
-      border-color: #087f3d;
-    }
+    input:focus, select:focus { border-color: #087f3d; }
 
     button {
       width: 100%;
@@ -85,9 +78,9 @@
       cursor: not-allowed;
     }
 
-    .secondary {
-      background: #333;
-    }
+    .secondary { background: #333; }
+
+    .download-btn { background: #145da0; }
 
     .price {
       background: #eaf5ee;
@@ -144,7 +137,17 @@
 
     .result p {
       border-bottom: 1px solid #eee;
-      padding: 6px 0;
+      padding: 7px 0;
+    }
+
+    .photo-preview {
+      display: none;
+      width: 125px;
+      height: 145px;
+      object-fit: cover;
+      border: 2px solid #087f3d;
+      border-radius: 8px;
+      margin: 15px auto;
     }
 
     .back {
@@ -162,11 +165,20 @@
       margin-top: 8px;
       line-height: 1.5;
     }
+
+    .unofficial-note {
+      margin-top: 12px;
+      padding: 10px;
+      background: #fff3e0;
+      border-radius: 7px;
+      color: #814b00;
+      font-size: 12px;
+      line-height: 1.5;
+    }
   </style>
 </head>
 
 <body>
-
 <div class="container">
 
   <div class="header">
@@ -178,7 +190,7 @@
     <h3>Personalisation Request</h3>
 
     <p class="small">
-      Enter your 15-character IJOVIA tracking ID and select your preferred slip type.
+      Enter your 15-character IJOVIA tracking ID and select your preferred record format.
     </p>
 
     <label for="trackingId">Tracking ID</label>
@@ -238,7 +250,6 @@
   </div>
 
   <a href="dashboard.html" class="back">← Back to Dashboard</a>
-
 </div>
 
 <script>
@@ -261,14 +272,15 @@
   const slipType = document.getElementById("slipType");
   const priceDisplay = document.getElementById("priceDisplay");
 
+  let latestSuccessfulResult = null;
+
   slipType.addEventListener("change", () => {
     const selected = slipType.value;
-    const amount = prices[selected];
 
     priceDisplay.textContent =
       (selected === "standard" ? "Standard" : "Premium") +
       " Personalisation: ₦" +
-      amount.toLocaleString("en-NG");
+      prices[selected].toLocaleString("en-NG");
   });
 
   function showMessage(elementId, message, type) {
@@ -281,42 +293,6 @@
     const element = document.getElementById(elementId);
     element.className = "message";
     element.textContent = "";
-  }
-
-  function displayResult(elementId, response) {
-    const container = document.getElementById(elementId);
-    container.replaceChildren();
-
-    const providerData =
-      response?.provider_response?.data?.data ||
-      response?.provider_response?.data ||
-      response?.data ||
-      {};
-
-    const fields = [
-      ["NIN", providerData.idNumber],
-      ["First Name", providerData.firstName],
-      ["Last Name", providerData.lastName],
-      ["Date of Birth", providerData.dateOfBirth],
-      ["Gender", providerData.gender],
-      ["Request ID", response.request_id],
-      ["Status", response.status]
-    ];
-
-    fields.forEach(([label, value]) => {
-      if (value !== undefined && value !== null && value !== "") {
-        const paragraph = document.createElement("p");
-        const strong = document.createElement("strong");
-
-        strong.textContent = label + ": ";
-        paragraph.appendChild(strong);
-        paragraph.appendChild(
-          document.createTextNode(String(value))
-        );
-
-        container.appendChild(paragraph);
-      }
-    });
   }
 
   async function getLoggedInUser() {
@@ -345,9 +321,7 @@
 
     const { data, error } = await client.functions.invoke(
       "nin-personalisation",
-      {
-        body: payload
-      }
+      { body: payload }
     );
 
     if (error) {
@@ -366,6 +340,111 @@
     return data;
   }
 
+  function getDetails(response) {
+    if (response?.personal_details) {
+      return response.personal_details;
+    }
+
+    const provider = response?.provider_response || {};
+
+    const data =
+      provider?.data?.data ||
+      provider?.data ||
+      {};
+
+    let image = data.image || null;
+
+    if (image && !image.startsWith("data:image/")) {
+      image = "data:image/jpeg;base64," + image;
+    }
+
+    return {
+      nin: data.idNumber || data.nin || "",
+      first_name: data.firstName || data.firstname || "",
+      middle_name: data.middleName || data.middlename || "",
+      surname: data.lastName || data.surname || "",
+      date_of_birth: data.dateOfBirth || data.dob || "",
+      gender: data.gender || "",
+      tracking_id: response.tracking_id || "",
+      slip_type: response.slip_type || "",
+      image: image
+    };
+  }
+
+  function displayResult(elementId, response) {
+    const container = document.getElementById(elementId);
+    container.replaceChildren();
+
+    const details = getDetails(response);
+
+    const fields = [
+      ["NIN", details.nin],
+      ["Surname", details.surname],
+      ["First Name", details.first_name],
+      ["Middle Name", details.middle_name],
+      ["Date of Birth", details.date_of_birth],
+      ["Gender", details.gender],
+      ["Tracking ID", details.tracking_id || response.tracking_id],
+      ["Slip Type", details.slip_type || response.slip_type],
+      ["Request ID", response.request_id],
+      ["Status", response.status]
+    ];
+
+    fields.forEach(([label, value]) => {
+      if (value !== undefined && value !== null && value !== "") {
+        const paragraph = document.createElement("p");
+        const strong = document.createElement("strong");
+
+        strong.textContent = label + ": ";
+        paragraph.appendChild(strong);
+        paragraph.appendChild(
+          document.createTextNode(String(value))
+        );
+
+        container.appendChild(paragraph);
+      }
+    });
+
+    if (details.image) {
+      const image = document.createElement("img");
+      image.className = "photo-preview";
+      image.alt = "Customer photograph";
+      image.src = details.image;
+      image.style.display = "block";
+      container.appendChild(image);
+    }
+
+    if (response.status === "successful" && details.nin) {
+      latestSuccessfulResult = {
+        details: details,
+        request_id: response.request_id || "",
+        status: response.status
+      };
+
+      const note = document.createElement("div");
+      note.className = "unofficial-note";
+      note.textContent =
+        "This is an unofficial Gracioustec customer record, not a government-issued identity document.";
+
+      container.appendChild(note);
+
+      const downloadButton = document.createElement("button");
+      downloadButton.className = "download-btn";
+      downloadButton.textContent =
+        "Download " +
+        (details.slip_type || "Standard").toUpperCase() +
+        " PDF Record";
+
+      downloadButton.onclick = downloadPersonalisationPDF;
+      container.appendChild(downloadButton);
+    } else if (response.status === "successful") {
+      const note = document.createElement("p");
+      note.textContent =
+        "The request is successful, but the returned personal details are incomplete. Please contact support before downloading a record.";
+      container.appendChild(note);
+    }
+  }
+
   async function submitRequest() {
     const button = document.getElementById("submitBtn");
     const trackingId =
@@ -375,6 +454,7 @@
 
     clearMessage("submitMessage");
     document.getElementById("submitResult").replaceChildren();
+    latestSuccessfulResult = null;
 
     if (!/^[a-zA-Z0-9]{15}$/.test(trackingId)) {
       showMessage(
@@ -456,6 +536,7 @@
 
     clearMessage("checkMessage");
     document.getElementById("checkResult").replaceChildren();
+    latestSuccessfulResult = null;
 
     if (!/^[a-zA-Z0-9]{15}$/.test(trackingId)) {
       showMessage(
@@ -487,7 +568,8 @@
       } else if (response.status === "failed") {
         showMessage(
           "checkMessage",
-          response.message || "The provider confirmed that the request failed. Check your wallet transaction history for the refund.",
+          response.message ||
+            "The provider confirmed that the request failed. Check your wallet transaction history for the refund.",
           "error"
         );
       } else {
@@ -513,8 +595,192 @@
     }
   }
 
+  function downloadPersonalisationPDF() {
+    if (!latestSuccessfulResult) {
+      alert("No successful personalisation record is available.");
+      return;
+    }
+
+    if (!window.jspdf || !window.jspdf.jsPDF) {
+      alert("PDF service could not load. Please refresh the page and try again.");
+      return;
+    }
+
+    const details = latestSuccessfulResult.details;
+    const type = String(details.slip_type || "standard").toLowerCase();
+    const premium = type === "premium";
+
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF({
+      orientation: "portrait",
+      unit: "mm",
+      format: "a4"
+    });
+
+    const pageWidth = 210;
+    const green = [8, 127, 61];
+
+    // Gracioustec document header.
+    pdf.setFillColor(...green);
+    pdf.rect(0, 0, pageWidth, 37, "F");
+
+    pdf.setTextColor(255, 255, 255);
+    pdf.setFont("helvetica", "bold");
+    pdf.setFontSize(premium ? 21 : 18);
+    pdf.text("GRACIOUSTEC", 15, 17);
+
+    pdf.setFont("helvetica", "normal");
+    pdf.setFontSize(10);
+    pdf.text("NIN PERSONALISATION RECORD", 15, 25);
+
+    pdf.setFontSize(9);
+    pdf.text(
+      premium ? "PREMIUM CUSTOMER COPY" : "STANDARD CUSTOMER COPY",
+      15,
+      31
+    );
+
+    // Clear unofficial-document notice.
+    pdf.setTextColor(150, 40, 20);
+    pdf.setFont("helvetica", "bold");
+    pdf.setFontSize(9);
+    pdf.text(
+      "UNOFFICIAL CUSTOMER COPY - NOT A GOVERNMENT ID",
+      15,
+      47
+    );
+
+    pdf.setDrawColor(...green);
+    pdf.setLineWidth(premium ? 1.2 : 0.6);
+    pdf.roundedRect(
+      12,
+      53,
+      186,
+      116,
+      3,
+      3,
+      "S"
+    );
+
+    // Photograph.
+    if (details.image) {
+      try {
+        const imageType = details.image.startsWith("data:image/png")
+          ? "PNG"
+          : details.image.startsWith("data:image/webp")
+            ? "WEBP"
+            : "JPEG";
+
+        pdf.addImage(
+          details.image,
+          imageType,
+          150,
+          62,
+          35,
+          42,
+          undefined,
+          "FAST"
+        );
+      } catch (error) {
+        console.error("Could not add customer photo:", error);
+        pdf.setTextColor(120, 120, 120);
+        pdf.setFontSize(8);
+        pdf.text("Photo unavailable", 150, 83);
+      }
+    }
+
+    // Personal information.
+    pdf.setTextColor(35, 35, 35);
+    pdf.setFont("helvetica", "bold");
+    pdf.setFontSize(premium ? 12 : 11);
+    pdf.text("CUSTOMER DETAILS", 20, 65);
+
+    const rows = [
+      ["NIN", details.nin],
+      ["Surname", details.surname],
+      ["First Name", details.first_name],
+      ["Middle Name", details.middle_name],
+      ["Date of Birth", details.date_of_birth],
+      ["Gender", details.gender],
+      ["Tracking ID", details.tracking_id]
+    ];
+
+    let y = 77;
+
+    rows.forEach(([label, value]) => {
+      pdf.setFont("helvetica", "bold");
+      pdf.setFontSize(9);
+      pdf.setTextColor(80, 80, 80);
+      pdf.text(label + ":", 20, y);
+
+      pdf.setFont("helvetica", "normal");
+      pdf.setTextColor(25, 25, 25);
+
+      const safeValue = String(value || "Not provided");
+      pdf.text(safeValue.substring(0, 45), 58, y);
+
+      y += 12;
+    });
+
+    // Record information.
+    pdf.setFont("helvetica", "bold");
+    pdf.setFontSize(10);
+    pdf.setTextColor(...green);
+    pdf.text("PERSONALISATION STATUS: SUCCESSFUL", 15, 184);
+
+    pdf.setFont("helvetica", "normal");
+    pdf.setFontSize(9);
+    pdf.setTextColor(70, 70, 70);
+    pdf.text(
+      "Slip selection: " + (premium ? "Premium" : "Standard"),
+      15,
+      194
+    );
+
+    pdf.text(
+      "Request reference: " +
+        String(latestSuccessfulResult.request_id || "Not provided"),
+      15,
+      202
+    );
+
+    // Strong disclaimer and footer.
+    pdf.setFillColor(255, 244, 230);
+    pdf.roundedRect(12, 216, 186, 34, 2, 2, "F");
+
+    pdf.setTextColor(120, 65, 0);
+    pdf.setFont("helvetica", "bold");
+    pdf.setFontSize(9);
+    pdf.text("IMPORTANT NOTICE", 17, 225);
+
+    pdf.setFont("helvetica", "normal");
+    pdf.setFontSize(8);
+
+    const disclaimer =
+      "This document is a Gracioustec-generated customer record for personalisation reference only. It is not issued by NIMC or any government authority and is not valid proof of identity.";
+
+    const lines = pdf.splitTextToSize(disclaimer, 174);
+    pdf.text(lines, 17, 232);
+
+    pdf.setTextColor(100, 100, 100);
+    pdf.setFontSize(8);
+    pdf.text(
+      "Generated by Gracioustec - " + new Date().toLocaleDateString("en-GB"),
+      15,
+      273
+    );
+
+    const filename =
+      "Gracioustec-" +
+      (premium ? "Premium" : "Standard") +
+      "-Personalisation-" +
+      String(details.tracking_id || "record") +
+      ".pdf";
+
+    pdf.save(filename);
+  }
+
   getLoggedInUser();
 </script>
-
 </body>
 </html>
