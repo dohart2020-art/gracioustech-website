@@ -213,7 +213,7 @@
     try {
       if (
         SUPABASE_PUBLISHABLE_KEY ===
-        "PASTE_YOUR_ACTUAL_PUBLISHABLE_KEY_HERE"
+        "sb_publishable_xELauxOMm7eMkNrPz55Mrw_LVkRoASn"
       ) {
         throw new Error("Supabase Publishable key has not been added.");
       }
