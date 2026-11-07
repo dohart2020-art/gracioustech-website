@@ -7,7 +7,6 @@
   <meta name="theme-color" content="#087f3d">
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js"></script>
 
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -79,7 +78,6 @@
     }
 
     .secondary { background: #333; }
-
     .download-btn { background: #145da0; }
 
     .price {
@@ -165,16 +163,6 @@
       margin-top: 8px;
       line-height: 1.5;
     }
-
-    .unofficial-note {
-      margin-top: 12px;
-      padding: 10px;
-      background: #fff3e0;
-      border-radius: 7px;
-      color: #814b00;
-      font-size: 12px;
-      line-height: 1.5;
-    }
   </style>
 </head>
 
@@ -190,7 +178,7 @@
     <h3>Personalisation Request</h3>
 
     <p class="small">
-      Enter your 15-character  tracking ID and select your preferred record format.
+      Enter your 15-character tracking ID and select your preferred record format.
     </p>
 
     <label for="trackingId">Tracking ID</label>
@@ -250,6 +238,7 @@
   </div>
 
   <a href="dashboard.html" class="back">← Back to Dashboard</a>
+
 </div>
 
 <script>
@@ -352,9 +341,17 @@
       provider?.data ||
       {};
 
-    let image = data.image || null;
+    let image =
+      data.photo ||
+      data.image ||
+      data.picture ||
+      null;
 
-    if (image && !image.startsWith("data:image/")) {
+    if (
+      image &&
+      typeof image === "string" &&
+      !image.startsWith("data:image/")
+    ) {
       image = "data:image/jpeg;base64," + image;
     }
 
@@ -372,71 +369,68 @@
   }
 
   function displayResult(elementId, response) {
-  const container = document.getElementById(elementId);
-  container.replaceChildren();
+    const container = document.getElementById(elementId);
+    container.replaceChildren();
 
-  const details = getDetails(response);
+    const details = getDetails(response);
 
-  const fields = [
-    ["NIN", details.nin],
-    ["Surname", details.surname],
-    ["First Name", details.first_name],
-    ["Middle Name", details.middle_name],
-    ["Date of Birth", details.date_of_birth],
-    ["Gender", details.gender],
-    ["Tracking ID", details.tracking_id || response.tracking_id],
-    ["Slip Type", details.slip_type || response.slip_type],
-    ["Request ID", response.request_id],
-    ["Status", response.status]
-  ];
+    const fields = [
+      ["NIN", details.nin],
+      ["Surname", details.surname],
+      ["First Name", details.first_name],
+      ["Middle Name", details.middle_name],
+      ["Date of Birth", details.date_of_birth],
+      ["Gender", details.gender],
+      ["Tracking ID", details.tracking_id || response.tracking_id],
+      ["Slip Type", details.slip_type || response.slip_type],
+      ["Request ID", response.request_id],
+      ["Status", response.status]
+    ];
 
-  fields.forEach(([label, value]) => {
-    if (value !== undefined && value !== null && value !== "") {
-      const paragraph = document.createElement("p");
-      const strong = document.createElement("strong");
+    fields.forEach(([label, value]) => {
+      if (value !== undefined && value !== null && value !== "") {
+        const paragraph = document.createElement("p");
+        const strong = document.createElement("strong");
 
-      strong.textContent = label + ": ";
-      paragraph.appendChild(strong);
-      paragraph.appendChild(
-        document.createTextNode(String(value))
-      );
+        strong.textContent = label + ": ";
+        paragraph.appendChild(strong);
+        paragraph.appendChild(
+          document.createTextNode(String(value))
+        );
 
-      container.appendChild(paragraph);
+        container.appendChild(paragraph);
+      }
+    });
+
+    if (details.image) {
+      const image = document.createElement("img");
+      image.className = "photo-preview";
+      image.alt = "Customer photograph";
+      image.src = details.image;
+      image.style.display = "block";
+      container.appendChild(image);
     }
-  });
 
-  if (details.image) {
-    const image = document.createElement("img");
-    image.className = "photo-preview";
-    image.alt = "Customer photograph";
-    image.src = details.image;
-    image.style.display = "block";
-    container.appendChild(image);
-  }
+    if (response.status === "successful" && details.nin) {
+      latestSuccessfulResult = {
+        details: details,
+        request_id: response.request_id || "",
+        status: response.status
+      };
 
-  if (response.status === "successful" && details.nin) {
-    latestSuccessfulResult = {
-      details: details,
-      request_id: response.request_id || "",
-      status: response.status
-    };
+      const downloadButton = document.createElement("button");
+      downloadButton.className = "download-btn";
+      downloadButton.textContent = "Download NINSLIP PDF";
+      downloadButton.onclick = downloadPersonalisationPDF;
 
-    const downloadButton = document.createElement("button");
-    downloadButton.className = "download-btn";
-    downloadButton.textContent =
-      "Download " +
-      (details.slip_type || "Standard").toUpperCase() +
-      " PDF Record";
+      container.appendChild(downloadButton);
 
-    downloadButton.onclick = downloadPersonalisationPDF;
-    container.appendChild(downloadButton);
-
-  } else if (response.status === "successful") {
-    const note = document.createElement("p");
-    note.textContent =
-      "The request is successful, but the returned personal details are incomplete.";
-    container.appendChild(note);
-  }
+    } else if (response.status === "successful") {
+      const note = document.createElement("p");
+      note.textContent =
+        "The request is successful, but the returned personal details are incomplete.";
+      container.appendChild(note);
+    }
   }
 
   async function submitRequest() {
@@ -589,170 +583,93 @@
     }
   }
 
-  function downloadPersonalisationPDF() {
+  // Download the actual PDF returned by NINSLIP.
+  async function downloadPersonalisationPDF() {
     if (!latestSuccessfulResult) {
       alert("No successful personalisation record is available.");
       return;
     }
 
-    if (!window.jspdf || !window.jspdf.jsPDF) {
-      alert("PDF service could not load. Please refresh the page and try again.");
+    const trackingId =
+      latestSuccessfulResult.details.tracking_id;
+
+    if (!trackingId) {
+      alert("Tracking ID is missing. Please check your request status again.");
       return;
     }
 
-    const details = latestSuccessfulResult.details;
-    const type = String(details.slip_type || "standard").toLowerCase();
-    const premium = type === "premium";
+    const button = document.querySelector(".download-btn");
 
-    const { jsPDF } = window.jspdf;
-    const pdf = new jsPDF({
-      orientation: "portrait",
-      unit: "mm",
-      format: "a4"
-    });
-
-    const pageWidth = 210;
-    const green = [8, 127, 61];
-
-    // Gracioustec document header.
-    pdf.setFillColor(...green);
-    pdf.rect(0, 0, pageWidth, 37, "F");
-
-    pdf.setTextColor(255, 255, 255);
-    pdf.setFont("helvetica", "bold");
-    pdf.setFontSize(premium ? 21 : 18);
-    pdf.text("GRACIOUSTEC", 15, 17);
-
-    pdf.setFont("helvetica", "normal");
-    pdf.setFontSize(10);
-    pdf.text("NIN PERSONALISATION RECORD", 15, 25);
-
-    pdf.setFontSize(9);
-    pdf.text(
-      premium ? "PREMIUM CUSTOMER COPY" : "STANDARD CUSTOMER COPY",
-      15,
-      31
-    );
-
-    // Clear unofficial-document notice.
-    pdf.setTextColor(150, 40, 20);
-    pdf.setFont("helvetica", "bold");
-    pdf.setFontSize(9);
-
-    pdf.setDrawColor(...green);
-    pdf.setLineWidth(premium ? 1.2 : 0.6);
-    pdf.roundedRect(
-      12,
-      53,
-      186,
-      116,
-      3,
-      3,
-      "S"
-    );
-
-    // Photograph.
-    if (details.image) {
-      try {
-        const imageType = details.image.startsWith("data:image/png")
-          ? "PNG"
-          : details.image.startsWith("data:image/webp")
-            ? "WEBP"
-            : "JPEG";
-
-        pdf.addImage(
-          details.image,
-          imageType,
-          150,
-          62,
-          35,
-          42,
-          undefined,
-          "FAST"
-        );
-      } catch (error) {
-        console.error("Could not add customer photo:", error);
-        pdf.setTextColor(120, 120, 120);
-        pdf.setFontSize(8);
-        pdf.text("Photo unavailable", 150, 83);
-      }
+    if (button) {
+      button.disabled = true;
+      button.textContent = "Generating NINSLIP PDF...";
     }
 
-    // Personal information.
-    pdf.setTextColor(35, 35, 35);
-    pdf.setFont("helvetica", "bold");
-    pdf.setFontSize(premium ? 12 : 11);
-    pdf.text("CUSTOMER DETAILS", 20, 65);
+    try {
+      const { data, error } = await client.functions.invoke(
+        "nin-personalisation-slip",
+        {
+          body: {
+            tracking_id: trackingId
+          }
+        }
+      );
 
-    const rows = [
-      ["NIN", details.nin],
-      ["Surname", details.surname],
-      ["First Name", details.first_name],
-      ["Middle Name", details.middle_name],
-      ["Date of Birth", details.date_of_birth],
-      ["Gender", details.gender],
-      ["Tracking ID", details.tracking_id]
-    ];
+      if (error) {
+        let message = error.message || "PDF generation failed.";
 
-    let y = 77;
+        try {
+          if (error.context) {
+            const response = await error.context.json();
+            message = response.message || message;
+          }
+        } catch (_) {}
 
-    rows.forEach(([label, value]) => {
-      pdf.setFont("helvetica", "bold");
-      pdf.setFontSize(9);
-      pdf.setTextColor(80, 80, 80);
-      pdf.text(label + ":", 20, y);
+        throw new Error(message);
+      }
 
-      pdf.setFont("helvetica", "normal");
-      pdf.setTextColor(25, 25, 25);
+      if (!data?.success || !data?.slip?.pdf_base64) {
+        throw new Error(
+          data?.message || "NINSLIP did not return a PDF."
+        );
+      }
 
-      const safeValue = String(value || "Not provided");
-      pdf.text(safeValue.substring(0, 45), 58, y);
+      const base64 = data.slip.pdf_base64;
+      const binary = atob(base64);
+      const bytes = new Uint8Array(binary.length);
 
-      y += 12;
-    });
+      for (let i = 0; i < binary.length; i++) {
+        bytes[i] = binary.charCodeAt(i);
+      }
 
-    // Record information.
-    pdf.setFont("helvetica", "bold");
-    pdf.setFontSize(10);
-    pdf.setTextColor(...green);
-    pdf.text("PERSONALISATION STATUS: SUCCESSFUL", 15, 184);
+      const blob = new Blob(
+        [bytes],
+        { type: data.slip.mime_type || "application/pdf" }
+      );
 
-    pdf.setFont("helvetica", "normal");
-    pdf.setFontSize(9);
-    pdf.setTextColor(70, 70, 70);
-    pdf.text(
-      "Slip selection: " + (premium ? "Premium" : "Standard"),
-      15,
-      194
-    );
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
 
-    pdf.text(
-      "Request reference: " +
-        String(latestSuccessfulResult.request_id || "Not provided"),
-      15,
-      202
-    );
+      link.href = url;
+      link.download =
+        data.slip.file_name || "NINSLIP-Personalisation.pdf";
 
-    // Strong disclaimer and footer.
-    
-// PDF footer without disclaimer.
-pdf.setTextColor(100, 100, 100);
-pdf.setFont("helvetica", "normal");
-pdf.setFontSize(8);
-pdf.text(
-  "Generated by Gracioustec - " +
-    new Date().toLocaleDateString("en-GB"),
-  15,
-  273
-);
-    const filename =
-      "Gracioustec-" +
-      (premium ? "Premium" : "Standard") +
-      "-Personalisation-" +
-      String(details.tracking_id || "record") +
-      ".pdf";
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
 
-    pdf.save(filename);
+      setTimeout(() => URL.revokeObjectURL(url), 10000);
+
+      alert("Your NINSLIP PDF is ready for download.");
+
+    } catch (error) {
+      alert(error.message || "Unable to download your NIN slip.");
+    } finally {
+      if (button) {
+        button.disabled = false;
+        button.textContent = "Download NINSLIP PDF";
+      }
+    }
   }
 
   getLoggedInUser();
