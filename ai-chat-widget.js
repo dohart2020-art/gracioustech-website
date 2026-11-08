@@ -6,8 +6,7 @@
     "https://iknhifndgpwibkfidggq.supabase.co";
 
   // INSERT YOUR SUPABASE PUBLISHABLE KEY BELOW
-  const SUPABASE_PUBLISHABLE_KEY =
-    "PASTE_YOUR_ACTUAL_PUBLISHABLE_KEY_HERE";
+  const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_xELauxOMm7eMkNrPz55Mrw_LVkRoASn";
 
   const FUNCTION_URL =
     SUPABASE_URL + "/functions/v1/gracioustec-ai-assistant";
