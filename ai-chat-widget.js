@@ -210,13 +210,6 @@
     send.textContent = "...";
 
     try {
-      if (
-        SUPABASE_PUBLISHABLE_KEY ===
-        "sb_publishable_xELauxOMm7eMkNrPz55Mrw_LVkRoASn"
-      ) {
-        throw new Error("Supabase Publishable key has not been added.");
-      }
-
       const response = await fetch(FUNCTION_URL, {
         method: "POST",
         headers: {
