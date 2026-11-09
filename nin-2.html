@@ -1,0 +1,904 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NIN Reprinting 2 - Gracioustec</title>
+<meta name="theme-color" content="#087f3d">
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+}
+
+body {
+  background: #f4f7f5;
+  color: #18352a;
+}
+
+header {
+  background: #063b2b;
+  color: white;
+  padding: 22px 18px;
+}
+
+header a {
+  color: white;
+  text-decoration: none;
+  font-size: 14px;
+}
+
+header h2 {
+  margin-top: 18px;
+  font-size: 22px;
+}
+
+header p {
+  margin-top: 7px;
+  color: #d8eee1;
+  font-size: 14px;
+}
+
+.container {
+  max-width: 600px;
+  margin: 25px auto;
+  padding: 0 16px;
+}
+
+.card {
+  background: white;
+  padding: 22px;
+  border-radius: 14px;
+  border: 1px solid #e1ebe5;
+  box-shadow: 0 4px 14px #00000008;
+  margin-bottom: 20px;
+}
+
+h3 {
+  color: #087f3d;
+  margin-bottom: 18px;
+}
+
+label {
+  display: block;
+  font-weight: bold;
+  font-size: 14px;
+  margin: 16px 0 7px;
+}
+
+input, select {
+  width: 100%;
+  padding: 14px;
+  border: 1px solid #ccd9d0;
+  border-radius: 8px;
+  font-size: 15px;
+  background: white;
+}
+
+button {
+  width: 100%;
+  padding: 15px;
+  background: #087f3d;
+  color: white;
+  border: 0;
+  border-radius: 9px;
+  font-weight: bold;
+  font-size: 16px;
+  margin-top: 22px;
+  cursor: pointer;
+}
+
+button:disabled {
+  opacity: .6;
+  cursor: not-allowed;
+}
+
+.note {
+  font-size: 12px;
+  color: #68766e;
+  line-height: 1.6;
+  margin-top: 15px;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.message {
+  display: none;
+  padding: 13px;
+  margin-top: 15px;
+  border-radius: 8px;
+  font-size: 14px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.message.success {
+  display: block;
+  background: #e7f6ec;
+  color: #087f3d;
+}
+
+.message.error {
+  display: block;
+  background: #fff0f0;
+  color: #a00000;
+}
+
+.history-intro {
+  color: #68766e;
+  font-size: 13px;
+  line-height: 1.6;
+  margin-top: -8px;
+  margin-bottom: 16px;
+}
+
+.history-status {
+  color: #68766e;
+  font-size: 14px;
+  line-height: 1.6;
+  padding: 12px 0;
+}
+
+.history-item {
+  border: 1px solid #e1ebe5;
+  border-radius: 10px;
+  padding: 15px;
+  margin-top: 13px;
+  background: #fbfdfb;
+}
+
+.history-item h4 {
+  color: #087f3d;
+  font-size: 15px;
+  margin-bottom: 10px;
+}
+
+.history-detail {
+  font-size: 13px;
+  color: #53645a;
+  line-height: 1.8;
+  overflow-wrap: anywhere;
+}
+
+.history-item button {
+  margin-top: 13px;
+  padding: 12px;
+  font-size: 14px;
+}
+
+.history-item button:disabled {
+  background: #82958a;
+}
+
+footer {
+  text-align: center;
+  padding: 25px;
+  color: #718078;
+  font-size: 12px;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+<a href="nin-reprint-options.html">← Back</a>
+<h2>NIN REPRINTING 2</h2>
+<p>Alternative NIN slip reprinting service.</p>
+</header>
+
+<main class="container">
+
+<!-- NIN REPRINTING FORM -->
+
+<div class="card">
+
+<h3>NIN Reprinting Form</h3>
+
+<form id="ninForm">
+
+<label>Search Method</label>
+
+<select id="method" required>
+<option value="nin">By NIN</option>
+<option value="phone">By Phone Number</option>
+<option value="demographic">By Demographics</option>
+</select>
+
+<div id="ninFields">
+
+<label>NIN Number</label>
+
+<input
+id="nin"
+type="text"
+inputmode="numeric"
+maxlength="11"
+placeholder="Enter 11-digit NIN"
+>
+
+</div>
+
+<div id="phoneFields" class="hidden">
+
+<label>Registered Phone Number</label>
+
+<input
+id="phone"
+type="tel"
+inputmode="numeric"
+maxlength="11"
+placeholder="08012345678"
+>
+
+</div>
+
+<div id="demoFields" class="hidden">
+
+<label>First Name</label>
+
+<input
+id="firstname"
+type="text"
+placeholder="Enter first name"
+>
+
+<label>Surname</label>
+
+<input
+id="lastname"
+type="text"
+placeholder="Enter surname"
+>
+
+<label>Date of Birth</label>
+
+<input id="dob" type="date">
+
+<label>Gender</label>
+
+<select id="gender">
+<option value="">Select gender</option>
+<option value="m">Male</option>
+<option value="f">Female</option>
+</select>
+
+</div>
+
+<label>Slip Type</label>
+
+<select id="slipType" required>
+<option value="premium">Premium Slip</option>
+<option value="standard">Standard Slip</option>
+<option value="regular">Regular Slip</option>
+<option value="vnin">VNIN Slip</option>
+</select>
+
+<div id="statusMessage" class="message"></div>
+
+<button type="submit" id="submitBtn">
+Continue
+</button>
+
+</form>
+
+<p class="note">
+Please ensure that the information supplied is correct before submitting your request.
+</p>
+
+</div>
+
+<!-- NIN REPRINTING HISTORY -->
+
+<div class="card">
+
+<h3>My NIN Reprinting History</h3>
+
+<p class="history-intro">
+Your previously successful NIN reprints are saved here. You can download them again free of charge without another wallet deduction.
+</p>
+
+<div id="historyList">
+<p class="history-status">Loading your reprinting history...</p>
+</div>
+
+</div>
+
+</main>
+
+<footer>
+© 2026 Gracioustec. All rights reserved.
+Website Designed By GRACIOUSTEC
+</footer>
+
+<script>
+"use strict";
+
+// SUPABASE CONNECTION
+
+const SUPABASE_URL =
+  "https://iknhifndgpwibkfidggq.supabase.co";
+
+const SUPABASE_ANON_KEY =
+  "sb_publishable_xELauxOMm7eMkNrPz55Mrw_LVkRoASn";
+
+if (!window.supabase) {
+  alert("The secure service connection could not load. Please refresh the page.");
+  throw new Error("Supabase library failed to load.");
+}
+
+const idfixerSupabaseClient = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_ANON_KEY
+);
+
+// FORM ELEMENTS
+
+const method = document.getElementById("method");
+const slipTypeElement = document.getElementById("slipType");
+const form = document.getElementById("ninForm");
+const submitButton = document.getElementById("submitBtn");
+const statusMessage = document.getElementById("statusMessage");
+const historyList = document.getElementById("historyList");
+
+// DISPLAY MESSAGE
+
+function showMessage(message, type) {
+  statusMessage.textContent = message;
+  statusMessage.className = "message " + type;
+}
+
+// UPDATE SEARCH FIELDS
+
+function updateForm() {
+
+  const selected = method.value;
+
+  document.getElementById("ninFields")
+    .classList.toggle("hidden", selected !== "nin");
+
+  document.getElementById("phoneFields")
+    .classList.toggle("hidden", selected !== "phone");
+
+  document.getElementById("demoFields")
+    .classList.toggle("hidden", selected !== "demographic");
+
+  const vninOption =
+    slipTypeElement.querySelector('option[value="vnin"]');
+
+  vninOption.disabled = selected !== "nin";
+
+  if (selected !== "nin" && slipTypeElement.value === "vnin") {
+    slipTypeElement.value = "premium";
+  }
+}
+
+method.addEventListener("change", updateForm);
+
+updateForm();
+
+// PDF DOWNLOAD
+
+function downloadPDF(base64, fileName) {
+
+  if (!base64) {
+    throw new Error("The provider did not return a PDF file.");
+  }
+
+  base64 = base64.replace(/^data:[^,]*;base64,/i, "");
+  base64 = base64.replace(/\s/g, "");
+
+  const binary = atob(base64);
+  const bytes = new Uint8Array(binary.length);
+
+  for (let i = 0; i < binary.length; i++) {
+    bytes[i] = binary.charCodeAt(i);
+  }
+
+  const pdfBlob = new Blob([bytes], {
+    type: "application/pdf"
+  });
+
+  const pdfUrl = URL.createObjectURL(pdfBlob);
+
+  let safeName = (fileName || "Gracioustec-NIN-Reprint.pdf")
+    .replace(/[\\/:*?"<>|]/g, "_");
+
+  if (!safeName.toLowerCase().endsWith(".pdf")) {
+    safeName += ".pdf";
+  }
+
+  const link = document.createElement("a");
+
+  link.href = pdfUrl;
+  link.download = safeName;
+
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+
+  setTimeout(function() {
+    URL.revokeObjectURL(pdfUrl);
+  }, 60000);
+}
+
+// FORMAT HISTORY DATE
+
+function formatHistoryDate(dateValue) {
+
+  const date = new Date(dateValue);
+
+  if (Number.isNaN(date.getTime())) {
+    return "Date unavailable";
+  }
+
+  return date.toLocaleString("en-NG", {
+    dateStyle: "medium",
+    timeStyle: "short"
+  });
+}
+
+// CREATE HISTORY ELEMENT
+
+function createHistoryElement(documentItem) {
+
+  const item = document.createElement("div");
+  item.className = "history-item";
+
+  const heading = document.createElement("h4");
+  heading.textContent =
+    (documentItem.slip_type || "NIN") + " Slip";
+
+  const details = document.createElement("div");
+  details.className = "history-detail";
+
+  const date = document.createElement("div");
+  date.textContent =
+    "Date: " + formatHistoryDate(documentItem.created_at);
+
+  const amount = document.createElement("div");
+  amount.textContent =
+    "Amount paid: ₦" +
+    Number(documentItem.amount).toLocaleString("en-NG");
+
+  const methodDetail = document.createElement("div");
+  methodDetail.textContent =
+    "Search method: " + (documentItem.method || "N/A");
+
+  const reference = document.createElement("div");
+  reference.textContent =
+    "Reference: " + documentItem.reference;
+
+  details.appendChild(date);
+  details.appendChild(amount);
+  details.appendChild(methodDetail);
+  details.appendChild(reference);
+
+  const downloadButton = document.createElement("button");
+  downloadButton.type = "button";
+  downloadButton.textContent = "Download Again - FREE";
+
+  downloadButton.addEventListener("click", function() {
+    redownloadDocument(
+      documentItem.reference,
+      downloadButton
+    );
+  });
+
+  item.appendChild(heading);
+  item.appendChild(details);
+  item.appendChild(downloadButton);
+
+  return item;
+}
+
+// LOAD CUSTOMER HISTORY
+
+async function loadNinHistory() {
+
+  historyList.replaceChildren();
+
+  const loading = document.createElement("p");
+  loading.className = "history-status";
+  loading.textContent = "Loading your reprinting history...";
+
+  historyList.appendChild(loading);
+
+  try {
+
+    const {
+      data: sessionData,
+      error: sessionError
+    } = await idfixerSupabaseClient.auth.getSession();
+
+    if (sessionError) {
+      throw sessionError;
+    }
+
+    if (!sessionData.session) {
+
+      historyList.replaceChildren();
+
+      const loginMessage = document.createElement("p");
+      loginMessage.className = "history-status";
+      loginMessage.textContent =
+        "Please log in to view your previous NIN reprints.";
+
+      historyList.appendChild(loginMessage);
+      return;
+    }
+
+    // RLS ensures customers only see their own records.
+
+    const { data, error } =
+      await idfixerSupabaseClient
+        .from("idfixer_nin_documents")
+        .select(
+          "id, reference, amount, method, slip_type, created_at"
+        )
+        .order("created_at", {
+          ascending: false
+        });
+
+    if (error) {
+      throw error;
+    }
+
+    historyList.replaceChildren();
+
+    if (!data || data.length === 0) {
+
+      const emptyMessage = document.createElement("p");
+      emptyMessage.className = "history-status";
+      emptyMessage.textContent =
+        "You have no saved NIN reprints yet. Successfully completed reprints will appear here.";
+
+      historyList.appendChild(emptyMessage);
+      return;
+    }
+
+    data.forEach(function(documentItem) {
+      historyList.appendChild(
+        createHistoryElement(documentItem)
+      );
+    });
+
+  } catch (error) {
+
+    console.error("NIN History Error:", error);
+
+    historyList.replaceChildren();
+
+    const errorMessage = document.createElement("p");
+    errorMessage.className = "history-status";
+    errorMessage.textContent =
+      "Your history could not be loaded. Please refresh the page and try again.";
+
+    historyList.appendChild(errorMessage);
+  }
+}
+
+// FREE REDOWNLOAD
+
+async function redownloadDocument(reference, button) {
+
+  if (button.disabled) {
+    return;
+  }
+
+  button.disabled = true;
+  button.textContent = "Preparing PDF...";
+
+  try {
+
+    const {
+      data: sessionData,
+      error: sessionError
+    } = await idfixerSupabaseClient.auth.getSession();
+
+    if (sessionError) {
+      throw sessionError;
+    }
+
+    if (!sessionData.session) {
+
+      alert("Your login session has expired. Please log in again.");
+      window.location.href = "login.html";
+      return;
+    }
+
+    // This function does not charge the wallet.
+
+    const { data, error } =
+      await idfixerSupabaseClient.functions.invoke(
+        "idfixer-nin-redownload",
+        {
+          body: {
+            reference: reference
+          }
+        }
+      );
+
+    if (error) {
+      console.error("Redownload Function Error:", error);
+      throw new Error(
+        "The PDF could not be prepared. Please try again."
+      );
+    }
+
+    if (
+      !data ||
+      data.success !== true ||
+      !data.signed_url
+    ) {
+      throw new Error(
+        data?.message || "The PDF could not be downloaded."
+      );
+    }
+
+    // Open the secure temporary download link.
+
+    window.location.href = data.signed_url;
+
+    button.textContent = "Download Started";
+
+  } catch (error) {
+
+    console.error("Free Redownload Error:", error);
+
+    alert(
+      error.message ||
+      "Unable to download your previous PDF. Please try again."
+    );
+
+    button.disabled = false;
+    button.textContent = "Download Again - FREE";
+  }
+}
+
+// SUBMIT NIN REPRINT REQUEST
+
+form.addEventListener("submit", async function(e) {
+
+  e.preventDefault();
+
+  statusMessage.className = "message";
+  statusMessage.textContent = "";
+
+  const selectedMethod = method.value;
+  const selectedSlipType = slipTypeElement.value.toLowerCase();
+
+  // VALIDATE NIN
+
+  if (selectedMethod === "nin") {
+
+    const nin = document.getElementById("nin").value.trim();
+
+    if (!/^\d{11}$/.test(nin)) {
+      showMessage("Please enter a valid 11-digit NIN.", "error");
+      return;
+    }
+  }
+
+  // VALIDATE PHONE
+
+  if (selectedMethod === "phone") {
+
+    const phone = document.getElementById("phone").value.trim();
+
+    if (!/^\d{11}$/.test(phone)) {
+      showMessage("Please enter a valid 11-digit phone number.", "error");
+      return;
+    }
+  }
+
+  // VALIDATE DEMOGRAPHICS
+
+  if (selectedMethod === "demographic") {
+
+    if (
+      !document.getElementById("firstname").value.trim() ||
+      !document.getElementById("lastname").value.trim() ||
+      !document.getElementById("dob").value ||
+      !document.getElementById("gender").value
+    ) {
+
+      showMessage(
+        "Please complete all demographic fields.",
+        "error"
+      );
+
+      return;
+    }
+  }
+
+  // VNIN RESTRICTION
+
+  if (selectedMethod !== "nin" && selectedSlipType === "vnin") {
+
+    showMessage(
+      "VNIN is only available when searching by NIN.",
+      "error"
+    );
+
+    return;
+  }
+
+  // PREPARE REQUEST
+
+  const requestData = {
+    method: selectedMethod,
+    slip_type: selectedSlipType
+  };
+
+  if (selectedMethod === "nin") {
+    requestData.nin =
+      document.getElementById("nin").value.trim();
+  }
+
+  if (selectedMethod === "phone") {
+    requestData.phone =
+      document.getElementById("phone").value.trim();
+  }
+
+  if (selectedMethod === "demographic") {
+    requestData.firstname =
+      document.getElementById("firstname").value.trim();
+
+    requestData.lastname =
+      document.getElementById("lastname").value.trim();
+
+    requestData.dob =
+      document.getElementById("dob").value;
+
+    requestData.gender =
+      document.getElementById("gender").value.toLowerCase();
+  }
+
+  // PREVENT MULTIPLE SUBMISSIONS
+
+  submitButton.disabled = true;
+  submitButton.textContent = "Processing...";
+
+  try {
+
+    // CHECK LOGIN SESSION
+
+    const { data: sessionData, error: sessionError } =
+      await idfixerSupabaseClient.auth.getSession();
+
+    if (sessionError) {
+      throw sessionError;
+    }
+
+    if (!sessionData.session) {
+
+      showMessage(
+        "Your session has expired. Please log in again.",
+        "error"
+      );
+
+      window.location.href = "login.html";
+      return;
+    }
+
+    // CALL IDFIXER EDGE FUNCTION
+
+    showMessage(
+      "Your request is being processed. Please wait...",
+      "success"
+    );
+
+    const { data, error } =
+      await idfixerSupabaseClient.functions.invoke(
+        "idfixer-nin",
+        {
+          body: requestData
+        }
+      );
+
+    // HANDLE FUNCTION ERROR
+
+    if (error) {
+
+      console.error("IDFIXER Edge Function Error:", error);
+
+      showMessage(
+        "The IDFIXER service could not complete your request. Please try again or contact support.",
+        "error"
+      );
+
+      return;
+    }
+
+    // CHECK RESPONSE
+
+    if (!data || data.success !== true) {
+
+      console.error("IDFIXER Response:", data);
+
+      showMessage(
+        data?.error || "GRACIOUSTEC could not process your request.",
+        "error"
+      );
+
+      return;
+    }
+
+    // CHECK PDF
+
+    if (!data.pdf_base64) {
+
+      console.error("PDF missing from IDFIXER response:", data);
+
+      showMessage(
+        "Your request returned successfully, but the PDF was not included. Please contact support before submitting another request.",
+        "error"
+      );
+
+      return;
+    }
+
+    // DOWNLOAD PDF
+
+    try {
+
+      downloadPDF(
+        data.pdf_base64,
+        data.file_name || "Gracioustec-NIN-Reprint.pdf"
+      );
+
+    } catch (pdfError) {
+
+      console.error("PDF Download Error:", pdfError);
+
+      showMessage(
+        "The request was successful, but the PDF could not be downloaded. Please contact support before trying again.",
+        "error"
+      );
+
+      return;
+    }
+
+    // REMOVE SUCCESS MESSAGE
+
+    statusMessage.className = "message";
+    statusMessage.textContent = "";
+
+    // REFRESH HISTORY
+
+    await loadNinHistory();
+
+  } catch (error) {
+
+    console.error("NIN Reprinting Error:", error);
+
+    showMessage(
+      "An unexpected error occurred. Please try again or contact support.",
+      "error"
+    );
+
+  } finally {
+
+    submitButton.disabled = false;
+    submitButton.textContent = "Continue";
+
+  }
+
+});
+
+// LOAD HISTORY WHEN PAGE OPENS
+
+loadNinHistory();
+
+</script>
+
+</body>
+</html>
