@@ -1,0 +1,151 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NIN Reprinting 2 - Gracioustec</title>
+<meta name="theme-color" content="#087f3d">
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0;font-family:Arial,sans-serif}
+body{background:#f4f7f5;color:#18352a}
+header{background:#063b2b;color:white;padding:22px 18px}
+header a{color:white;text-decoration:none;font-size:14px}
+header h2{margin-top:18px;font-size:22px}
+header p{margin-top:7px;color:#d8eee1;font-size:14px}
+.container{max-width:600px;margin:25px auto;padding:0 16px}
+.card{background:white;padding:22px;border-radius:14px;border:1px solid #e1ebe5;box-shadow:0 4px 14px #00000008}
+h3{color:#087f3d;margin-bottom:18px}
+label{display:block;font-weight:bold;font-size:14px;margin:16px 0 7px}
+input,select{width:100%;padding:14px;border:1px solid #ccd9d0;border-radius:8px;font-size:15px;background:white}
+button{width:100%;padding:15px;background:#087f3d;color:white;border:0;border-radius:9px;font-weight:bold;font-size:16px;margin-top:22px}
+button:disabled{opacity:.6}
+.note{font-size:12px;color:#68766e;line-height:1.6;margin-top:15px}
+.hidden{display:none}
+footer{text-align:center;padding:25px;color:#718078;font-size:12px}
+</style>
+</head>
+
+<body>
+<header>
+<a href="nin-reprint-options.html">← Back</a>
+<h2>NIN REPRINTING 2</h2>
+<p>Alternative NIN slip reprinting service.</p>
+</header>
+
+<main class="container">
+<div class="card">
+<h3>NIN Reprinting Form</h3>
+
+<form id="ninForm">
+
+<label>Search Method</label>
+<select id="method" required>
+<option value="nin">By NIN</option>
+<option value="phone">By Phone Number</option>
+<option value="demographic">By Demographics</option>
+</select>
+
+<div id="ninFields">
+<label>NIN Number</label>
+<input id="nin" type="text" inputmode="numeric" maxlength="11" placeholder="Enter 11-digit NIN">
+</div>
+
+<div id="phoneFields" class="hidden">
+<label>Registered Phone Number</label>
+<input id="phone" type="tel" inputmode="numeric" maxlength="11" placeholder="08012345678">
+</div>
+
+<div id="demoFields" class="hidden">
+<label>First Name</label>
+<input id="firstname" type="text" placeholder="Enter first name">
+
+<label>Surname</label>
+<input id="lastname" type="text" placeholder="Enter surname">
+
+<label>Date of Birth</label>
+<input id="dob" type="date">
+
+<label>Gender</label>
+<select id="gender">
+<option value="">Select gender</option>
+<option value="m">Male</option>
+<option value="f">Female</option>
+</select>
+</div>
+
+<label>Slip Type</label>
+<select id="slipType" required>
+<option value="premium">Premium Slip</option>
+<option value="standard">Standard Slip</option>
+<option value="regular">Regular Slip</option>
+<option value="vnin">VNIN Slip</option>
+</select>
+
+<button type="submit" id="submitBtn">Continue</button>
+
+<p class="note">
+Please ensure that the information supplied is correct.
+Your request will be processed after the secure IDFIXER connection is completed.
+</p>
+
+</form>
+</div>
+</main>
+
+<footer>© 2026 Gracioustec. All rights reserved.</footer>
+
+<script>
+const method = document.getElementById("method");
+const slipType = document.getElementById("slipType");
+
+function updateForm(){
+  const selected = method.value;
+
+  document.getElementById("ninFields").classList.toggle("hidden",selected !== "nin");
+  document.getElementById("phoneFields").classList.toggle("hidden",selected !== "phone");
+  document.getElementById("demoFields").classList.toggle("hidden",selected !== "demographic");
+
+  const vninOption = slipType.querySelector('option[value="vnin"]');
+
+  vninOption.disabled = selected !== "nin";
+
+  if(selected !== "nin" && slipType.value === "vnin"){
+    slipType.value = "premium";
+  }
+}
+
+method.addEventListener("change",updateForm);
+updateForm();
+
+document.getElementById("ninForm").addEventListener("submit",function(e){
+  e.preventDefault();
+
+  if(method.value === "nin" &&
+     !/^\d{11}$/.test(document.getElementById("nin").value.trim())){
+    alert("Please enter a valid 11-digit NIN.");
+    return;
+  }
+
+  if(method.value === "phone" &&
+     !/^\d{11}$/.test(document.getElementById("phone").value.trim())){
+    alert("Please enter a valid 11-digit phone number.");
+    return;
+  }
+
+  if(method.value === "demographic"){
+    if(!document.getElementById("firstname").value.trim() ||
+       !document.getElementById("lastname").value.trim() ||
+       !document.getElementById("dob").value ||
+       !document.getElementById("gender").value){
+      alert("Please complete all demographic fields.");
+      return;
+    }
+  }
+
+  alert("The IDFIXER service connection is the next step. Your request has not been submitted or charged.");
+});
+</script>
+</body>
+</html>
