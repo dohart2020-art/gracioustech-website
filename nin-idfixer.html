@@ -274,7 +274,6 @@ const idfixerSupabaseClient = window.supabase.createClient(
   SUPABASE_ANON_KEY
 );
 
-
 // FORM ELEMENTS
 
 const method = document.getElementById("method");
@@ -283,14 +282,12 @@ const form = document.getElementById("ninForm");
 const submitButton = document.getElementById("submitBtn");
 const statusMessage = document.getElementById("statusMessage");
 
-
 // DISPLAY MESSAGE
 
 function showMessage(message, type) {
   statusMessage.textContent = message;
   statusMessage.className = "message " + type;
 }
-
 
 // UPDATE SEARCH FIELDS
 
@@ -321,7 +318,6 @@ method.addEventListener("change", updateForm);
 
 updateForm();
 
-
 // PDF DOWNLOAD
 
 function downloadPDF(base64, fileName) {
@@ -329,8 +325,6 @@ function downloadPDF(base64, fileName) {
   if (!base64) {
     throw new Error("The provider did not return a PDF file.");
   }
-
-  // Remove data URI prefix if supplied.
 
   base64 = base64.replace(/^data:[^,]*;base64,/i, "");
   base64 = base64.replace(/\s/g, "");
@@ -369,7 +363,6 @@ function downloadPDF(base64, fileName) {
   }, 60000);
 }
 
-
 // SUBMIT NIN REPRINT REQUEST
 
 form.addEventListener("submit", async function(e) {
@@ -394,7 +387,6 @@ form.addEventListener("submit", async function(e) {
     }
   }
 
-
   // VALIDATE PHONE
 
   if (selectedMethod === "phone") {
@@ -406,7 +398,6 @@ form.addEventListener("submit", async function(e) {
       return;
     }
   }
-
 
   // VALIDATE DEMOGRAPHICS
 
@@ -428,7 +419,6 @@ form.addEventListener("submit", async function(e) {
     }
   }
 
-
   // VNIN RESTRICTION
 
   if (selectedMethod !== "nin" && selectedSlipType === "vnin") {
@@ -441,7 +431,6 @@ form.addEventListener("submit", async function(e) {
     return;
   }
 
-
   // PREPARE REQUEST
 
   const requestData = {
@@ -449,25 +438,17 @@ form.addEventListener("submit", async function(e) {
     slip_type: selectedSlipType
   };
 
-
   if (selectedMethod === "nin") {
-
     requestData.nin =
       document.getElementById("nin").value.trim();
-
   }
-
 
   if (selectedMethod === "phone") {
-
     requestData.phone =
       document.getElementById("phone").value.trim();
-
   }
 
-
   if (selectedMethod === "demographic") {
-
     requestData.firstname =
       document.getElementById("firstname").value.trim();
 
@@ -479,9 +460,7 @@ form.addEventListener("submit", async function(e) {
 
     requestData.gender =
       document.getElementById("gender").value.toLowerCase();
-
   }
-
 
   // PREVENT MULTIPLE SUBMISSIONS
 
@@ -510,7 +489,6 @@ form.addEventListener("submit", async function(e) {
       return;
     }
 
-
     // CALL IDFIXER EDGE FUNCTION
 
     showMessage(
@@ -526,7 +504,6 @@ form.addEventListener("submit", async function(e) {
         }
       );
 
-
     // HANDLE FUNCTION ERROR
 
     if (error) {
@@ -540,7 +517,6 @@ form.addEventListener("submit", async function(e) {
 
       return;
     }
-
 
     // CHECK RESPONSE
 
@@ -556,7 +532,6 @@ form.addEventListener("submit", async function(e) {
       return;
     }
 
-
     // CHECK PDF
 
     if (!data.pdf_base64) {
@@ -570,7 +545,6 @@ form.addEventListener("submit", async function(e) {
 
       return;
     }
-
 
     // DOWNLOAD PDF
 
@@ -593,18 +567,11 @@ form.addEventListener("submit", async function(e) {
       return;
     }
 
+    // SUCCESS MESSAGE REMOVED
+    // PDF download continues automatically.
 
-    // SUCCESS MESSAGE
-
-    showMessage(
-      "NIN reprinting successful! Amount: ₦" +
-      (data.amount ?? "Not provided") +
-      " | Reference: " +
-      (data.reference || "Not provided") +
-      ". Your PDF download has been started.",
-      "success"
-    );
-
+    statusMessage.className = "message";
+    statusMessage.textContent = "";
 
   } catch (error) {
 
