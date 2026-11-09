@@ -1,460 +1,255 @@
-DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NIN Long Slip Template</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NIN Slip Download - Gracioustec</title>
+  <meta name="theme-color" content="#087f3d">
 
-<style>
-* {
-    box-sizing: border-box;
-}
-
-body {
-    margin: 0;
-    padding: 30px;
-    background: #f1f1f1;
-    font-family: Arial, Helvetica, sans-serif;
-    color: #111;
-}
-
-.slip {
-    width: 768px;
-    max-width: 100%;
-    margin: auto;
-    background: #fff;
-    border: 2px solid #222;
-    box-shadow: 0 4px 18px rgba(0,0,0,.15);
-}
-
-/* HEADER */
-.header {
-    display: grid;
-    grid-template-columns: 110px 1fr 110px;
-    align-items: center;
-    min-height: 145px;
-    padding: 15px;
-    border-bottom: 2px solid #222;
-}
-
-.logo-box {
-    width: 85px;
-    height: 85px;
-    margin: auto;
-    border: 2px solid #555;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    font-size: 11px;
-    font-weight: bold;
-}
-
-.header-title {
-    text-align: center;
-}
-
-.header-title h1 {
-    margin: 0;
-    font-size: 25px;
-    font-weight: 800;
-}
-
-.header-title h2 {
-    margin: 6px 0;
-    font-size: 18px;
-    font-weight: 700;
-}
-
-.header-title p {
-    margin: 4px 0 0;
-    font-size: 14px;
-    font-weight: 600;
-}
-
-.slip-title {
-    margin: 12px auto 0;
-    padding: 9px 15px;
-    background: #eee;
-    border: 1px solid #555;
-    font-size: 18px;
-    font-weight: 800;
-    text-align: center;
-}
-
-/* MAIN AREA */
-.main {
-    display: grid;
-    grid-template-columns: 1fr 220px;
-    border-bottom: 2px solid #222;
-}
-
-/* INFORMATION TABLE */
-.info {
-    border-right: 2px solid #222;
-}
-
-.row {
-    display: grid;
-    grid-template-columns: 175px 1fr;
-    min-height: 55px;
-    border-bottom: 1px solid #777;
-}
-
-.row:last-child {
-    border-bottom: 0;
-}
-
-.label {
-    padding: 13px 10px;
-    background: #f0f0f0;
-    border-right: 1px solid #777;
-    font-weight: bold;
-    font-size: 13px;
-    display: flex;
-    align-items: center;
-}
-
-.value {
-    padding: 13px 12px;
-    font-size: 14px;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    color: #444;
-}
-
-/* PHOTO */
-.photo-area {
-    padding: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.photo {
-    width: 175px;
-    height: 215px;
-    border: 1px solid #999;
-    background: #f7f7f7;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    color: #777;
-    font-size: 13px;
-    font-weight: bold;
-}
-
-/* NOTICE */
-.notice {
-    padding: 15px;
-    background: #f5f5f5;
-    border-bottom: 2px solid #222;
-    font-size: 12px;
-    line-height: 1.5;
-}
-
-.notice strong {
-    font-size: 13px;
-}
-
-/* FOOTER */
-.footer {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-}
-
-.footer-box {
-    min-height: 105px;
-    padding: 12px 8px;
-    text-align: center;
-    border-right: 1px solid #777;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-}
-
-.footer-box:last-child {
-    border-right: none;
-}
-
-.footer-box h4 {
-    margin: 0 0 8px;
-    font-size: 12px;
-}
-
-.footer-box p {
-    margin: 2px 0;
-    font-size: 10px;
-    color: #555;
-}
-
-/* TEMPLATE LABEL */
-.template-label {
-    padding: 9px;
-    text-align: center;
-    background: #222;
-    color: white;
-    font-size: 11px;
-    font-weight: bold;
-    letter-spacing: 1px;
-}
-
-/* PRINT */
-.print-button {
-    display: block;
-    margin: 20px auto;
-    padding: 12px 25px;
-    border: none;
-    border-radius: 5px;
-    background: #222;
-    color: white;
-    font-size: 14px;
-    font-weight: bold;
-    cursor: pointer;
-}
-
-.print-button:hover {
-    background: #444;
-}
-
-@media (max-width: 650px) {
+  <style>
+    * {
+      box-sizing: border-box;
+    }
 
     body {
-        padding: 10px;
+      margin: 0;
+      padding: 20px;
+      font-family: Arial, sans-serif;
+      background: #f3f7f4;
+      color: #222;
     }
 
-    .header {
-        grid-template-columns: 70px 1fr 70px;
-        padding: 8px;
+    .container {
+      max-width: 480px;
+      margin: 45px auto;
+      padding: 25px;
+      background: white;
+      border-radius: 14px;
+      box-shadow: 0 4px 18px rgba(0,0,0,0.08);
+      text-align: center;
     }
 
-    .logo-box {
-        width: 55px;
-        height: 55px;
-        font-size: 8px;
-    }
-
-    .header-title h1 {
-        font-size: 16px;
-    }
-
-    .header-title h2 {
-        font-size: 13px;
-    }
-
-    .header-title p {
-        font-size: 10px;
-    }
-
-    .slip-title {
-        font-size: 13px;
-    }
-
-    .main {
-        grid-template-columns: 1fr;
+    h2 {
+      color: #087f3d;
+      margin-top: 0;
     }
 
     .info {
-        border-right: none;
-        border-bottom: 2px solid #222;
+      background: #f1f8f3;
+      padding: 15px;
+      border-radius: 8px;
+      margin: 20px 0;
+      text-align: left;
+      overflow-wrap: anywhere;
     }
 
-    .photo-area {
-        padding: 15px;
+    .info p {
+      margin: 8px 0;
+      font-size: 14px;
     }
 
-    .row {
-        grid-template-columns: 130px 1fr;
+    button, .back-link {
+      display: block;
+      width: 100%;
+      padding: 15px;
+      margin-top: 14px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: bold;
+      text-decoration: none;
+      cursor: pointer;
     }
 
-    .label,
-    .value {
-        font-size: 11px;
+    button {
+      background: #087f3d;
+      color: white;
     }
 
-    .footer {
-        grid-template-columns: 1fr 1fr;
+    .open-button {
+      background: #e7f2ea;
+      color: #087f3d;
     }
 
-    .footer-box {
-        border-bottom: 1px solid #777;
-    }
-}
-
-@media print {
-
-    body {
-        padding: 0;
-        background: white;
+    .back-link {
+      background: #eeeeee;
+      color: #333;
     }
 
-    .slip {
-        width: 100%;
-        max-width: none;
-        box-shadow: none;
-        border: 2px solid #222;
+    .message {
+      padding: 15px;
+      border-radius: 8px;
+      background: #fff0f0;
+      color: #a00000;
+      margin-top: 15px;
     }
 
-    .print-button {
-        display: none;
+    .small {
+      font-size: 12px;
+      color: #666;
+      line-height: 1.6;
+      margin-top: 20px;
     }
-}
-</style>
+
+    [hidden] {
+      display: none !important;
+    }
+  </style>
 </head>
 
 <body>
 
-<div class="slip">
+  <div class="container">
+    <h2>GRACIOUSTEC</h2>
+    <h3>NIN Slip Download</h3>
 
-    <!-- HEADER -->
-    <div class="header">
+    <p>Your PDF is ready.</p>
 
-        <div class="logo-box">
-            IDENTITY<br>
-            EMBLEM
-        </div>
-
-        <div class="header-title">
-
-            <h1>NATIONAL IDENTITY MANAGEMENT SYSTEM</h1>
-
-            <h2>FEDERAL REPUBLIC OF NIGERIA</h2>
-
-            <p>(ENROLLMENT TRANSACTION SLIP)</p>
-
-            <div class="slip-title">
-                NIN LONG SLIP
-            </div>
-
-        </div>
-
-        <div class="logo-box">
-            IDENTITY<br>
-            LOGO
-        </div>
-
+    <div id="details" class="info" hidden>
+      <p><strong>Slip type:</strong> <span id="slipType"></span></p>
+      <p><strong>File:</strong> <span id="fileName"></span></p>
+      <p id="trackingRow" hidden>
+        <strong>Tracking ID:</strong>
+        <span id="trackingId"></span>
+      </p>
     </div>
 
+    <div id="errorMessage" class="message" hidden></div>
 
-    <!-- MAIN INFORMATION -->
-    <div class="main">
+    <div id="downloadSection" hidden>
+      <button type="button" id="downloadButton">
+        Download NIN Slip PDF
+      </button>
 
-        <div class="info">
-
-            <div class="row">
-                <div class="label">Tracking ID:</div>
-                <div class="value">________________________</div>
-            </div>
-
-            <div class="row">
-                <div class="label">Registration Center:</div>
-                <div class="value">________________________</div>
-            </div>
-
-            <div class="row">
-                <div class="label">Registration Date:</div>
-                <div class="value">____ / ____ / ______</div>
-            </div>
-
-            <div class="row">
-                <div class="label">Enroller's ID:</div>
-                <div class="value">________________________</div>
-            </div>
-
-            <div class="row">
-                <div class="label">Surname:</div>
-                <div class="value">________________________</div>
-            </div>
-
-            <div class="row">
-                <div class="label">First Name:</div>
-                <div class="value">________________________</div>
-            </div>
-
-            <div class="row">
-                <div class="label">Middle Name:</div>
-                <div class="value">________________________</div>
-            </div>
-
-            <div class="row">
-                <div class="label">Gender:</div>
-                <div class="value">________________________</div>
-            </div>
-
-        </div>
-
-
-        <!-- PHOTO PLACEHOLDER -->
-        <div class="photo-area">
-
-            <div class="photo">
-                PHOTO AREA
-            </div>
-
-        </div>
-
+      <button type="button" id="openButton" class="open-button">
+        Open PDF
+      </button>
     </div>
 
+    <a href="nin.html" class="back-link">
+      Back to NIN Reprint
+    </a>
 
-    <!-- NOTICE -->
-    <div class="notice">
+    <p class="small">
+      This page provides the original PDF returned by the service
+      provider. Gracioustec does not recreate or alter the document.
+    </p>
+  </div>
 
-        <strong>NOTE:</strong>
+  <script>
+    let pdfUrl = null;
+    let savedFileName = "Gracioustec-NIN-Slip.pdf";
 
-        This template contains no personal identity information.
-        Fields are intentionally blank for development and testing.
+    function showError(message) {
+      document.getElementById("errorMessage").textContent = message;
+      document.getElementById("errorMessage").hidden = false;
+      document.getElementById("downloadSection").hidden = true;
+      document.getElementById("details").hidden = true;
+    }
 
-        <br><br>
+    function loadPDF() {
+      const paid = sessionStorage.getItem("gracioustech_nin_paid");
 
-        Keep your identity information confidential and only use
-        authorized channels for obtaining official identity documents.
+      if (paid !== "true") {
+        showError("Payment is required before you can download this PDF.");
+        return;
+      }
 
-    </div>
+      let base64 = sessionStorage.getItem("gracioustech_nin_pdf");
 
+      if (!base64) {
+        showError("The PDF could not be found. Please return to the NIN Reprint page and verify again.");
+        return;
+      }
 
-    <!-- FOOTER -->
-    <div class="footer">
+      const mimeType =
+        sessionStorage.getItem("gracioustech_nin_pdf_mime") ||
+        "application/pdf";
 
-        <div class="footer-box">
-            <h4>EMAIL</h4>
-            <p>Official Helpdesk</p>
-            <p>________________</p>
-        </div>
+      savedFileName =
+        sessionStorage.getItem("gracioustech_nin_pdf_name") ||
+        "Gracioustec-NIN-Slip.pdf";
 
-        <div class="footer-box">
-            <h4>WEBSITE</h4>
-            <p>Official Website</p>
-            <p>________________</p>
-        </div>
+      const slipType =
+        sessionStorage.getItem("gracioustech_slip_type") ||
+        "NIN Slip";
 
-        <div class="footer-box">
-            <h4>PHONE</h4>
-            <p>Official Contact</p>
-            <p>________________</p>
-        </div>
+      const trackingId =
+        sessionStorage.getItem("gracioustech_nin_tracking") || "";
 
-        <div class="footer-box">
-            <h4>OFFICE</h4>
-            <p>Official Office Address</p>
-            <p>________________</p>
-        </div>
+      try {
+        // Remove a possible data URI prefix.
+        base64 = base64.replace(/^data:[^,]*;base64,/i, "");
+        base64 = base64.replace(/\s/g, "");
 
-    </div>
+        const binary = atob(base64);
+        const bytes = new Uint8Array(binary.length);
 
+        for (let i = 0; i < binary.length; i++) {
+          bytes[i] = binary.charCodeAt(i);
+        }
 
-    <div class="template-label">
-        BLANK DEVELOPMENT TEMPLATE — NOT AN ISSUED GOVERNMENT DOCUMENT
-    </div>
+        const blob = new Blob([bytes], { type: mimeType });
 
-</div>
+        if (pdfUrl) {
+          URL.revokeObjectURL(pdfUrl);
+        }
 
+        pdfUrl = URL.createObjectURL(blob);
 
-<button class="print-button" onclick="window.print()">
-    Print Template
-</button>
+        // Ensure a safe PDF filename.
+        savedFileName = savedFileName
+          .replace(/[\\/:*?"<>|]/g, "_");
+
+        if (!savedFileName.toLowerCase().endsWith(".pdf")) {
+          savedFileName += ".pdf";
+        }
+
+        document.getElementById("slipType").textContent = slipType;
+        document.getElementById("fileName").textContent = savedFileName;
+
+        if (trackingId) {
+          document.getElementById("trackingId").textContent = trackingId;
+          document.getElementById("trackingRow").hidden = false;
+        }
+
+        document.getElementById("details").hidden = false;
+        document.getElementById("downloadSection").hidden = false;
+
+      } catch (error) {
+        showError("The PDF could not be opened. Please return to the NIN Reprint page and try again.");
+      }
+    }
+
+    document.getElementById("downloadButton").addEventListener("click", function() {
+      if (!pdfUrl) {
+        showError("PDF is not available. Please reload this page.");
+        return;
+      }
+
+      const link = document.createElement("a");
+      link.href = pdfUrl;
+      link.download = savedFileName;
+
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    });
+
+    document.getElementById("openButton").addEventListener("click", function() {
+      if (pdfUrl) {
+        window.open(pdfUrl, "_blank");
+      }
+    });
+
+    window.addEventListener("beforeunload", function() {
+      if (pdfUrl) {
+        URL.revokeObjectURL(pdfUrl);
+      }
+    });
+
+    loadPDF();
+  </script>
 
 </body>
 </html>
