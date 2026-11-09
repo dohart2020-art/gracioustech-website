@@ -319,41 +319,40 @@
 
       historyBox.innerHTML = "";
 
-      documents.forEach(document => {
-        const item = document.createElement("div");
-        item.className = "history-item";
+      documents.forEach(record => {
+  const item = document.createElement("div");
+  item.className = "history-item";
 
-        const type = document.slip_type === "premium"
-          ? "Premium"
-          : "Standard";
+  const type = record.slip_type === "premium"
+    ? "Premium"
+    : "Standard";
 
-        const date = document.created_at
-          ? new Date(document.created_at).toLocaleString("en-NG")
-          : "Date unavailable";
+  const date = record.created_at
+    ? new Date(record.created_at).toLocaleString("en-NG")
+    : "Date unavailable";
 
-        const details = document.createElement("div");
-        details.textContent =
-          type + " BVN Slip | " +
-          formatMoney(document.amount) +
-          " | " + date;
+  const details = document.createElement("div");
+  details.textContent =
+    type + " BVN Slip | " +
+    formatMoney(record.amount) +
+    " | " + date;
 
-        const reference = document.createElement("div");
-        reference.className = "muted";
-        reference.textContent = "Reference: " + document.reference;
+  const reference = document.createElement("div");
+  reference.className = "muted";
+  reference.textContent = "Reference: " + record.reference;
 
-        const button = document.createElement("button");
-        button.type = "button";
-        button.className = "download-btn";
-        button.textContent = "Download PDF";
-        button.dataset.reference = document.reference;
+  const button = document.createElement("button");
+  button.type = "button";
+  button.className = "download-btn";
+  button.textContent = "Download PDF";
+  button.dataset.reference = record.reference;
 
-        item.appendChild(details);
-        item.appendChild(reference);
-        item.appendChild(button);
+  item.appendChild(details);
+  item.appendChild(reference);
+  item.appendChild(button);
 
-        historyBox.appendChild(item);
-      });
-    }
+  historyBox.appendChild(item);
+});
 
     function downloadBase64PDF(base64, filename) {
       const cleanBase64 = base64.replace(
