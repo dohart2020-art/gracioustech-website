@@ -1,529 +1,584 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BVN Reprinting 2 - Gracioustec</title>
-<meta name="theme-color" content="#087f3d">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BVN Reprinting 2 - Gracioustec</title>
+  <meta name="theme-color" content="#087f3d">
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-<style>
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
-body {
-  font-family: Arial, sans-serif;
-  background: #f4f7f5;
-  color: #222;
-  padding-bottom: 35px;
-}
+    body {
+      font-family: Arial, sans-serif;
+      background: #f3f7f4;
+      color: #222;
+      padding: 16px;
+    }
 
-header {
-  background: #063b2b;
-  color: white;
-  padding: 20px 16px;
-}
+    .container {
+      max-width: 520px;
+      margin: 20px auto;
+    }
 
-header h2 {
-  font-size: 21px;
-  margin-bottom: 5px;
-}
+    .header {
+      background: #087f3d;
+      color: white;
+      padding: 20px;
+      border-radius: 12px;
+      margin-bottom: 18px;
+    }
 
-header p {
-  font-size: 13px;
-  opacity: .9;
-}
+    .header h2 {
+      margin-bottom: 8px;
+    }
 
-.container {
-  max-width: 600px;
-  margin: 20px auto;
-  padding: 0 14px;
-}
+    .header a {
+      color: white;
+      text-decoration: none;
+      font-size: 14px;
+    }
 
-.card {
-  background: white;
-  border-radius: 13px;
-  padding: 19px;
-  margin-bottom: 17px;
-  box-shadow: 0 2px 10px rgba(0,0,0,.06);
-}
+    .card {
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      margin-bottom: 16px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+    }
 
-.balance-card {
-  background: #087f3d;
-  color: white;
-}
+    .balance {
+      background: #e8f5ec;
+      border-left: 5px solid #087f3d;
+    }
 
-.balance-card small {
-  opacity: .9;
-}
+    .balance h3 {
+      color: #087f3d;
+      margin-bottom: 8px;
+    }
 
-.balance {
-  font-size: 27px;
-  font-weight: bold;
-  margin-top: 8px;
-}
+    .balance strong {
+      font-size: 25px;
+    }
 
-h3 {
-  font-size: 17px;
-  margin-bottom: 15px;
-}
+    label {
+      display: block;
+      margin: 14px 0 7px;
+      font-weight: bold;
+    }
 
-label {
-  display: block;
-  font-size: 14px;
-  font-weight: bold;
-  margin: 13px 0 7px;
-}
+    input, select {
+      width: 100%;
+      padding: 14px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 16px;
+      background: white;
+    }
 
-input, select {
-  width: 100%;
-  padding: 14px;
-  border: 1px solid #d5ddd8;
-  border-radius: 8px;
-  font-size: 15px;
-  outline: none;
-  background: white;
-}
+    button {
+      width: 100%;
+      border: none;
+      padding: 14px;
+      border-radius: 8px;
+      background: #087f3d;
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+      margin-top: 16px;
+      cursor: pointer;
+    }
 
-input:focus, select:focus {
-  border-color: #087f3d;
-}
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
 
-.price-info {
-  background: #edf8f0;
-  border: 1px solid #cce8d4;
-  padding: 13px;
-  border-radius: 8px;
-  margin-top: 13px;
-  font-size: 14px;
-  line-height: 1.8;
-}
+    .message {
+      margin-top: 14px;
+      padding: 12px;
+      border-radius: 7px;
+      display: none;
+      line-height: 1.5;
+      overflow-wrap: anywhere;
+    }
 
-button {
-  width: 100%;
-  border: none;
-  background: #087f3d;
-  color: white;
-  padding: 15px;
-  font-size: 15px;
-  font-weight: bold;
-  border-radius: 8px;
-  margin-top: 17px;
-  cursor: pointer;
-}
+    .success {
+      display: block;
+      background: #e8f5ec;
+      color: #087f3d;
+    }
 
-button:disabled {
-  opacity: .6;
-  cursor: not-allowed;
-}
+    .error {
+      display: block;
+      background: #ffebee;
+      color: #c62828;
+    }
 
-.back-button {
-  display: inline-block;
-  color: white;
-  text-decoration: none;
-  margin-bottom: 12px;
-  font-size: 14px;
-}
+    .info {
+      display: block;
+      background: #fff8e1;
+      color: #795500;
+    }
 
-.message {
-  display: none;
-  padding: 13px;
-  border-radius: 8px;
-  margin-top: 14px;
-  font-size: 14px;
-  line-height: 1.5;
-  overflow-wrap: anywhere;
-}
+    .history-item {
+      border-bottom: 1px solid #eee;
+      padding: 13px 0;
+      line-height: 1.7;
+      overflow-wrap: anywhere;
+    }
 
-.success {
-  display: block;
-  background: #e6f7eb;
-  color: #12652c;
-}
+    .history-item:last-child {
+      border-bottom: none;
+    }
 
-.error {
-  display: block;
-  background: #fff0f0;
-  color: #a51d1d;
-}
+    .download-btn {
+      background: #064f2b;
+      padding: 10px;
+      font-size: 14px;
+      margin-top: 8px;
+    }
 
-.history-item {
-  border-bottom: 1px solid #eee;
-  padding: 14px 0;
-  font-size: 13px;
-  line-height: 1.8;
-  overflow-wrap: anywhere;
-}
+    .muted {
+      color: #666;
+      font-size: 13px;
+    }
 
-.history-item:last-child {
-  border-bottom: none;
-}
-
-.history-item button {
-  margin-top: 8px;
-  padding: 10px;
-  font-size: 13px;
-}
-
-.muted {
-  color: #777;
-  font-size: 13px;
-}
-
-footer {
-  text-align: center;
-  font-size: 12px;
-  color: #777;
-  padding: 15px;
-}
-</style>
+    footer {
+      text-align: center;
+      color: #777;
+      font-size: 12px;
+      margin: 25px 0 10px;
+    }
+  </style>
 </head>
 
 <body>
+  <div class="container">
 
-<header>
-  <a class="back-button" href="dashboard.html">← Back to Dashboard</a>
-  <h2>BVN Reprinting 2</h2>
-  <p>Secure BVN Slip Reprinting - IDFIXER</p>
-</header>
-
-<div class="container">
-
-  <div class="card balance-card">
-    <small>Available Wallet Balance</small>
-    <div class="balance" id="walletBalance">Loading...</div>
-  </div>
-
-  <div class="card">
-    <h3>Generate BVN Slip</h3>
-
-    <form id="bvnForm">
-
-      <label for="bvn">Enter BVN</label>
-      <input
-        type="text"
-        id="bvn"
-        inputmode="numeric"
-        maxlength="11"
-        placeholder="Enter your 11-digit BVN"
-        required
-      >
-
-      <label for="slipType">Select Slip Type</label>
-      <select id="slipType" required>
-        <option value="standard">Standard BVN Slip - ₦285</option>
-        <option value="premium">Premium BVN Slip - ₦300</option>
-      </select>
-
-      <div class="price-info">
-        <strong>Service Prices</strong><br>
-        Standard BVN Slip: ₦285<br>
-        Premium BVN Slip: ₦300
-      </div>
-
-      <button type="submit" id="submitBtn">
-        Generate BVN Slip
-      </button>
-
-    </form>
-
-    <div id="message" class="message"></div>
-  </div>
-
-  <div class="card">
-    <h3>BVN Reprinting History</h3>
-    <p class="muted">Your previously generated BVN slips are available here for free redownload.</p>
-
-    <div id="history">
-      Loading history...
+    <div class="header">
+      <h2>BVN Reprinting 2</h2>
+      <p>IDFIXER BVN Slip Service</p>
+      <br>
+      <a href="dashboard.html">← Back to Dashboard</a>
     </div>
+
+    <div class="card balance">
+      <h3>Available Wallet Balance</h3>
+      <strong id="walletBalance">Loading...</strong>
+    </div>
+
+    <div class="card">
+      <h3>BVN Reprinting</h3>
+      <p class="muted">Enter your BVN and select your preferred slip type.</p>
+
+      <form id="bvnForm">
+        <label for="bvn">BVN Number</label>
+        <input
+          type="text"
+          id="bvn"
+          maxlength="11"
+          inputmode="numeric"
+          placeholder="Enter 11-digit BVN"
+          required
+        >
+
+        <label for="slipType">Select Slip Type</label>
+        <select id="slipType" required>
+          <option value="standard">Standard BVN Slip - ₦285</option>
+          <option value="premium">Premium BVN Slip - ₦300</option>
+        </select>
+
+        <button type="submit" id="submitBtn">
+          Generate BVN Slip
+        </button>
+      </form>
+
+      <div id="message" class="message"></div>
+    </div>
+
+    <div class="card">
+      <h3>BVN Reprinting History</h3>
+      <div id="history" class="muted">Loading history...</div>
+    </div>
+
+    <footer>
+      © 2026 Gracioustec. All rights reserved.
+    </footer>
+
   </div>
 
-</div>
+  <script>
+    const SUPABASE_URL = "https://iknhifndgpwibkfidggq.supabase.co";
+    const SUPABASE_KEY = "sb_publishable_xELauxOMm7eMkNrPz55Mrw_LVkRoASn";
 
-<footer>
-  © Gracioustec. All rights reserved. Designed by Gracioustec 
-</footer>
-  
-
-<script>
-const SUPABASE_URL = "https://iknhifndgpwibkfidggq.supabase.co";
-const SUPABASE_KEY = "sb_publishable_xELauxOMm7eMkNrPz55Mrw_LVkRoASn";
-
-const supabaseClient = window.supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_KEY
-);
-
-let currentUser = null;
-
-const balanceElement = document.getElementById("walletBalance");
-const messageElement = document.getElementById("message");
-const submitBtn = document.getElementById("submitBtn");
-const historyElement = document.getElementById("history");
-
-function formatMoney(amount) {
-  return "₦" + Number(amount || 0).toLocaleString("en-NG", {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2
-  });
-}
-
-function showMessage(message, type) {
-  messageElement.textContent = message;
-  messageElement.className = "message " + type;
-}
-
-function escapeHTML(value) {
-  return String(value ?? "").replace(/[&<>"']/g, char => ({
-    "&": "&amp;",
-    "<": "&lt;",
-    ">": "&gt;",
-    '"': "&quot;",
-    "'": "&#39;"
-  })[char]);
-}
-
-/* LOAD WALLET BALANCE */
-async function loadBalance() {
-  balanceElement.textContent = "Loading...";
-
-  try {
-    const { data, error } = await supabaseClient
-      .from("wallets")
-      .select("balance")
-      .eq("user_id", currentUser.id)
-      .maybeSingle();
-
-    if (error) throw error;
-
-    balanceElement.textContent = formatMoney(
-      data ? data.balance : 0
+    const supabaseClient = window.supabase.createClient(
+      SUPABASE_URL,
+      SUPABASE_KEY
     );
 
-  } catch (error) {
-    console.error("BVN wallet loading error:", error);
-    balanceElement.textContent = "Unable to load";
-  }
-}
+    let currentUser = null;
 
-/* LOAD BVN REPRINTING HISTORY */
-async function loadHistory() {
-  historyElement.textContent = "Loading history...";
+    const walletBalance = document.getElementById("walletBalance");
+    const historyBox = document.getElementById("history");
+    const messageBox = document.getElementById("message");
+    const submitBtn = document.getElementById("submitBtn");
+    const bvnForm = document.getElementById("bvnForm");
 
-  try {
-    const { data, error } = await supabaseClient
-      .from("idfixer_bvn_documents")
-      .select("reference, amount, slip_type, created_at")
-      .eq("user_id", currentUser.id)
-      .order("created_at", { ascending: false });
-
-    if (error) throw error;
-
-    if (!data || data.length === 0) {
-      historyElement.innerHTML =
-        '<p class="muted">No BVN reprinting records yet.</p>';
-      return;
+    function formatMoney(amount) {
+      return "₦" + Number(amount || 0).toLocaleString("en-NG", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      });
     }
 
-    historyElement.innerHTML = data.map(item => `
-      <div class="history-item">
-        <strong>${escapeHTML(String(item.slip_type || "").toUpperCase())} BVN SLIP</strong><br>
-        Amount: ${formatMoney(item.amount)}<br>
-        Reference: ${escapeHTML(item.reference)}<br>
-        Date: ${escapeHTML(new Date(item.created_at).toLocaleString("en-NG"))}
-        <button
-          type="button"
-          class="redownload-button"
-          data-reference="${escapeHTML(item.reference)}">
-          Download Again - FREE
-        </button>
-      </div>
-    `).join("");
+    function showMessage(message, type) {
+      messageBox.textContent = message;
+      messageBox.className = "message " + type;
+    }
 
-  } catch (error) {
-    console.error("BVN history loading error:", error);
-    historyElement.textContent =
-      "Could not load BVN history. Please refresh the page.";
-  }
-}
+    function withTimeout(promise, label, milliseconds = 15000) {
+      let timer;
 
-/* PDF DOWNLOAD */
-function downloadPdf(base64, fileName) {
-  const binary = atob(base64);
-  const bytes = new Uint8Array(binary.length);
+      return Promise.race([
+        promise,
+        new Promise((_, reject) => {
+          timer = setTimeout(() => {
+            reject(new Error(label + " timed out. Please refresh the page."));
+          }, milliseconds);
+        })
+      ]).finally(() => clearTimeout(timer));
+    }
 
-  for (let i = 0; i < binary.length; i++) {
-    bytes[i] = binary.charCodeAt(i);
-  }
+    async function loadUser() {
+      const result = await withTimeout(
+        supabaseClient.auth.getUser(),
+        "Login check"
+      );
 
-  const blob = new Blob([bytes], {
-    type: "application/pdf"
-  });
+      if (result.error) throw result.error;
 
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement("a");
+      if (!result.data || !result.data.user) {
+        window.location.href = "login.html";
+        return null;
+      }
 
-  link.href = url;
-  link.download = fileName;
-  document.body.appendChild(link);
-  link.click();
-  link.remove();
+      currentUser = result.data.user;
+      return currentUser;
+    }
 
-  setTimeout(() => URL.revokeObjectURL(url), 30000);
-}
+    async function loadBalance() {
+      if (!currentUser) return;
 
-/* GENERATE BVN SLIP */
-document.getElementById("bvnForm").addEventListener("submit", async event => {
-  event.preventDefault();
+      walletBalance.textContent = "Loading...";
 
-  if (!currentUser) {
-    showMessage("Your login session is unavailable. Please log in again.", "error");
-    return;
-  }
+      const result = await withTimeout(
+        supabaseClient
+          .from("wallets")
+          .select("balance")
+          .eq("user_id", currentUser.id)
+          .maybeSingle(),
+        "Wallet loading"
+      );
 
-  const bvn = document.getElementById("bvn").value.trim();
-  const slipType = document.getElementById("slipType").value;
+      if (result.error) throw result.error;
 
-  if (!/^\d{11}$/.test(bvn)) {
-    showMessage("Please enter a valid 11-digit BVN.", "error");
-    return;
-  }
+      walletBalance.textContent = formatMoney(
+        result.data ? result.data.balance : 0
+      );
+    }
 
-  const amount = slipType === "standard" ? 285 : 300;
+    async function loadHistory() {
+      if (!currentUser) return;
 
-  const confirmed = confirm(
-    `You are about to generate a ${slipType.toUpperCase()} BVN Slip for ${formatMoney(amount)}. Continue?`
-  );
+      historyBox.textContent = "Loading history...";
 
-  if (!confirmed) return;
+      const result = await withTimeout(
+        supabaseClient
+          .from("idfixer_bvn_documents")
+          .select("reference, amount, slip_type, created_at")
+          .eq("user_id", currentUser.id)
+          .order("created_at", { ascending: false }),
+        "History loading"
+      );
 
-  submitBtn.disabled = true;
-  submitBtn.textContent = "Processing...";
-  messageElement.className = "message";
+      if (result.error) throw result.error;
 
-  try {
-    const { data, error } = await supabaseClient.functions.invoke(
-      "idfixer-bvn",
-      {
-        body: {
-          bvn: bvn,
-          slip_type: slipType
+      const documents = result.data || [];
+
+      if (documents.length === 0) {
+        historyBox.textContent = "No BVN reprinting records found.";
+        return;
+      }
+
+      historyBox.innerHTML = "";
+
+      documents.forEach(document => {
+        const item = document.createElement("div");
+        item.className = "history-item";
+
+        const type = document.slip_type === "premium"
+          ? "Premium"
+          : "Standard";
+
+        const date = document.created_at
+          ? new Date(document.created_at).toLocaleString("en-NG")
+          : "Date unavailable";
+
+        const details = document.createElement("div");
+        details.textContent =
+          type + " BVN Slip | " +
+          formatMoney(document.amount) +
+          " | " + date;
+
+        const reference = document.createElement("div");
+        reference.className = "muted";
+        reference.textContent = "Reference: " + document.reference;
+
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "download-btn";
+        button.textContent = "Download PDF";
+        button.dataset.reference = document.reference;
+
+        item.appendChild(details);
+        item.appendChild(reference);
+        item.appendChild(button);
+
+        historyBox.appendChild(item);
+      });
+    }
+
+    function downloadBase64PDF(base64, filename) {
+      const cleanBase64 = base64.replace(
+        /^data:application\/pdf;base64,/,
+        ""
+      );
+
+      const binary = atob(cleanBase64);
+      const bytes = new Uint8Array(binary.length);
+
+      for (let i = 0; i < binary.length; i++) {
+        bytes[i] = binary.charCodeAt(i);
+      }
+
+      const blob = new Blob([bytes], {
+        type: "application/pdf"
+      });
+
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+
+      link.href = url;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+
+      setTimeout(() => URL.revokeObjectURL(url), 30000);
+    }
+
+    bvnForm.addEventListener("submit", async function(event) {
+      event.preventDefault();
+
+      if (!currentUser) {
+        showMessage("Please log in again.", "error");
+        return;
+      }
+
+      const bvn = document.getElementById("bvn").value.trim();
+      const slipType = document.getElementById("slipType").value;
+
+      if (!/^[0-9]{11}$/.test(bvn)) {
+        showMessage("Please enter a valid 11-digit BVN.", "error");
+        return;
+      }
+
+      const amount = slipType === "premium" ? 300 : 285;
+
+      const confirmed = confirm(
+        "You are about to generate a " +
+        (slipType === "premium" ? "Premium" : "Standard") +
+        " BVN Slip for " + formatMoney(amount) +
+        ". Continue?"
+      );
+
+      if (!confirmed) return;
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = "Processing...";
+      showMessage("Your BVN request is being processed. Please wait.", "info");
+
+      try {
+        const result = await withTimeout(
+          supabaseClient.functions.invoke("idfixer-bvn", {
+            body: {
+              bvn: bvn,
+              slip_type: slipType
+            }
+          }),
+          "BVN request",
+          60000
+        );
+
+        if (result.error) {
+          throw new Error(
+            result.data && result.data.error
+              ? result.data.error
+              : result.error.message
+          );
         }
+
+        const data = result.data || {};
+
+        if (data.error) {
+          throw new Error(data.error);
+        }
+
+        const pdfBase64 =
+          data.pdf_base64 ||
+          data.user_data?.pdf_base64;
+
+        if (!pdfBase64) {
+          throw new Error(
+            "The request returned no PDF file. Please check your history before trying again."
+          );
+        }
+
+        const filename =
+          "Gracioustec-BVN-" +
+          (data.reference || Date.now()) +
+          ".pdf";
+
+        downloadBase64PDF(pdfBase64, filename);
+
+        showMessage(
+          "BVN slip generated successfully. Your PDF download has started.",
+          "success"
+        );
+
+        document.getElementById("bvn").value = "";
+
+        await Promise.allSettled([
+          loadBalance(),
+          loadHistory()
+        ]);
+
+      } catch (error) {
+        console.error("IDFIXER BVN error:", error);
+
+        showMessage(
+          error.message || "Unable to process your BVN request. Please try again.",
+          "error"
+        );
+
+        await Promise.allSettled([
+          loadBalance(),
+          loadHistory()
+        ]);
+
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = "Generate BVN Slip";
       }
-    );
+    });
 
-    if (error) throw error;
+    historyBox.addEventListener("click", async function(event) {
+      const button = event.target.closest("[data-reference]");
 
-    if (!data || !data.success) {
-      throw new Error(data?.message || "BVN request failed.");
-    }
+      if (!button) return;
 
-    if (!data.pdf_base64) {
-      throw new Error("The BVN PDF was not returned.");
-    }
+      const reference = button.dataset.reference;
 
-    downloadPdf(
-      data.pdf_base64,
-      data.file_name || "Gracioustec-BVN-Slip.pdf"
-    );
+      button.disabled = true;
+      button.textContent = "Preparing PDF...";
 
-    showMessage(
-      "BVN slip generated successfully! Your PDF download has started. Reference: " +
-      data.reference,
-      "success"
-    );
+      try {
+        const result = await withTimeout(
+          supabaseClient.functions.invoke("idfixer-bvn-redownload", {
+            body: {
+              reference: reference
+            }
+          }),
+          "PDF download",
+          30000
+        );
 
-    document.getElementById("bvn").value = "";
+        if (result.error) {
+          throw new Error(
+            result.data && result.data.error
+              ? result.data.error
+              : result.error.message
+          );
+        }
 
-  } catch (error) {
-    console.error("BVN generation error:", error);
+        const data = result.data || {};
 
-    showMessage(
-      error.message || "Unable to process your BVN request.",
-      "error"
-    );
+        if (!data.download_url) {
+          throw new Error(data.error || "Download link was not returned.");
+        }
 
-  } finally {
-    await Promise.allSettled([
-      loadBalance(),
-      loadHistory()
-    ]);
+        const link = document.createElement("a");
+        link.href = data.download_url;
+        link.target = "_blank";
+        link.rel = "noopener";
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
 
-    submitBtn.disabled = false;
-    submitBtn.textContent = "Generate BVN Slip";
-  }
-});
+        button.textContent = "Download PDF";
 
-/* FREE REDOWNLOAD */
-async function redownloadSlip(reference) {
-  if (!confirm("Download this BVN slip again for free?")) return;
+      } catch (error) {
+        console.error("BVN redownload error:", error);
+        alert(error.message || "Unable to download PDF.");
+        button.textContent = "Download PDF";
 
-  try {
-    const { data, error } = await supabaseClient.functions.invoke(
-      "idfixer-bvn-redownload",
-      {
-        body: { reference }
+      } finally {
+        button.disabled = false;
       }
-    );
+    });
 
-    if (error) throw error;
+    async function initializePage() {
+      try {
+        await loadUser();
 
-    if (!data || !data.success || !data.download_url) {
-      throw new Error(data?.message || "Could not retrieve BVN PDF.");
+        if (!currentUser) return;
+
+        const results = await Promise.allSettled([
+          loadBalance(),
+          loadHistory()
+        ]);
+
+        if (results[0].status === "rejected") {
+          console.error("Wallet error:", results[0].reason);
+          walletBalance.textContent = "Unable to load";
+        }
+
+        if (results[1].status === "rejected") {
+          console.error("History error:", results[1].reason);
+          historyBox.textContent = "Unable to load history. Please refresh.";
+        }
+
+      } catch (error) {
+        console.error("Page initialization error:", error);
+
+        walletBalance.textContent = "Unable to load";
+        historyBox.textContent = "Unable to load history.";
+
+        showMessage(
+          error.message || "Connection error. Please refresh the page.",
+          "error"
+        );
+      }
     }
 
-    window.location.href = data.download_url;
-
-  } catch (error) {
-    console.error("BVN redownload error:", error);
-    alert(error.message || "Unable to download BVN slip.");
-  }
-}
-
-/* HISTORY BUTTON HANDLER */
-historyElement.addEventListener("click", event => {
-  const button = event.target.closest(".redownload-button");
-
-  if (!button) return;
-
-  const reference = button.getAttribute("data-reference");
-
-  if (reference) {
-    redownloadSlip(reference);
-  }
-});
-
-/* INITIALIZE PAGE USING THE WORKING DASHBOARD LOGIN METHOD */
-async function initializePage() {
-  balanceElement.textContent = "Checking login...";
-  historyElement.textContent = "Checking login...";
-
-  const { data, error } = await supabaseClient.auth.getUser();
-
-  if (error || !data || !data.user) {
-    window.location.href = "login.html";
-    return;
-  }
-
-  currentUser = data.user;
-
-  await Promise.allSettled([
-    loadBalance(),
-    loadHistory()
-  ]);
-}
-
-initializePage().catch(error => {
-  console.error("BVN page initialization error:", error);
-
-  balanceElement.textContent = "Connection error";
-  historyElement.textContent =
-    "Could not connect. Please refresh the page.";
-});
-</script>
-
+    initializePage();
+  </script>
+</body>
+</html>
