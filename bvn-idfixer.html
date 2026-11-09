@@ -525,16 +525,29 @@
 
         const data = result.data || {};
 
-        if (!data.download_url) {
-          throw new Error(
-            data.error || "Download link was not returned."
-          );
-        }
+if (!data.download_url) {
+  throw new Error(
+    data.error || "Download link was not returned."
+  );
+}
 
-        const link = document.createElement("a");
-        link.href = data.download_url;
-        link.target = "_blank";
-        link.rel = "noopener";
+const response = await fetch(data.download_url);
+
+if (!response.ok) {
+  throw new Error("PDF download failed. Please try again.");
+}
+
+const blob = await response.blob();
+const url = URL.createObjectURL(blob);
+
+const link = document.createElement("a");
+link.href = url;
+link.download = "BVN-Reprint.pdf";
+document.body.appendChild(link);
+link.click();
+link.remove();
+
+URL.revokeObjectURL(url);
 
         document.body.appendChild(link);
         link.click();
