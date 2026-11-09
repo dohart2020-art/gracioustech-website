@@ -56,6 +56,7 @@ header p {
   border-radius: 14px;
   border: 1px solid #e1ebe5;
   box-shadow: 0 4px 14px #00000008;
+  margin-bottom: 20px;
 }
 
 h3 {
@@ -130,6 +131,52 @@ button:disabled {
   color: #a00000;
 }
 
+.history-intro {
+  color: #68766e;
+  font-size: 13px;
+  line-height: 1.6;
+  margin-top: -8px;
+  margin-bottom: 16px;
+}
+
+.history-status {
+  color: #68766e;
+  font-size: 14px;
+  line-height: 1.6;
+  padding: 12px 0;
+}
+
+.history-item {
+  border: 1px solid #e1ebe5;
+  border-radius: 10px;
+  padding: 15px;
+  margin-top: 13px;
+  background: #fbfdfb;
+}
+
+.history-item h4 {
+  color: #087f3d;
+  font-size: 15px;
+  margin-bottom: 10px;
+}
+
+.history-detail {
+  font-size: 13px;
+  color: #53645a;
+  line-height: 1.8;
+  overflow-wrap: anywhere;
+}
+
+.history-item button {
+  margin-top: 13px;
+  padding: 12px;
+  font-size: 14px;
+}
+
+.history-item button:disabled {
+  background: #82958a;
+}
+
 footer {
   text-align: center;
   padding: 25px;
@@ -148,6 +195,8 @@ footer {
 </header>
 
 <main class="container">
+
+<!-- NIN REPRINTING FORM -->
 
 <div class="card">
 
@@ -246,6 +295,22 @@ Please ensure that the information supplied is correct before submitting your re
 
 </div>
 
+<!-- NIN REPRINTING HISTORY -->
+
+<div class="card">
+
+<h3>My NIN Reprinting History</h3>
+
+<p class="history-intro">
+Your previously successful NIN reprints are saved here. You can download them again free of charge without another wallet deduction.
+</p>
+
+<div id="historyList">
+<p class="history-status">Loading your reprinting history...</p>
+</div>
+
+</div>
+
 </main>
 
 <footer>
@@ -281,6 +346,7 @@ const slipTypeElement = document.getElementById("slipType");
 const form = document.getElementById("ninForm");
 const submitButton = document.getElementById("submitBtn");
 const statusMessage = document.getElementById("statusMessage");
+const historyList = document.getElementById("historyList");
 
 // DISPLAY MESSAGE
 
@@ -361,6 +427,240 @@ function downloadPDF(base64, fileName) {
   setTimeout(function() {
     URL.revokeObjectURL(pdfUrl);
   }, 60000);
+}
+
+// FORMAT HISTORY DATE
+
+function formatHistoryDate(dateValue) {
+
+  const date = new Date(dateValue);
+
+  if (Number.isNaN(date.getTime())) {
+    return "Date unavailable";
+  }
+
+  return date.toLocaleString("en-NG", {
+    dateStyle: "medium",
+    timeStyle: "short"
+  });
+}
+
+// CREATE HISTORY ELEMENT
+
+function createHistoryElement(documentItem) {
+
+  const item = document.createElement("div");
+  item.className = "history-item";
+
+  const heading = document.createElement("h4");
+  heading.textContent =
+    (documentItem.slip_type || "NIN") + " Slip";
+
+  const details = document.createElement("div");
+  details.className = "history-detail";
+
+  const date = document.createElement("div");
+  date.textContent =
+    "Date: " + formatHistoryDate(documentItem.created_at);
+
+  const amount = document.createElement("div");
+  amount.textContent =
+    "Amount paid: ₦" +
+    Number(documentItem.amount).toLocaleString("en-NG");
+
+  const methodDetail = document.createElement("div");
+  methodDetail.textContent =
+    "Search method: " + (documentItem.method || "N/A");
+
+  const reference = document.createElement("div");
+  reference.textContent =
+    "Reference: " + documentItem.reference;
+
+  details.appendChild(date);
+  details.appendChild(amount);
+  details.appendChild(methodDetail);
+  details.appendChild(reference);
+
+  const downloadButton = document.createElement("button");
+  downloadButton.type = "button";
+  downloadButton.textContent = "Download Again - FREE";
+
+  downloadButton.addEventListener("click", function() {
+    redownloadDocument(
+      documentItem.reference,
+      downloadButton
+    );
+  });
+
+  item.appendChild(heading);
+  item.appendChild(details);
+  item.appendChild(downloadButton);
+
+  return item;
+}
+
+// LOAD CUSTOMER HISTORY
+
+async function loadNinHistory() {
+
+  historyList.replaceChildren();
+
+  const loading = document.createElement("p");
+  loading.className = "history-status";
+  loading.textContent = "Loading your reprinting history...";
+
+  historyList.appendChild(loading);
+
+  try {
+
+    const {
+      data: sessionData,
+      error: sessionError
+    } = await idfixerSupabaseClient.auth.getSession();
+
+    if (sessionError) {
+      throw sessionError;
+    }
+
+    if (!sessionData.session) {
+
+      historyList.replaceChildren();
+
+      const loginMessage = document.createElement("p");
+      loginMessage.className = "history-status";
+      loginMessage.textContent =
+        "Please log in to view your previous NIN reprints.";
+
+      historyList.appendChild(loginMessage);
+      return;
+    }
+
+    // RLS ensures customers only see their own records.
+
+    const { data, error } =
+      await idfixerSupabaseClient
+        .from("idfixer_nin_documents")
+        .select(
+          "id, reference, amount, method, slip_type, created_at"
+        )
+        .order("created_at", {
+          ascending: false
+        });
+
+    if (error) {
+      throw error;
+    }
+
+    historyList.replaceChildren();
+
+    if (!data || data.length === 0) {
+
+      const emptyMessage = document.createElement("p");
+      emptyMessage.className = "history-status";
+      emptyMessage.textContent =
+        "You have no saved NIN reprints yet. Successfully completed reprints will appear here.";
+
+      historyList.appendChild(emptyMessage);
+      return;
+    }
+
+    data.forEach(function(documentItem) {
+      historyList.appendChild(
+        createHistoryElement(documentItem)
+      );
+    });
+
+  } catch (error) {
+
+    console.error("NIN History Error:", error);
+
+    historyList.replaceChildren();
+
+    const errorMessage = document.createElement("p");
+    errorMessage.className = "history-status";
+    errorMessage.textContent =
+      "Your history could not be loaded. Please refresh the page and try again.";
+
+    historyList.appendChild(errorMessage);
+  }
+}
+
+// FREE REDOWNLOAD
+
+async function redownloadDocument(reference, button) {
+
+  if (button.disabled) {
+    return;
+  }
+
+  button.disabled = true;
+  button.textContent = "Preparing PDF...";
+
+  try {
+
+    const {
+      data: sessionData,
+      error: sessionError
+    } = await idfixerSupabaseClient.auth.getSession();
+
+    if (sessionError) {
+      throw sessionError;
+    }
+
+    if (!sessionData.session) {
+
+      alert("Your login session has expired. Please log in again.");
+      window.location.href = "login.html";
+      return;
+    }
+
+    // This function does not charge the wallet.
+
+    const { data, error } =
+      await idfixerSupabaseClient.functions.invoke(
+        "idfixer-nin-redownload",
+        {
+          body: {
+            reference: reference
+          }
+        }
+      );
+
+    if (error) {
+      console.error("Redownload Function Error:", error);
+      throw new Error(
+        "The PDF could not be prepared. Please try again."
+      );
+    }
+
+    if (
+      !data ||
+      data.success !== true ||
+      !data.signed_url
+    ) {
+      throw new Error(
+        data?.message || "The PDF could not be downloaded."
+      );
+    }
+
+    // Open the secure temporary download link.
+
+    window.location.href = data.signed_url;
+
+    button.textContent = "Download Started";
+
+  } catch (error) {
+
+    console.error("Free Redownload Error:", error);
+
+    alert(
+      error.message ||
+      "Unable to download your previous PDF. Please try again."
+    );
+
+    button.disabled = false;
+    button.textContent = "Download Again - FREE";
+  }
 }
 
 // SUBMIT NIN REPRINT REQUEST
@@ -567,11 +867,14 @@ form.addEventListener("submit", async function(e) {
       return;
     }
 
-    // SUCCESS MESSAGE REMOVED
-    // PDF download continues automatically.
+    // REMOVE SUCCESS MESSAGE
 
     statusMessage.className = "message";
     statusMessage.textContent = "";
+
+    // REFRESH HISTORY
+
+    await loadNinHistory();
 
   } catch (error) {
 
@@ -590,6 +893,11 @@ form.addEventListener("submit", async function(e) {
   }
 
 });
+
+// LOAD HISTORY WHEN PAGE OPENS
+
+loadNinHistory();
+
 </script>
 
 </body>
