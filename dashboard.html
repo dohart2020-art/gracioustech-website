@@ -340,64 +340,60 @@ body{padding-bottom:25px}
 </div>
 
 <div class="services">
+
+<!-- SINGLE NIN REPRINTING CARD -->
 <div class="service-card" id="ninStandardCard">
-<div class="service-icon">🪪</div><h3>NIN Reprinting</h3>
-<p>Get your NIN slip reprinted quickly.</p>
+<div class="service-icon">🪪</div>
+<h3>NIN Reprinting</h3>
+<p>Choose from our available NIN reprinting options.</p>
 <div class="price" id="ninStandardPrice">Loading price...</div>
-<a href="nin.html" class="service-btn" id="ninStandardBtn">Continue</a>
-</div>
-
-<div class="service-card" id="ninLostCard">
-<div class="service-icon">📄</div><h3>NIN Lost Slip</h3>
-<p>Reprint your NIN slip if the original is lost.</p>
-<div class="price" id="ninLostPrice">Loading price...</div>
-<a href="nin.html" class="service-btn" id="ninLostBtn">Continue</a>
-</div>
-
-<div class="service-card" id="ninPremiumCard">
-<div class="service-icon">⭐</div><h3>Premium / Foreigner Slip</h3>
-<p>Premium NIN slip service.</p>
-<div class="price" id="ninPremiumPrice">Loading price...</div>
-<a href="nin.html" class="service-btn" id="ninPremiumBtn">Continue</a>
+<a href="nin-reprint-options.html" class="service-btn" id="ninStandardBtn">Continue</a>
 </div>
 
 <div class="service-card nin-tracking-card" id="ninPersonalisationCard" style="display:none">
 <span class="nin-tracking-new">NEW</span>
-<div class="service-icon">📝</div><h3>NIN Personalisation</h3>
+<div class="service-icon">📝</div>
+<h3>NIN Personalisation</h3>
 <p>Submit your IJOVIA NIN Personalisation request using your 15-character tracking ID.</p>
 <div class="price" id="ninPersonalisationStandardPrice">Standard: Loading...</div>
 <div class="price" id="ninPersonalisationPremiumPrice">Premium: Loading...</div>
 <a href="nin-personalisation.html" class="service-btn" id="ninPersonalisationBtn">Open NIN Personalisation</a>
 </div>
 
+<!-- SINGLE BVN REPRINTING CARD -->
 <div class="service-card" id="bvnCard">
-<div class="service-icon">🔐</div><h3>BVN Reprinting</h3>
-<p>Verify and reprint your BVN slip.</p>
+<div class="service-icon">🔐</div>
+<h3>BVN Reprinting</h3>
+<p>Choose from our available BVN reprinting options.</p>
 <div class="price" id="bvnPrice">Loading price...</div>
-<a href="bvn.html" class="service-btn" id="bvnBtn">Continue</a>
+<a href="bvn-reprint-options.html" class="service-btn" id="bvnBtn">Continue</a>
 </div>
 
 <div class="service-card" id="ninValidationCard">
-<div class="service-icon">📋</div><h3>NIN Validation</h3>
+<div class="service-icon">📋</div>
+<h3>NIN Validation</h3>
 <p>Submit a NIN validation request and check its processing status.</p>
 <div class="price" id="ninValidationPrice">Loading price...</div>
 <a href="nin-validation.html" class="service-btn" id="ninValidationBtn">Open NIN Validation</a>
 </div>
 
 <div class="service-card">
-<div class="service-icon">✅</div><h3>NIN Verification</h3>
+<div class="service-icon">✅</div>
+<h3>NIN Verification</h3>
 <p>Verify NIN information and view available details.</p>
 <a href="nin-verification.html" class="service-btn">Verify NIN</a>
 </div>
 
 <div class="service-card">
-<div class="service-icon">🔎</div><h3>BVN Verification</h3>
+<div class="service-icon">🔎</div>
+<h3>BVN Verification</h3>
 <p>Verify BVN information.</p>
 <a href="bvn-verification.html" class="service-btn">Verify BVN</a>
 </div>
 
 <div class="service-card" id="ipeClearanceCard">
-<div class="service-icon">📑</div><h3>IPE Clearance</h3>
+<div class="service-icon">📑</div>
+<h3>IPE Clearance</h3>
 <p>Submit your IPE Clearance tracking ID and check your clearance request status.</p>
 <div class="price" id="ipeClearancePrice">Loading price...</div>
 <a href="ipe-clearance.html" class="service-btn" id="ipeClearanceBtn">Open IPE Clearance</a>
@@ -405,11 +401,13 @@ body{padding-bottom:25px}
 
 <div class="service-card nin-tracking-card" id="ninModificationCard">
 <span class="nin-tracking-new">NEW</span>
-<div class="service-icon">📝</div><h3>NIN Modification</h3>
+<div class="service-icon">📝</div>
+<h3>NIN Modification</h3>
 <p>Request correction of your NIN name, date of birth, phone number or address.</p>
 <div class="price">Prices from ₦10,500</div>
 <a href="nin-modification.html" class="service-btn">Open NIN Modification</a>
 </div>
+
 </div>
 
 <!-- CUSTOMER NIN MODIFICATION UPDATES -->
@@ -697,14 +695,19 @@ const {data,error}=await supabaseClient
 
 if(error){
 console.error("Service price error:",error);
+
 [
-"ninStandardPrice","ninLostPrice","ninPremiumPrice",
-"bvnPrice","ninValidationPrice","ipeClearancePrice",
-"ninPersonalisationStandardPrice","ninPersonalisationPremiumPrice"
+"ninStandardPrice",
+"bvnPrice",
+"ninValidationPrice",
+"ipeClearancePrice",
+"ninPersonalisationStandardPrice",
+"ninPersonalisationPremiumPrice"
 ].forEach(id=>{
 const el=document.getElementById(id);
 if(el)el.textContent="Unable to load price";
 });
+
 const btn=document.getElementById("ninPersonalisationBtn");
 btn.classList.add("disabled-btn");
 btn.removeAttribute("href");
@@ -713,23 +716,43 @@ return;
 
 const services=data||[];
 
-updateServiceCard("ninStandardCard","ninStandardPrice","ninStandardBtn",
-services.find(x=>x.service_code==="nin_standard"),"nin.html","Continue");
+/* NIN REPRINTING OPTIONS PAGE */
+updateServiceCard(
+"ninStandardCard",
+"ninStandardPrice",
+"ninStandardBtn",
+services.find(x=>x.service_code==="nin_standard"),
+"nin-reprint-options.html",
+"Continue"
+);
 
-updateServiceCard("ninLostCard","ninLostPrice","ninLostBtn",
-services.find(x=>x.service_code==="nin_lost"),"nin.html","Continue");
+/* BVN REPRINTING OPTIONS PAGE */
+updateServiceCard(
+"bvnCard",
+"bvnPrice",
+"bvnBtn",
+services.find(x=>x.service_code==="bvn_reprint"),
+"bvn-reprint-options.html",
+"Continue"
+);
 
-updateServiceCard("ninPremiumCard","ninPremiumPrice","ninPremiumBtn",
-services.find(x=>x.service_code==="nin_premium"),"nin.html","Continue");
+updateServiceCard(
+"ninValidationCard",
+"ninValidationPrice",
+"ninValidationBtn",
+services.find(x=>x.service_code==="nin_validation"),
+"nin-validation.html",
+"Open NIN Validation"
+);
 
-updateServiceCard("bvnCard","bvnPrice","bvnBtn",
-services.find(x=>x.service_code==="bvn_reprint"),"bvn.html","Continue");
-
-updateServiceCard("ninValidationCard","ninValidationPrice","ninValidationBtn",
-services.find(x=>x.service_code==="nin_validation"),"nin-validation.html","Open NIN Validation");
-
-updateServiceCard("ipeClearanceCard","ipeClearancePrice","ipeClearanceBtn",
-services.find(x=>x.service_code==="ipe_clearance"),"ipe-clearance.html","Open IPE Clearance");
+updateServiceCard(
+"ipeClearanceCard",
+"ipeClearancePrice",
+"ipeClearanceBtn",
+services.find(x=>x.service_code==="ipe_clearance"),
+"ipe-clearance.html",
+"Open IPE Clearance"
+);
 
 updateNinPersonalisationCard(services);
 }
@@ -1070,6 +1093,6 @@ loadNinModificationRequests();
 },30000);
 
 </script>
-  <script src="ai-chat-widget.js"></script>
+<script src="ai-chat-widget.js"></script>
 </body>
 </html>
