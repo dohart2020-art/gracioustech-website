@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,27 +6,141 @@
 <title>NIN Reprinting 2 - Gracioustec</title>
 <meta name="theme-color" content="#087f3d">
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <style>
-*{box-sizing:border-box;margin:0;padding:0;font-family:Arial,sans-serif}
-body{background:#f4f7f5;color:#18352a}
-header{background:#063b2b;color:white;padding:22px 18px}
-header a{color:white;text-decoration:none;font-size:14px}
-header h2{margin-top:18px;font-size:22px}
-header p{margin-top:7px;color:#d8eee1;font-size:14px}
-.container{max-width:600px;margin:25px auto;padding:0 16px}
-.card{background:white;padding:22px;border-radius:14px;border:1px solid #e1ebe5;box-shadow:0 4px 14px #00000008}
-h3{color:#087f3d;margin-bottom:18px}
-label{display:block;font-weight:bold;font-size:14px;margin:16px 0 7px}
-input,select{width:100%;padding:14px;border:1px solid #ccd9d0;border-radius:8px;font-size:15px;background:white}
-button{width:100%;padding:15px;background:#087f3d;color:white;border:0;border-radius:9px;font-weight:bold;font-size:16px;margin-top:22px}
-button:disabled{opacity:.6}
-.note{font-size:12px;color:#68766e;line-height:1.6;margin-top:15px}
-.hidden{display:none}
-footer{text-align:center;padding:25px;color:#718078;font-size:12px}
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+}
+
+body {
+  background: #f4f7f5;
+  color: #18352a;
+}
+
+header {
+  background: #063b2b;
+  color: white;
+  padding: 22px 18px;
+}
+
+header a {
+  color: white;
+  text-decoration: none;
+  font-size: 14px;
+}
+
+header h2 {
+  margin-top: 18px;
+  font-size: 22px;
+}
+
+header p {
+  margin-top: 7px;
+  color: #d8eee1;
+  font-size: 14px;
+}
+
+.container {
+  max-width: 600px;
+  margin: 25px auto;
+  padding: 0 16px;
+}
+
+.card {
+  background: white;
+  padding: 22px;
+  border-radius: 14px;
+  border: 1px solid #e1ebe5;
+  box-shadow: 0 4px 14px #00000008;
+}
+
+h3 {
+  color: #087f3d;
+  margin-bottom: 18px;
+}
+
+label {
+  display: block;
+  font-weight: bold;
+  font-size: 14px;
+  margin: 16px 0 7px;
+}
+
+input, select {
+  width: 100%;
+  padding: 14px;
+  border: 1px solid #ccd9d0;
+  border-radius: 8px;
+  font-size: 15px;
+  background: white;
+}
+
+button {
+  width: 100%;
+  padding: 15px;
+  background: #087f3d;
+  color: white;
+  border: 0;
+  border-radius: 9px;
+  font-weight: bold;
+  font-size: 16px;
+  margin-top: 22px;
+  cursor: pointer;
+}
+
+button:disabled {
+  opacity: .6;
+  cursor: not-allowed;
+}
+
+.note {
+  font-size: 12px;
+  color: #68766e;
+  line-height: 1.6;
+  margin-top: 15px;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.message {
+  display: none;
+  padding: 13px;
+  margin-top: 15px;
+  border-radius: 8px;
+  font-size: 14px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.message.success {
+  display: block;
+  background: #e7f6ec;
+  color: #087f3d;
+}
+
+.message.error {
+  display: block;
+  background: #fff0f0;
+  color: #a00000;
+}
+
+footer {
+  text-align: center;
+  padding: 25px;
+  color: #718078;
+  font-size: 12px;
+}
 </style>
 </head>
 
 <body>
+
 <header>
 <a href="nin-reprint-options.html">← Back</a>
 <h2>NIN REPRINTING 2</h2>
@@ -35,12 +148,15 @@ footer{text-align:center;padding:25px;color:#718078;font-size:12px}
 </header>
 
 <main class="container">
+
 <div class="card">
+
 <h3>NIN Reprinting Form</h3>
 
 <form id="ninForm">
 
 <label>Search Method</label>
+
 <select id="method" required>
 <option value="nin">By NIN</option>
 <option value="phone">By Phone Number</option>
@@ -48,34 +164,67 @@ footer{text-align:center;padding:25px;color:#718078;font-size:12px}
 </select>
 
 <div id="ninFields">
+
 <label>NIN Number</label>
-<input id="nin" type="text" inputmode="numeric" maxlength="11" placeholder="Enter 11-digit NIN">
+
+<input
+id="nin"
+type="text"
+inputmode="numeric"
+maxlength="11"
+placeholder="Enter 11-digit NIN"
+>
+
 </div>
 
 <div id="phoneFields" class="hidden">
+
 <label>Registered Phone Number</label>
-<input id="phone" type="tel" inputmode="numeric" maxlength="11" placeholder="08012345678">
+
+<input
+id="phone"
+type="tel"
+inputmode="numeric"
+maxlength="11"
+placeholder="08012345678"
+>
+
 </div>
 
 <div id="demoFields" class="hidden">
+
 <label>First Name</label>
-<input id="firstname" type="text" placeholder="Enter first name">
+
+<input
+id="firstname"
+type="text"
+placeholder="Enter first name"
+>
 
 <label>Surname</label>
-<input id="lastname" type="text" placeholder="Enter surname">
+
+<input
+id="lastname"
+type="text"
+placeholder="Enter surname"
+>
 
 <label>Date of Birth</label>
+
 <input id="dob" type="date">
 
 <label>Gender</label>
+
 <select id="gender">
 <option value="">Select gender</option>
 <option value="m">Male</option>
 <option value="f">Female</option>
 </select>
+
 </div>
 
 <label>Slip Type</label>
+
 <select id="slipType" required>
 <option value="premium">Premium Slip</option>
 <option value="standard">Standard Slip</option>
@@ -83,100 +232,242 @@ footer{text-align:center;padding:25px;color:#718078;font-size:12px}
 <option value="vnin">VNIN Slip</option>
 </select>
 
-<button type="submit" id="submitBtn">Continue</button>
+<div id="statusMessage" class="message"></div>
+
+<button type="submit" id="submitBtn">
+Continue
+</button>
 
 </form>
+
+<p class="note">
+Please ensure that the information supplied is correct before submitting your request.
+</p>
+
 </div>
+
 </main>
 
-<footer>© 2026 Gracioustec. All rights reserved.Website Designed By GRACIOUSTEC</footer>
+<footer>
+© 2026 Gracioustec. All rights reserved.
+Website Designed By GRACIOUSTEC
+</footer>
 
 <script>
-const method = document.getElementById("method");
-const slipType = document.getElementById("slipType");
+"use strict";
 
-function updateForm(){
+// SUPABASE CONNECTION
+
+const SUPABASE_URL =
+  "https://iknhifndgpwibkfidggq.supabase.co";
+
+const SUPABASE_ANON_KEY =
+  "sb_publishable_xELauxOMm7eMkNrPz55Mrw_LVkRoASn";
+
+if (!window.supabase) {
+  alert("The secure service connection could not load. Please refresh the page.");
+  throw new Error("Supabase library failed to load.");
+}
+
+const idfixerSupabaseClient = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_ANON_KEY
+);
+
+
+// FORM ELEMENTS
+
+const method = document.getElementById("method");
+const slipTypeElement = document.getElementById("slipType");
+const form = document.getElementById("ninForm");
+const submitButton = document.getElementById("submitBtn");
+const statusMessage = document.getElementById("statusMessage");
+
+
+// DISPLAY MESSAGE
+
+function showMessage(message, type) {
+  statusMessage.textContent = message;
+  statusMessage.className = "message " + type;
+}
+
+
+// UPDATE SEARCH FIELDS
+
+function updateForm() {
+
   const selected = method.value;
 
-  document.getElementById("ninFields").classList.toggle("hidden",selected !== "nin");
-  document.getElementById("phoneFields").classList.toggle("hidden",selected !== "phone");
-  document.getElementById("demoFields").classList.toggle("hidden",selected !== "demographic");
+  document.getElementById("ninFields")
+    .classList.toggle("hidden", selected !== "nin");
 
-  const vninOption = slipType.querySelector('option[value="vnin"]');
+  document.getElementById("phoneFields")
+    .classList.toggle("hidden", selected !== "phone");
+
+  document.getElementById("demoFields")
+    .classList.toggle("hidden", selected !== "demographic");
+
+  const vninOption =
+    slipTypeElement.querySelector('option[value="vnin"]');
 
   vninOption.disabled = selected !== "nin";
 
-  if(selected !== "nin" && slipType.value === "vnin"){
-    slipType.value = "premium";
+  if (selected !== "nin" && slipTypeElement.value === "vnin") {
+    slipTypeElement.value = "premium";
   }
 }
 
-method.addEventListener("change",updateForm);
+method.addEventListener("change", updateForm);
+
 updateForm();
 
-const idfixerSupabaseClient = window.supabase.createClient(
-  "https://iknhifndgpwibkfidggq.supabase.co",
-  "sb_publishable_xELauxOMm7eMkNrPz55Mrw_LVkRoASn"
-);
 
-document.getElementById("ninForm").addEventListener("submit", async function(e) {
+// PDF DOWNLOAD
+
+function downloadPDF(base64, fileName) {
+
+  if (!base64) {
+    throw new Error("The provider did not return a PDF file.");
+  }
+
+  // Remove data URI prefix if supplied.
+
+  base64 = base64.replace(/^data:[^,]*;base64,/i, "");
+  base64 = base64.replace(/\s/g, "");
+
+  const binary = atob(base64);
+  const bytes = new Uint8Array(binary.length);
+
+  for (let i = 0; i < binary.length; i++) {
+    bytes[i] = binary.charCodeAt(i);
+  }
+
+  const pdfBlob = new Blob([bytes], {
+    type: "application/pdf"
+  });
+
+  const pdfUrl = URL.createObjectURL(pdfBlob);
+
+  let safeName = (fileName || "Gracioustec-NIN-Reprint.pdf")
+    .replace(/[\\/:*?"<>|]/g, "_");
+
+  if (!safeName.toLowerCase().endsWith(".pdf")) {
+    safeName += ".pdf";
+  }
+
+  const link = document.createElement("a");
+
+  link.href = pdfUrl;
+  link.download = safeName;
+
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+
+  setTimeout(function() {
+    URL.revokeObjectURL(pdfUrl);
+  }, 60000);
+}
+
+
+// SUBMIT NIN REPRINT REQUEST
+
+form.addEventListener("submit", async function(e) {
+
   e.preventDefault();
 
+  statusMessage.className = "message";
+  statusMessage.textContent = "";
+
   const selectedMethod = method.value;
-  const slipElement =
-    document.getElementById("slipType") ||
-    document.getElementById("slip_type");
+  const selectedSlipType = slipTypeElement.value.toLowerCase();
 
-  if (!slipElement) {
-    alert("Slip type field could not be found.");
-    return;
+  // VALIDATE NIN
+
+  if (selectedMethod === "nin") {
+
+    const nin = document.getElementById("nin").value.trim();
+
+    if (!/^\d{11}$/.test(nin)) {
+      showMessage("Please enter a valid 11-digit NIN.", "error");
+      return;
+    }
   }
 
-  const slipType = slipElement.value.toLowerCase();
 
-  if (selectedMethod === "nin" &&
-      !/^\d{11}$/.test(document.getElementById("nin").value.trim())) {
-    alert("Please enter a valid 11-digit NIN.");
-    return;
+  // VALIDATE PHONE
+
+  if (selectedMethod === "phone") {
+
+    const phone = document.getElementById("phone").value.trim();
+
+    if (!/^\d{11}$/.test(phone)) {
+      showMessage("Please enter a valid 11-digit phone number.", "error");
+      return;
+    }
   }
 
-  if (selectedMethod === "phone" &&
-      !/^\d{11}$/.test(document.getElementById("phone").value.trim())) {
-    alert("Please enter a valid 11-digit phone number.");
-    return;
-  }
+
+  // VALIDATE DEMOGRAPHICS
 
   if (selectedMethod === "demographic") {
+
     if (
       !document.getElementById("firstname").value.trim() ||
       !document.getElementById("lastname").value.trim() ||
       !document.getElementById("dob").value ||
       !document.getElementById("gender").value
     ) {
-      alert("Please complete all demographic fields.");
+
+      showMessage(
+        "Please complete all demographic fields.",
+        "error"
+      );
+
       return;
     }
   }
 
-  if (selectedMethod !== "nin" && slipType === "vnin") {
-    alert("VNIN is only available when searching by NIN.");
+
+  // VNIN RESTRICTION
+
+  if (selectedMethod !== "nin" && selectedSlipType === "vnin") {
+
+    showMessage(
+      "VNIN is only available when searching by NIN.",
+      "error"
+    );
+
     return;
   }
 
+
+  // PREPARE REQUEST
+
   const requestData = {
     method: selectedMethod,
-    slip_type: slipType
+    slip_type: selectedSlipType
   };
 
+
   if (selectedMethod === "nin") {
-    requestData.nin = document.getElementById("nin").value.trim();
+
+    requestData.nin =
+      document.getElementById("nin").value.trim();
+
   }
+
 
   if (selectedMethod === "phone") {
-    requestData.phone = document.getElementById("phone").value.trim();
+
+    requestData.phone =
+      document.getElementById("phone").value.trim();
+
   }
 
+
   if (selectedMethod === "demographic") {
+
     requestData.firstname =
       document.getElementById("firstname").value.trim();
 
@@ -188,82 +479,151 @@ document.getElementById("ninForm").addEventListener("submit", async function(e) 
 
     requestData.gender =
       document.getElementById("gender").value.toLowerCase();
+
   }
 
-  const submitButton = this.querySelector('button[type="submit"]');
 
-  if (submitButton) {
-    submitButton.disabled = true;
-    submitButton.textContent = "Processing...";
-  }
+  // PREVENT MULTIPLE SUBMISSIONS
+
+  submitButton.disabled = true;
+  submitButton.textContent = "Processing...";
 
   try {
-    const { data: sessionData } =
+
+    // CHECK LOGIN SESSION
+
+    const { data: sessionData, error: sessionError } =
       await idfixerSupabaseClient.auth.getSession();
 
+    if (sessionError) {
+      throw sessionError;
+    }
+
     if (!sessionData.session) {
-      alert("Your session has expired. Please log in again.");
+
+      showMessage(
+        "Your session has expired. Please log in again.",
+        "error"
+      );
+
+      window.location.href = "login.html";
       return;
     }
+
+
+    // CALL IDFIXER EDGE FUNCTION
+
+    showMessage(
+      "Your request is being processed. Please wait...",
+      "success"
+    );
 
     const { data, error } =
       await idfixerSupabaseClient.functions.invoke(
         "idfixer-nin",
-        { body: requestData }
+        {
+          body: requestData
+        }
       );
 
+
+    // HANDLE FUNCTION ERROR
+
     if (error) {
-      console.error("IDFIXER error:", error);
-      alert("The request could not be completed. Please check your wallet and try again.");
+
+      console.error("IDFIXER Edge Function Error:", error);
+
+      showMessage(
+        "The IDFIXER service could not complete your request. Please try again or contact support.",
+        "error"
+      );
+
       return;
     }
 
-    if (!data || !data.success) {
-      alert(data?.error || "GRACIOUSTEC could not process your request.");
+
+    // CHECK RESPONSE
+
+    if (!data || data.success !== true) {
+
+      console.error("IDFIXER Response:", data);
+
+      showMessage(
+        data?.error || "GRACIOUSTEC could not process your request.",
+        "error"
+      );
+
       return;
     }
 
-    if (data.pdf_base64) {
-      const binary = atob(data.pdf_base64);
-      const bytes = new Uint8Array(binary.length);
 
-      for (let i = 0; i < binary.length; i++) {
-        bytes[i] = binary.charCodeAt(i);
-      }
+    // CHECK PDF
 
-      const pdfBlob = new Blob([bytes], {
-        type: "application/pdf"
-      });
+    if (!data.pdf_base64) {
 
-      const pdfUrl = URL.createObjectURL(pdfBlob);
-      const link = document.createElement("a");
+      console.error("PDF missing from IDFIXER response:", data);
 
-      link.href = pdfUrl;
-      link.download = "Gracioustec-NIN-Reprint.pdf";
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
+      showMessage(
+        "Your request returned successfully, but the PDF was not included. Please contact support before submitting another request.",
+        "error"
+      );
 
-      setTimeout(() => URL.revokeObjectURL(pdfUrl), 60000);
+      return;
     }
 
-    alert(
-      "NIN reprinting successful!\n" +
-      "Amount: ₦" + data.amount +
-      "\nReference: " + data.reference
+
+    // DOWNLOAD PDF
+
+    try {
+
+      downloadPDF(
+        data.pdf_base64,
+        data.file_name || "Gracioustec-NIN-Reprint.pdf"
+      );
+
+    } catch (pdfError) {
+
+      console.error("PDF Download Error:", pdfError);
+
+      showMessage(
+        "The request was successful, but the PDF could not be downloaded. Please contact support before trying again.",
+        "error"
+      );
+
+      return;
+    }
+
+
+    // SUCCESS MESSAGE
+
+    showMessage(
+      "NIN reprinting successful! Amount: ₦" +
+      (data.amount ?? "Not provided") +
+      " | Reference: " +
+      (data.reference || "Not provided") +
+      ". Your PDF download has been started.",
+      "success"
     );
 
-  } catch (error) {
-    console.error(error);
-    alert("An unexpected error occurred. Please try again.");
-  } finally {
-    if (submitButton) {
-      submitButton.disabled = false;
-      submitButton.textContent = "Submit Request";
-    }
-  }
-});
 
+  } catch (error) {
+
+    console.error("NIN Reprinting Error:", error);
+
+    showMessage(
+      "An unexpected error occurred. Please try again or contact support.",
+      "error"
+    );
+
+  } finally {
+
+    submitButton.disabled = false;
+    submitButton.textContent = "Continue";
+
+  }
+
+});
+</script>
 
 </body>
 </html>
