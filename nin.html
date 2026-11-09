@@ -2414,54 +2414,35 @@ async function payNow(){
 function openPaidSlip(){
 
   if(!userAuthenticated){
-
-    window.location.replace(
-      "register.html"
-    );
-
+    window.location.replace("register.html");
     return;
-
   }
 
-
-  const paid =
-    sessionStorage.getItem(
-      "gracioustech_nin_paid"
-    );
-
+  const paid = sessionStorage.getItem(
+    "gracioustech_nin_paid"
+  );
 
   if(paid !== "true"){
-
     showSlipMessage(
       "Please complete payment first.",
       "error"
     );
-
     return;
-
   }
 
-
-  if(!generatedPDFUrl){
-
+  if(!generatedPDFBase64){
     restoreSavedPDF();
-
   }
 
-
-  if(!generatedPDFUrl){
-
+  if(!generatedPDFBase64){
     showSlipMessage(
       "The generated PDF could not be found. Please verify the NIN again.",
       "error"
     );
-
     return;
-
   }
 
-
-  displaySlipResult();
+  window.location.href = "nin-slip.html";
 
 }
 
