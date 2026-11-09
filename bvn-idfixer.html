@@ -562,7 +562,7 @@
 
         if (results[1].status === "rejected") {
           console.error("History error:", results[1].reason);
-          historyBox.textContent = "Unable to load history. Please refresh.";
+          historyBox.textContent = "History error: " + (results[1].reason?.message || "Unknown error");
         }
 
       } catch (error) {
