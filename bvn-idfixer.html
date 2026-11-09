@@ -479,8 +479,13 @@ async function initializePage() {
   await loadBalance();
   await loadHistory();
 }
+initializePage().catch(error => {
+  console.error("BVN page error:", error);
+  balanceElement.textContent = "Connection error";
+  document.getElementById("history").textContent =
+    "Could not connect. Please refresh the page.";
+});
 
-initializePage();
 </script>
 
 </body>
