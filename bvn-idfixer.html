@@ -320,39 +320,41 @@
       historyBox.innerHTML = "";
 
       documents.forEach(record => {
-  const item = document.createElement("div");
-  item.className = "history-item";
+        const item = document.createElement("div");
+        item.className = "history-item";
 
-  const type = record.slip_type === "premium"
-    ? "Premium"
-    : "Standard";
+        const type = record.slip_type === "premium"
+          ? "Premium"
+          : "Standard";
 
-  const date = record.created_at
-    ? new Date(record.created_at).toLocaleString("en-NG")
-    : "Date unavailable";
+        const date = record.created_at
+          ? new Date(record.created_at).toLocaleString("en-NG")
+          : "Date unavailable";
 
-  const details = document.createElement("div");
-  details.textContent =
-    type + " BVN Slip | " +
-    formatMoney(record.amount) +
-    " | " + date;
+        const details = document.createElement("div");
 
-  const reference = document.createElement("div");
-  reference.className = "muted";
-  reference.textContent = "Reference: " + record.reference;
+        details.textContent =
+          type + " BVN Slip | " +
+          formatMoney(record.amount) +
+          " | " + date;
 
-  const button = document.createElement("button");
-  button.type = "button";
-  button.className = "download-btn";
-  button.textContent = "Download PDF";
-  button.dataset.reference = record.reference;
+        const reference = document.createElement("div");
+        reference.className = "muted";
+        reference.textContent = "Reference: " + record.reference;
 
-  item.appendChild(details);
-  item.appendChild(reference);
-  item.appendChild(button);
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "download-btn";
+        button.textContent = "Download PDF";
+        button.dataset.reference = record.reference;
 
-  historyBox.appendChild(item);
-});
+        item.appendChild(details);
+        item.appendChild(reference);
+        item.appendChild(button);
+
+        historyBox.appendChild(item);
+      });
+    }
 
     function downloadBase64PDF(base64, filename) {
       const cleanBase64 = base64.replace(
@@ -412,7 +414,11 @@
 
       submitBtn.disabled = true;
       submitBtn.textContent = "Processing...";
-      showMessage("Your BVN request is being processed. Please wait.", "info");
+
+      showMessage(
+        "Your BVN request is being processed. Please wait.",
+        "info"
+      );
 
       try {
         const result = await withTimeout(
@@ -520,13 +526,16 @@
         const data = result.data || {};
 
         if (!data.download_url) {
-          throw new Error(data.error || "Download link was not returned.");
+          throw new Error(
+            data.error || "Download link was not returned."
+          );
         }
 
         const link = document.createElement("a");
         link.href = data.download_url;
         link.target = "_blank";
         link.rel = "noopener";
+
         document.body.appendChild(link);
         link.click();
         link.remove();
@@ -561,7 +570,10 @@
 
         if (results[1].status === "rejected") {
           console.error("History error:", results[1].reason);
-          historyBox.textContent = "History error: " + (results[1].reason?.message || "Unknown error");
+
+          historyBox.textContent =
+            "History error: " +
+            (results[1].reason?.message || "Unknown error");
         }
 
       } catch (error) {
