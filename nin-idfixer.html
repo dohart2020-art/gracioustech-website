@@ -119,33 +119,156 @@ function updateForm(){
 method.addEventListener("change",updateForm);
 updateForm();
 
-document.getElementById("ninForm").addEventListener("submit",function(e){
+const idfixerSupabaseClient = window.supabase.createClient(
+  "https://iknhifndgpwibkfidggq.supabase.co",
+  "sb_publishable_xELauxOMm7eMkNrPz55Mrw_LVkRoASn"
+);
+
+document.getElementById("ninForm").addEventListener("submit", async function(e) {
   e.preventDefault();
 
-  if(method.value === "nin" &&
-     !/^\d{11}$/.test(document.getElementById("nin").value.trim())){
+  const selectedMethod = method.value;
+  const slipElement =
+    document.getElementById("slipType") ||
+    document.getElementById("slip_type");
+
+  if (!slipElement) {
+    alert("Slip type field could not be found.");
+    return;
+  }
+
+  const slipType = slipElement.value.toLowerCase();
+
+  if (selectedMethod === "nin" &&
+      !/^\d{11}$/.test(document.getElementById("nin").value.trim())) {
     alert("Please enter a valid 11-digit NIN.");
     return;
   }
 
-  if(method.value === "phone" &&
-     !/^\d{11}$/.test(document.getElementById("phone").value.trim())){
+  if (selectedMethod === "phone" &&
+      !/^\d{11}$/.test(document.getElementById("phone").value.trim())) {
     alert("Please enter a valid 11-digit phone number.");
     return;
   }
 
-  if(method.value === "demographic"){
-    if(!document.getElementById("firstname").value.trim() ||
-       !document.getElementById("lastname").value.trim() ||
-       !document.getElementById("dob").value ||
-       !document.getElementById("gender").value){
+  if (selectedMethod === "demographic") {
+    if (
+      !document.getElementById("firstname").value.trim() ||
+      !document.getElementById("lastname").value.trim() ||
+      !document.getElementById("dob").value ||
+      !document.getElementById("gender").value
+    ) {
       alert("Please complete all demographic fields.");
       return;
     }
   }
 
-  alert("The IDFIXER service connection is the next step. Your request has not been submitted or charged.");
+  if (selectedMethod !== "nin" && slipType === "vnin") {
+    alert("VNIN is only available when searching by NIN.");
+    return;
+  }
+
+  const requestData = {
+    method: selectedMethod,
+    slip_type: slipType
+  };
+
+  if (selectedMethod === "nin") {
+    requestData.nin = document.getElementById("nin").value.trim();
+  }
+
+  if (selectedMethod === "phone") {
+    requestData.phone = document.getElementById("phone").value.trim();
+  }
+
+  if (selectedMethod === "demographic") {
+    requestData.firstname =
+      document.getElementById("firstname").value.trim();
+
+    requestData.lastname =
+      document.getElementById("lastname").value.trim();
+
+    requestData.dob =
+      document.getElementById("dob").value;
+
+    requestData.gender =
+      document.getElementById("gender").value.toLowerCase();
+  }
+
+  const submitButton = this.querySelector('button[type="submit"]');
+
+  if (submitButton) {
+    submitButton.disabled = true;
+    submitButton.textContent = "Processing...";
+  }
+
+  try {
+    const { data: sessionData } =
+      await idfixerSupabaseClient.auth.getSession();
+
+    if (!sessionData.session) {
+      alert("Your session has expired. Please log in again.");
+      return;
+    }
+
+    const { data, error } =
+      await idfixerSupabaseClient.functions.invoke(
+        "idfixer-nin",
+        { body: requestData }
+      );
+
+    if (error) {
+      console.error("IDFIXER error:", error);
+      alert("The request could not be completed. Please check your wallet and try again.");
+      return;
+    }
+
+    if (!data || !data.success) {
+      alert(data?.error || "IDFIXER could not process your request.");
+      return;
+    }
+
+    if (data.pdf_base64) {
+      const binary = atob(data.pdf_base64);
+      const bytes = new Uint8Array(binary.length);
+
+      for (let i = 0; i < binary.length; i++) {
+        bytes[i] = binary.charCodeAt(i);
+      }
+
+      const pdfBlob = new Blob([bytes], {
+        type: "application/pdf"
+      });
+
+      const pdfUrl = URL.createObjectURL(pdfBlob);
+      const link = document.createElement("a");
+
+      link.href = pdfUrl;
+      link.download = "Gracioustec-NIN-Reprint.pdf";
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+
+      setTimeout(() => URL.revokeObjectURL(pdfUrl), 60000);
+    }
+
+    alert(
+      "NIN reprinting successful!\n" +
+      "Amount: ₦" + data.amount +
+      "\nReference: " + data.reference
+    );
+
+  } catch (error) {
+    console.error(error);
+    alert("An unexpected error occurred. Please try again.");
+  } finally {
+    if (submitButton) {
+      submitButton.disabled = false;
+      submitButton.textContent = "Submit Request";
+    }
+  }
 });
-</script>
+
+
 </body>
 </html>
