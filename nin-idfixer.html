@@ -473,8 +473,8 @@ function createHistoryElement(documentItem) {
     "Search method: " + (documentItem.method || "N/A");
 
   const reference = document.createElement("div");
-  reference.textContent =
-    "Reference: " + documentItem.reference;
+reference.textContent =
+  "Reference: " + documentItem.reference.replace(/^IDFIXER-/, "");
 
   details.appendChild(date);
   details.appendChild(amount);
