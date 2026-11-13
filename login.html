@@ -1,18 +1,9 @@
-<!DOCTYPE html>
-<html lang="en-NG">
+<!DOCTYPE html><html lang="en-NG">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <title>GRACIOUSTEC | Login</title>
-
-  <meta name="description" content="Log in to your GRACIOUSTEC account to access NIN and BVN reprinting and verification services in Nigeria.">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">  <title>GRACIOUSTEC | Login</title>  <meta name="description" content="Log in to your GRACIOUSTEC account to access NIN and BVN reprinting and verification services in Nigeria.">
   <meta name="robots" content="index, follow">
-  <link rel="canonical" href="https://gracioustec.com.ng/login.html">
-
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-  <style>
+  <link rel="canonical" href="https://gracioustec.com.ng/login.html">  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>  <style>
     * {
       box-sizing: border-box;
     }
@@ -21,7 +12,7 @@
       margin: 0;
       padding: 20px;
       font-family: Arial, sans-serif;
-      background: #eaf5ee;
+      background: #f0f7f3;
       min-height: 100vh;
       display: flex;
       justify-content: center;
@@ -30,17 +21,17 @@
 
     .container {
       width: 100%;
-      max-width: 460px;
+      max-width: 420px;
       background: white;
-      padding: 30px;
-      border-radius: 16px;
-      box-shadow: 0 5px 25px rgba(0,0,0,0.10);
+      padding: 32px;
+      border-radius: 12px;
+      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.1);
     }
 
     .logo {
       text-align: center;
       color: #087443;
-      font-size: 30px;
+      font-size: 27px;
       font-weight: bold;
       letter-spacing: 1px;
       margin-bottom: 8px;
@@ -50,15 +41,14 @@
       text-align: center;
       color: #666;
       font-size: 13px;
-      margin-bottom: 28px;
+      margin-bottom: 25px;
       line-height: 1.5;
     }
 
     h2 {
       text-align: center;
       margin: 0 0 25px;
-      color: #087443;
-      font-size: 25px;
+      color: #222;
     }
 
     label {
@@ -71,10 +61,10 @@
     input {
       display: block;
       width: 100%;
-      padding: 14px;
+      padding: 13px;
       margin-top: 7px;
       border: 1px solid #ccc;
-      border-radius: 8px;
+      border-radius: 7px;
       font-size: 16px;
     }
 
@@ -85,13 +75,13 @@
 
     button {
       width: 100%;
-      padding: 15px;
+      padding: 14px;
       margin-top: 22px;
       border: 0;
-      border-radius: 8px;
+      border-radius: 7px;
       background: #087443;
       color: white;
-      font-size: 17px;
+      font-size: 16px;
       font-weight: bold;
       cursor: pointer;
     }
@@ -103,46 +93,6 @@
     button:disabled {
       background: #8cae9a;
       cursor: not-allowed;
-    }
-
-    /* IMPORTANT DISCLAIMER */
-
-    .disclaimer {
-      margin-top: 22px;
-      padding: 17px;
-      background: #fff0f0;
-      border: 2px solid #e00000;
-      border-radius: 13px;
-      color: #222;
-    }
-
-    .disclaimer-heading {
-      display: inline-block;
-      background: #d90000;
-      color: white;
-      padding: 8px 12px;
-      border-radius: 7px;
-      font-size: 15px;
-      font-weight: bold;
-      margin-bottom: 12px;
-    }
-
-    .disclaimer p {
-      font-size: 14px;
-      line-height: 1.65;
-      margin: 7px 0;
-    }
-
-    .disclaimer a {
-      color: #087443;
-      font-weight: bold;
-      text-decoration: underline;
-      overflow-wrap: anywhere;
-    }
-
-    .disclaimer .warning {
-      color: #c00000;
-      font-weight: bold;
     }
 
     #message {
@@ -157,7 +107,6 @@
       text-align: center;
       margin-top: 22px;
       line-height: 1.8;
-      font-size: 15px;
     }
 
     .register a {
@@ -189,125 +138,58 @@
       font-size: 12px;
       margin-top: 25px;
     }
+  </style></head><body>  <main class="container"><div class="logo">GRACIOUSTEC</div>
 
-    @media (max-width: 480px) {
-      body {
-        padding: 12px;
-      }
+<div class="subtitle">
+  NIN &amp; BVN Reprinting and Verification Services
+</div>
 
-      .container {
-        padding: 22px 17px;
-      }
+<h2>Login to Your Account</h2>
 
-      .logo {
-        font-size: 26px;
-      }
+<form id="loginForm">
 
-      h2 {
-        font-size: 22px;
-      }
+  <label for="email">Email Address</label>
 
-      .disclaimer {
-        padding: 13px;
-      }
+  <input
+    type="email"
+    id="email"
+    placeholder="Enter your email address"
+    autocomplete="email"
+    required
+  >
 
-      .disclaimer p {
-        font-size: 13px;
-      }
+  <label for="password">Password</label>
 
-      .disclaimer-heading {
-        font-size: 13px;
-      }
-    }
-  </style>
-</head>
+  <input
+    type="password"
+    id="password"
+    placeholder="Enter your password"
+    autocomplete="current-password"
+    required
+  >
 
-<body>
+  <button type="submit" id="loginButton">
+    Login
+  </button>
 
-  <main class="container">
+</form>
 
-    <div class="logo">GRACIOUSTEC</div>
+<div id="message" role="status" aria-live="polite"></div>
 
-    <div class="subtitle">
-      NIN &amp; BVN Reprinting and Verification Services
-    </div>
+<div class="register">
+  Don't have an account?
+  <a href="register.html">Create an Account</a>
+</div>
 
-    <h2>Login to Your Account</h2>
+<a href="index.html" class="home-link">
+  &larr; Back to Homepage
+</a>
 
-    <form id="loginForm">
+<footer>
+  &copy; <span id="year"></span> GRACIOUSTEC. All Rights Reserved.
+</footer>
 
-      <label for="email">Email Address</label>
-
-      <input
-        type="email"
-        id="email"
-        placeholder="Enter your email address"
-        autocomplete="email"
-        required
-      >
-
-      <label for="password">Password</label>
-
-      <input
-        type="password"
-        id="password"
-        placeholder="Enter your password"
-        autocomplete="current-password"
-        required
-      >
-
-      <button type="submit" id="loginButton">
-        Login
-      </button>
-
-    </form>
-
-    <!-- IMPORTANT DISCLAIMER -->
-
-    <section class="disclaimer" aria-label="Important disclaimer">
-
-      <div class="disclaimer-heading">
-        IMPORTANT DISCLAIMER
-      </div>
-
-      <p>
-        Gracioustec is an independent platform and is not
-        affiliated with NIMC or any government agency.
-      </p>
-
-      <p>
-        Official NIMC website:
-        <a
-          href="https://nimc.gov.ng"
-          target="_blank"
-          rel="noopener noreferrer"
-        >https://nimc.gov.ng</a>
-      </p>
-
-      <p class="warning">
-        Only access records you own or have consent to access.
-      </p>
-
-    </section>
-
-    <div id="message" role="status" aria-live="polite"></div>
-
-    <div class="register">
-      Don't have an account?
-      <a href="register.html">Create an Account</a>
-    </div>
-
-    <a href="index.html" class="home-link">
-      &larr; Back to Homepage
-    </a>
-
-    <footer>
-      &copy; <span id="year"></span> GRACIOUSTEC. All Rights Reserved.
-    </footer>
-
-  </main>
-
-  <script>
+  </main>  <script>
     const SUPABASE_URL =
       "https://iknhifndgpwibkfidggq.supabase.co";
 
@@ -340,28 +222,26 @@
     ];
 
     function getLoginDestination() {
+  const requestedPage =
+    new URLSearchParams(window.location.search).get("next");
 
-      const requestedPage =
-        new URLSearchParams(window.location.search).get("next");
+  // Return to the admin page when it requested login.
+  if (requestedPage === "admin.html") {
+    return "admin.html";
+  }
 
-      // Return to admin page when it requested login.
-      if (requestedPage === "admin.html") {
-        return "admin.html";
-      }
+  const selectedService =
+    sessionStorage.getItem("gracioustech_after_login");
 
-      const selectedService =
-        sessionStorage.getItem("gracioustech_after_login");
+  if (allowedDestinations.includes(selectedService)) {
+    sessionStorage.removeItem("gracioustech_after_login");
+    return selectedService;
+  }
 
-      if (allowedDestinations.includes(selectedService)) {
-        sessionStorage.removeItem("gracioustech_after_login");
-        return selectedService;
-      }
-
-      return "dashboard.html";
+  return "dashboard.html";
     }
 
     loginForm.addEventListener("submit", async function(event) {
-
       event.preventDefault();
 
       const email =
@@ -384,7 +264,6 @@
       message.textContent = "";
 
       try {
-
         const { data, error } =
           await supabaseClient.auth.signInWithPassword({
             email: email,
@@ -413,7 +292,6 @@
         window.location.replace(destination);
 
       } catch (error) {
-
         console.error("Login error:", error);
 
         message.style.color = "#c62828";
@@ -421,14 +299,9 @@
           "Something went wrong. Please check your internet connection and try again.";
 
       } finally {
-
         loginButton.disabled = false;
         loginButton.textContent = "Login";
-
       }
-
     });
-  </script>
-
-</body>
+  </script></body>
 </html>
