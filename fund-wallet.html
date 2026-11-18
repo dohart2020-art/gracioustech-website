@@ -577,9 +577,7 @@ Checking available payment methods...
 
 <script>
 
-// =====================================================
 // SUPABASE CONFIGURATION
-// =====================================================
 
 const SUPABASE_URL =
   "https://iknhifndgpwibkfidggq.supabase.co";
@@ -593,9 +591,7 @@ const supabaseClient =
     SUPABASE_KEY
   );
 
-// =====================================================
 // EDGE FUNCTIONS
-// =====================================================
 
 const REKOPAY_ACCOUNT_FUNCTION =
   SUPABASE_URL +
@@ -605,13 +601,13 @@ const PAYMENTPOINT_ACCOUNT_FUNCTION =
   SUPABASE_URL +
   "/functions/v1/create-paymentpoint-account";
 
+// CORRECTED IJOVIA FUNCTION NAME
+
 const IJOVIA_ACCOUNT_FUNCTION =
   SUPABASE_URL +
-  "/functions/v1/ijoviapay-create-account";
+  "/functions/v1/ijoviapay-create-account-";
 
-// =====================================================
 // PAYMENT SETTINGS
-// =====================================================
 
 let paymentMethods = {
   recopay: false,
@@ -619,9 +615,7 @@ let paymentMethods = {
   ijoviapay: false
 };
 
-// =====================================================
 // CURRENT SESSION
-// =====================================================
 
 async function getCurrentSession() {
 
@@ -636,9 +630,7 @@ async function getCurrentSession() {
   return data.session;
 }
 
-// =====================================================
 // WALLET BALANCE
-// =====================================================
 
 async function loadWalletBalance(userId) {
 
@@ -663,9 +655,7 @@ async function loadWalletBalance(userId) {
     });
 }
 
-// =====================================================
 // PAYMENT METHOD SETTINGS
-// =====================================================
 
 async function loadPaymentMethods() {
 
@@ -711,9 +701,7 @@ async function loadPaymentMethods() {
   return paymentMethods;
 }
 
-// =====================================================
 // DISPLAY PAYMENT METHODS
-// =====================================================
 
 function displayPaymentMethods() {
 
@@ -740,9 +728,7 @@ function displayPaymentMethods() {
     anyAvailable ? "block" : "none";
 }
 
-// =====================================================
 // LOAD EXISTING IJOVIA ACCOUNT
-// =====================================================
 
 async function loadExistingIjoviaAccount(userId) {
 
@@ -764,14 +750,11 @@ async function loadExistingIjoviaAccount(userId) {
         .eq("user_id", userId)
         .maybeSingle();
 
-    if (error) {
-      throw error;
-    }
+    if (error) throw error;
 
     if (data && data.account_number) {
 
       displayIjoviaAccount(data);
-
       accountBox.style.display = "block";
       consentBox.style.display = "none";
       generateBtn.style.display = "none";
@@ -798,9 +781,7 @@ async function loadExistingIjoviaAccount(userId) {
   }
 }
 
-// =====================================================
 // DISPLAY IJOVIA ACCOUNT
-// =====================================================
 
 function displayIjoviaAccount(account) {
 
@@ -813,23 +794,15 @@ function displayIjoviaAccount(account) {
   document.getElementById("ijoviaAccountNumber").textContent =
     account.account_number || "-";
 
-  document.getElementById("ijoviaAccountBox").style.display =
-    "block";
+  document.getElementById("ijoviaAccountBox").style.display = "block";
 }
 
-// =====================================================
 // CREATE IJOVIA ACCOUNT
-// =====================================================
 
 async function createIjoviaAccount() {
 
   if (!paymentMethods.ijoviapay) {
-
-    showMessage(
-      "IJOVIA PAY is currently unavailable.",
-      "error"
-    );
-
+    showMessage("IJOVIA PAY is currently unavailable.", "error");
     return;
   }
 
@@ -837,12 +810,10 @@ async function createIjoviaAccount() {
     document.getElementById("ijoviaConsent").checked;
 
   if (!consent) {
-
     showMessage(
       "Please read and accept the identity verification consent before continuing.",
       "error"
     );
-
     return;
   }
 
@@ -865,8 +836,6 @@ async function createIjoviaAccount() {
       return;
     }
 
-    // Record explicit consent before account creation.
-
     const { error: consentError } =
       await supabaseClient.rpc(
         "record_ijoviapay_kyc_consent",
@@ -881,10 +850,6 @@ async function createIjoviaAccount() {
       );
     }
 
-    // NIN is never sent from this browser request.
-    // The authenticated Edge Function reads it securely
-    // from the user's Supabase account metadata.
-
     const response =
       await fetch(IJOVIA_ACCOUNT_FUNCTION, {
         method: "POST",
@@ -896,28 +861,34 @@ async function createIjoviaAccount() {
         body: JSON.stringify({})
       });
 
-    const result = await response.json();
+    const responseText = await response.text();
 
-    console.log("IJOVIA account response:", result);
+    let result = {};
+
+    try {
+      result = responseText ? JSON.parse(responseText) : {};
+    } catch {
+      throw new Error(
+        "The account service returned an invalid response. Please try again."
+      );
+    }
 
     if (!response.ok) {
       throw new Error(
         result?.message ||
         result?.error ||
-        "Unable to generate your IJOVIA PAY account."
+        result?.msg ||
+        "Unable to generate your IJOVIA PAY account. Please try again."
       );
     }
 
-    // First try the account returned by the Edge Function.
-
     let account = findAccountObject(result);
-
-    // If the function response does not contain the account,
-    // read the saved account from our database.
 
     if (!account || !findValue(account, [
       "account_number",
-      "accountNumber"
+      "accountNumber",
+      "account_no",
+      "accountNo"
     ])) {
 
       const { data, error } =
@@ -934,7 +905,7 @@ async function createIjoviaAccount() {
 
     if (!account) {
       throw new Error(
-        "Account creation was accepted, but the account details were not returned. Please refresh before trying again."
+        "Account details were not returned. Please refresh before trying again."
       );
     }
 
@@ -942,7 +913,8 @@ async function createIjoviaAccount() {
       findValue(account, [
         "account_number",
         "accountNumber",
-        "account_no"
+        "account_no",
+        "accountNo"
       ]);
 
     if (!accountNumber) {
@@ -963,9 +935,7 @@ async function createIjoviaAccount() {
       account_number: accountNumber
     });
 
-    document.getElementById("ijoviaConsentBox").style.display =
-      "none";
-
+    document.getElementById("ijoviaConsentBox").style.display = "none";
     button.style.display = "none";
 
     showMessage(
@@ -993,17 +963,11 @@ async function createIjoviaAccount() {
   }
 }
 
-// =====================================================
-// FIND ACCOUNT OBJECT IN EDGE FUNCTION RESPONSE
-// =====================================================
+// FIND ACCOUNT OBJECT
 
 function findAccountObject(value, depth = 0) {
 
-  if (
-    !value ||
-    typeof value !== "object" ||
-    depth > 8
-  ) {
+  if (!value || typeof value !== "object" || depth > 8) {
     return null;
   }
 
@@ -1053,15 +1017,11 @@ function findAccountObject(value, depth = 0) {
   return null;
 }
 
-// =====================================================
 // FIND VALUE
-// =====================================================
 
 function findValue(object, keys) {
 
-  if (!object || typeof object !== "object") {
-    return null;
-  }
+  if (!object || typeof object !== "object") return null;
 
   for (const key of keys) {
 
@@ -1077,9 +1037,7 @@ function findValue(object, keys) {
   return null;
 }
 
-// =====================================================
 // LOAD RECOPAY ACCOUNT
-// =====================================================
 
 async function loadReckopayAccount() {
 
@@ -1189,9 +1147,7 @@ async function loadReckopayAccount() {
   }
 }
 
-// =====================================================
 // PAYMENTPOINT ACCOUNT
-// =====================================================
 
 async function createPaymentpointAccount() {
 
@@ -1340,9 +1296,7 @@ async function createPaymentpointAccount() {
   }
 }
 
-// =====================================================
 // LOAD EXISTING PAYMENTPOINT ACCOUNT
-// =====================================================
 
 async function loadExistingPaymentpointAccount(userId) {
 
@@ -1385,9 +1339,7 @@ async function loadExistingPaymentpointAccount(userId) {
   }
 }
 
-// =====================================================
 // COPY ACCOUNT NUMBER
-// =====================================================
 
 async function copyNumber(elementId) {
 
@@ -1414,9 +1366,7 @@ async function copyNumber(elementId) {
   }
 }
 
-// =====================================================
 // DISPLAY MESSAGE
-// =====================================================
 
 function showMessage(message, type) {
 
@@ -1427,9 +1377,7 @@ function showMessage(message, type) {
   box.style.display = "block";
 }
 
-// =====================================================
 // START PAGE
-// =====================================================
 
 async function startPage() {
 
