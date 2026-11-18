@@ -11,6 +11,11 @@
     {
       "source": "/nin-verification",
       "destination": "/nin-verification.html"
+    },
+    {
+      "source": "/webhook",
+      "destination": "https://iknhifndgpwibkfidggq.supabase.co/functions/v1/ijoviapay-webhook"
     }
   ]
 }
+
