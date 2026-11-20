@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -206,8 +207,6 @@ border-radius:50%;background:#20bf60;color:white;
 display:flex;align-items:center;justify-content:center;
 font-size:27px;box-shadow:0 5px 16px rgba(0,0,0,.22);z-index:1400
 }
-
-/* NIN MODIFICATION TRACKING */
 .modification-tracking{
 background:#fff;border:1px solid var(--border);
 border-radius:15px;padding:15px;margin-top:12px;
@@ -341,7 +340,6 @@ body{padding-bottom:25px}
 
 <div class="services">
 
-<!-- SINGLE NIN REPRINTING CARD -->
 <div class="service-card" id="ninStandardCard">
 <div class="service-icon">🪪</div>
 <h3>NIN Reprinting</h3>
@@ -360,7 +358,6 @@ body{padding-bottom:25px}
 <a href="nin-personalisation.html" class="service-btn" id="ninPersonalisationBtn">Open NIN Personalisation</a>
 </div>
 
-<!-- SINGLE BVN REPRINTING CARD -->
 <div class="service-card" id="bvnCard">
 <div class="service-icon">🔐</div>
 <h3>BVN Reprinting</h3>
@@ -410,7 +407,6 @@ body{padding-bottom:25px}
 
 </div>
 
-<!-- CUSTOMER NIN MODIFICATION UPDATES -->
 <h2 class="section-title">📋 My NIN Modification Updates</h2>
 <div class="modification-tracking">
 <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px">
@@ -716,16 +712,41 @@ return;
 
 const services=data||[];
 
-/* NIN REPRINTING 1 - NINSLIP
-   This is the service code controlled by the admin dashboard. */
-updateServiceCard(
-"ninStandardCard",
-"ninStandardPrice",
-"ninStandardBtn",
-services.find(x=>x.service_code==="nin_reprint_1"),
-"nin-reprint-options.html",
-"Continue"
+/* NIN REPRINTING:
+   Show the customer card if at least one provider is active.
+   NINSLIP = nin_reprint_1
+   IDFIXER = nin_reprint_2
+*/
+const ninReprintProviders=services.filter(x=>
+(x.service_code==="nin_reprint_1"||
+ x.service_code==="nin_reprint_2")&&
+x.is_active===true
 );
+
+const ninCard=document.getElementById("ninStandardCard");
+const ninPrice=document.getElementById("ninStandardPrice");
+const ninButton=document.getElementById("ninStandardBtn");
+
+if(ninReprintProviders.length===0){
+ninCard.style.display="none";
+}else{
+ninCard.style.display="flex";
+ninCard.classList.remove("disabled");
+
+const availablePrices=ninReprintProviders
+.map(x=>Number(x.price))
+.filter(price=>Number.isFinite(price)&&price>0);
+
+if(availablePrices.length>0){
+ninPrice.textContent="From "+formatMoney(Math.min(...availablePrices));
+}else{
+ninPrice.textContent="Choose an available option";
+}
+
+ninButton.textContent="Continue";
+ninButton.classList.remove("disabled-btn");
+ninButton.href="nin-reprint-options.html";
+}
 
 /* BVN REPRINTING */
 updateServiceCard(
@@ -840,8 +861,6 @@ document.getElementById("announcementOverlay").classList.remove("show");
 document.getElementById("announcementOverlay").style.display="none";
 }
 document.getElementById("announcementCloseBtn").addEventListener("click",closeAnnouncement);
-
-/* NIN MODIFICATION CUSTOMER TRACKING */
 
 function escapeModificationText(value){
 return String(value??"").replace(/[&<>"']/g,char=>({
@@ -1076,7 +1095,6 @@ document.addEventListener("DOMContentLoaded",startDashboard);
 startDashboard();
 }
 
-// Check for NIN Modification updates every 30 seconds.
 setInterval(()=>{
 if(currentUser){
 loadNinModificationRequests();
