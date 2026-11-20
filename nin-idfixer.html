@@ -80,6 +80,32 @@ input, select {
   background: white;
 }
 
+.price-box {
+  margin-top: 16px;
+  padding: 17px;
+  background: #eaf5ee;
+  border: 1px solid #cce5d5;
+  border-radius: 10px;
+}
+
+.price-label {
+  color: #53645a;
+  font-size: 13px;
+}
+
+.price-amount {
+  color: #087f3d;
+  font-size: 25px;
+  font-weight: bold;
+  margin-top: 6px;
+}
+
+.price-note {
+  color: #68766e;
+  font-size: 12px;
+  margin-top: 5px;
+}
+
 button {
   width: 100%;
   padding: 15px;
@@ -196,8 +222,6 @@ footer {
 
 <main class="container">
 
-<!-- NIN REPRINTING FORM -->
-
 <div class="card">
 
 <h3>NIN Reprinting Form</h3>
@@ -281,6 +305,14 @@ placeholder="Enter surname"
 <option value="vnin">VNIN Slip</option>
 </select>
 
+<div class="price-box">
+<div class="price-label">Price for selected slip</div>
+<div class="price-amount" id="slipPrice">₦350</div>
+<div class="price-note">
+This amount will be deducted from your wallet when your request is processed.
+</div>
+</div>
+
 <div id="statusMessage" class="message"></div>
 
 <button type="submit" id="submitBtn">
@@ -294,8 +326,6 @@ Please ensure that the information supplied is correct before submitting your re
 </p>
 
 </div>
-
-<!-- NIN REPRINTING HISTORY -->
 
 <div class="card">
 
@@ -339,6 +369,15 @@ const idfixerSupabaseClient = window.supabase.createClient(
   SUPABASE_ANON_KEY
 );
 
+// EXACT PRICES FROM idfixer-nin EDGE FUNCTION
+
+const SLIP_PRICES = {
+  regular: 220,
+  standard: 320,
+  premium: 350,
+  vnin: 400
+};
+
 // FORM ELEMENTS
 
 const method = document.getElementById("method");
@@ -347,6 +386,27 @@ const form = document.getElementById("ninForm");
 const submitButton = document.getElementById("submitBtn");
 const statusMessage = document.getElementById("statusMessage");
 const historyList = document.getElementById("historyList");
+const slipPriceElement = document.getElementById("slipPrice");
+
+// FORMAT PRICE
+
+function formatPrice(amount) {
+  return "₦" + Number(amount).toLocaleString("en-NG");
+}
+
+// UPDATE DISPLAYED PRICE
+
+function updateSlipPrice() {
+  const selectedSlip = slipTypeElement.value;
+  const amount = SLIP_PRICES[selectedSlip];
+
+  if (amount === undefined) {
+    slipPriceElement.textContent = "Price unavailable";
+    return;
+  }
+
+  slipPriceElement.textContent = formatPrice(amount);
+}
 
 // DISPLAY MESSAGE
 
@@ -378,11 +438,16 @@ function updateForm() {
   if (selected !== "nin" && slipTypeElement.value === "vnin") {
     slipTypeElement.value = "premium";
   }
+
+  updateSlipPrice();
 }
 
 method.addEventListener("change", updateForm);
 
+slipTypeElement.addEventListener("change", updateSlipPrice);
+
 updateForm();
+updateSlipPrice();
 
 // PDF DOWNLOAD
 
@@ -465,16 +530,17 @@ function createHistoryElement(documentItem) {
 
   const amount = document.createElement("div");
   amount.textContent =
-    "Amount paid: ₦" +
-    Number(documentItem.amount).toLocaleString("en-NG");
+    "Amount paid: " +
+    formatPrice(documentItem.amount);
 
   const methodDetail = document.createElement("div");
   methodDetail.textContent =
     "Search method: " + (documentItem.method || "N/A");
 
   const reference = document.createElement("div");
-reference.textContent =
-  "Reference: " + documentItem.reference.replace(/^IDFIXER-/, "");
+  reference.textContent =
+    "Reference: " + String(documentItem.reference || "")
+      .replace(/^IDFIXER-/, "");
 
   details.appendChild(date);
   details.appendChild(amount);
@@ -534,8 +600,6 @@ async function loadNinHistory() {
       historyList.appendChild(loginMessage);
       return;
     }
-
-    // RLS ensures customers only see their own records.
 
     const { data, error } =
       await idfixerSupabaseClient
@@ -614,8 +678,6 @@ async function redownloadDocument(reference, button) {
       return;
     }
 
-    // This function does not charge the wallet.
-
     const { data, error } =
       await idfixerSupabaseClient.functions.invoke(
         "idfixer-nin-redownload",
@@ -642,8 +704,6 @@ async function redownloadDocument(reference, button) {
         data?.message || "The PDF could not be downloaded."
       );
     }
-
-    // Open the secure temporary download link.
 
     window.location.href = data.signed_url;
 
@@ -674,6 +734,11 @@ form.addEventListener("submit", async function(e) {
 
   const selectedMethod = method.value;
   const selectedSlipType = slipTypeElement.value.toLowerCase();
+
+  if (!Object.prototype.hasOwnProperty.call(SLIP_PRICES, selectedSlipType)) {
+    showMessage("Invalid slip type selected.", "error");
+    return;
+  }
 
   // VALIDATE NIN
 
@@ -762,14 +827,10 @@ form.addEventListener("submit", async function(e) {
       document.getElementById("gender").value.toLowerCase();
   }
 
-  // PREVENT MULTIPLE SUBMISSIONS
-
   submitButton.disabled = true;
   submitButton.textContent = "Processing...";
 
   try {
-
-    // CHECK LOGIN SESSION
 
     const { data: sessionData, error: sessionError } =
       await idfixerSupabaseClient.auth.getSession();
@@ -789,10 +850,11 @@ form.addEventListener("submit", async function(e) {
       return;
     }
 
-    // CALL IDFIXER EDGE FUNCTION
-
     showMessage(
-      "Your request is being processed. Please wait...",
+      "Your request is being processed. " +
+      "Selected slip price: " +
+      formatPrice(SLIP_PRICES[selectedSlipType]) +
+      ". Please wait...",
       "success"
     );
 
@@ -804,21 +866,17 @@ form.addEventListener("submit", async function(e) {
         }
       );
 
-    // HANDLE FUNCTION ERROR
-
     if (error) {
 
       console.error("IDFIXER Edge Function Error:", error);
 
       showMessage(
-  "Your request could not be completed. Please try again.",
-  "error"
-);
+        "Your request could not be completed. Please try again.",
+        "error"
+      );
 
       return;
     }
-
-    // CHECK RESPONSE
 
     if (!data || data.success !== true) {
 
@@ -832,8 +890,6 @@ form.addEventListener("submit", async function(e) {
       return;
     }
 
-    // CHECK PDF
-
     if (!data.pdf_base64) {
 
       console.error("PDF missing from IDFIXER response:", data);
@@ -845,8 +901,6 @@ form.addEventListener("submit", async function(e) {
 
       return;
     }
-
-    // DOWNLOAD PDF
 
     try {
 
@@ -867,12 +921,8 @@ form.addEventListener("submit", async function(e) {
       return;
     }
 
-    // REMOVE SUCCESS MESSAGE
-
     statusMessage.className = "message";
     statusMessage.textContent = "";
-
-    // REFRESH HISTORY
 
     await loadNinHistory();
 
