@@ -6,6 +6,8 @@
   <title>NIN Reprinting - Gracioustec</title>
   <meta name="theme-color" content="#087f3d">
 
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
   <style>
     * {
       box-sizing: border-box;
@@ -50,6 +52,7 @@
     }
 
     .option {
+      display: none;
       background: white;
       border-radius: 14px;
       padding: 22px;
@@ -86,6 +89,17 @@
       opacity: 0.8;
     }
 
+    #status {
+      background: white;
+      border-radius: 12px;
+      padding: 18px;
+      text-align: center;
+      color: #58665e;
+      font-size: 14px;
+      line-height: 1.6;
+      border: 1px solid #e1ebe5;
+    }
+
     footer {
       text-align: center;
       padding: 25px 15px;
@@ -105,13 +119,15 @@
 
   <main class="container">
 
-    <div class="option">
+    <div id="status">Checking available reprinting options...</div>
+
+    <div class="option" id="ninOption1">
       <h3>NIN REPRINTING 1</h3>
       <p>Use this option for NIN slip reprinting. Standard, Lost and Premium options are available inside.</p>
       <a href="nin.html">Continue</a>
     </div>
 
-    <div class="option">
+    <div class="option" id="ninOption2">
       <h3>NIN REPRINTING 2</h3>
       <p>Provides the real, current state of your NIN details.</p>
       <a href="nin-idfixer.html">Continue</a>
@@ -122,6 +138,71 @@
   <footer>
     © 2026 Gracioustec. All rights reserved.
   </footer>
+
+  <script>
+    const SUPABASE_URL = "https://iknhifndgpwibkfidggq.supabase.co";
+    const SUPABASE_KEY = "sb_publishable_xELauxOMm7eMkNrPz55Mrw_LVkRoASn";
+
+    const supabaseClient = window.supabase.createClient(
+      SUPABASE_URL,
+      SUPABASE_KEY
+    );
+
+    async function loadNINOptions() {
+      const status = document.getElementById("status");
+      const option1 = document.getElementById("ninOption1");
+      const option2 = document.getElementById("ninOption2");
+
+      option1.style.display = "none";
+      option2.style.display = "none";
+
+      try {
+        const { data, error } = await supabaseClient
+          .from("service_settings")
+          .select("service_code, is_active")
+          .in("service_code", ["nin_reprint_1", "nin_reprint_2"]);
+
+        if (error) {
+          throw error;
+        }
+
+        const ninSlip = data.find(
+          item => item.service_code === "nin_reprint_1"
+        );
+
+        const idFixer = data.find(
+          item => item.service_code === "nin_reprint_2"
+        );
+
+        let visibleOptions = 0;
+
+        if (ninSlip && ninSlip.is_active === true) {
+          option1.style.display = "block";
+          visibleOptions++;
+        }
+
+        if (idFixer && idFixer.is_active === true) {
+          option2.style.display = "block";
+          visibleOptions++;
+        }
+
+        if (visibleOptions > 0) {
+          status.style.display = "none";
+        } else {
+          status.textContent =
+            "Sorry, all NIN reprinting options are currently unavailable. Please check again later.";
+        }
+
+      } catch (error) {
+        console.error("NIN options loading error:", error);
+
+        status.textContent =
+          "Unable to check NIN reprinting availability. Please refresh the page or try again later.";
+      }
+    }
+
+    loadNINOptions();
+  </script>
 
 </body>
 </html>
