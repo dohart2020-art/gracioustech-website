@@ -6,6 +6,8 @@
   <title>BVN Reprinting - Gracioustec</title>
   <meta name="theme-color" content="#087f3d">
 
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
   <style>
     * {
       box-sizing: border-box;
@@ -50,6 +52,7 @@
     }
 
     .option {
+      display: none;
       background: white;
       border-radius: 14px;
       padding: 22px;
@@ -82,6 +85,17 @@
       font-weight: bold;
     }
 
+    #status {
+      background: white;
+      border-radius: 12px;
+      padding: 18px;
+      text-align: center;
+      color: #58665e;
+      font-size: 14px;
+      line-height: 1.6;
+      border: 1px solid #e1ebe5;
+    }
+
     footer {
       text-align: center;
       padding: 25px 15px;
@@ -101,13 +115,15 @@
 
   <main class="container">
 
-    <div class="option">
+    <div id="status">Checking available BVN reprinting options...</div>
+
+    <div class="option" id="bvnOption1">
       <h3>BVN REPRINTING 1</h3>
       <p>Use this option for BVN slip reprinting through the standard service.</p>
       <a href="bvn.html">Continue</a>
     </div>
 
-    <div class="option">
+    <div class="option" id="bvnOption2">
       <h3>BVN REPRINTING 2</h3>
       <p>Use this option for the alternative BVN reprinting service.</p>
       <a href="bvn-idfixer.html">Continue</a>
@@ -118,6 +134,71 @@
   <footer>
     © 2026 Gracioustec. All rights reserved.
   </footer>
+
+  <script>
+    const SUPABASE_URL = "https://iknhifndgpwibkfidggq.supabase.co";
+    const SUPABASE_KEY = "sb_publishable_xELauxOMm7eMkNrPz55Mrw_LVkRoASn";
+
+    const supabaseClient = window.supabase.createClient(
+      SUPABASE_URL,
+      SUPABASE_KEY
+    );
+
+    async function loadBVNOptions() {
+      const status = document.getElementById("status");
+      const option1 = document.getElementById("bvnOption1");
+      const option2 = document.getElementById("bvnOption2");
+
+      option1.style.display = "none";
+      option2.style.display = "none";
+
+      try {
+        const { data, error } = await supabaseClient
+          .from("service_settings")
+          .select("service_code, is_active")
+          .in("service_code", ["bvn_reprint_1", "bvn_reprint_2"]);
+
+        if (error) {
+          throw error;
+        }
+
+        const bvnSlip = data.find(
+          item => item.service_code === "bvn_reprint_1"
+        );
+
+        const idFixer = data.find(
+          item => item.service_code === "bvn_reprint_2"
+        );
+
+        let visibleOptions = 0;
+
+        if (bvnSlip && bvnSlip.is_active === true) {
+          option1.style.display = "block";
+          visibleOptions++;
+        }
+
+        if (idFixer && idFixer.is_active === true) {
+          option2.style.display = "block";
+          visibleOptions++;
+        }
+
+        if (visibleOptions > 0) {
+          status.style.display = "none";
+        } else {
+          status.textContent =
+            "Sorry, all BVN reprinting options are currently unavailable. Please check again later.";
+        }
+
+      } catch (error) {
+        console.error("BVN options loading error:", error);
+
+        status.textContent =
+          "Unable to check BVN reprinting availability. Please refresh the page or try again later.";
+      }
+    }
+
+    loadBVNOptions();
+  </script>
 
 </body>
 </html>
