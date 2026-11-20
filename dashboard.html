@@ -716,17 +716,18 @@ return;
 
 const services=data||[];
 
-/* NIN REPRINTING OPTIONS PAGE */
+/* NIN REPRINTING 1 - NINSLIP
+   This is the service code controlled by the admin dashboard. */
 updateServiceCard(
 "ninStandardCard",
 "ninStandardPrice",
 "ninStandardBtn",
-services.find(x=>x.service_code==="nin_standard"),
+services.find(x=>x.service_code==="nin_reprint_1"),
 "nin-reprint-options.html",
 "Continue"
 );
 
-/* BVN REPRINTING OPTIONS PAGE */
+/* BVN REPRINTING */
 updateServiceCard(
 "bvnCard",
 "bvnPrice",
@@ -795,23 +796,13 @@ const button=document.getElementById(buttonId);
 
 if(!card||!price||!button)return;
 
-if(!service){
+if(!service||service.is_active!==true){
 card.style.display="none";
-console.warn("Service setting not found:",cardId);
+console.warn("Service is missing or inactive:",cardId);
 return;
 }
 
 card.style.display="flex";
-
-if(!service.is_active){
-card.classList.add("disabled");
-price.textContent="Currently unavailable";
-button.textContent="Unavailable";
-button.classList.add("disabled-btn");
-button.removeAttribute("href");
-return;
-}
-
 card.classList.remove("disabled");
 price.textContent=formatMoney(service.price);
 button.textContent=activeText;
