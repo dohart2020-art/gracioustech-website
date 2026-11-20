@@ -1,1980 +1,898 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Gracioustec Admin Dashboard</title>
-
-  <style>
-    * { box-sizing: border-box; }
-
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #f4f7f9;
-      color: #17212b;
-    }
-
-    header {
-      background: #087f5b;
-      color: white;
-      padding: 18px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    header h1 { margin: 0; font-size: 21px; }
-
-    .logout {
-      background: white;
-      color: #087f5b;
-      border: none;
-      padding: 9px 14px;
-      border-radius: 7px;
-      font-weight: bold;
-      cursor: pointer;
-    }
-
-    .container {
-      max-width: 1300px;
-      margin: auto;
-      padding: 18px;
-    }
-
-    #loading {
-      text-align: center;
-      padding: 40px;
-      font-size: 18px;
-    }
-
-    #error {
-      display: none;
-      background: #ffe3e3;
-      color: #b00020;
-      padding: 15px;
-      border-radius: 8px;
-      margin-bottom: 15px;
-      overflow-wrap: anywhere;
-    }
-
-    .success-message {
-      display: none;
-      background: #d3f9d8;
-      color: #087f5b;
-      padding: 12px;
-      border-radius: 8px;
-      margin-bottom: 15px;
-    }
-
-    .stats {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 15px;
-      margin-bottom: 25px;
-    }
-
-    .stat {
-      background: white;
-      padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(0,0,0,.07);
-    }
-
-    .stat h3 {
-      margin: 0 0 10px;
-      font-size: 14px;
-      color: #666;
-    }
-
-    .stat strong {
-      font-size: 24px;
-      color: #087f5b;
-    }
-
-    .section {
-      background: white;
-      padding: 20px;
-      margin-bottom: 20px;
-      border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(0,0,0,.06);
-    }
-
-    .section h2 {
-      margin-top: 0;
-      color: #087f5b;
-    }
-
-    .section-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 15px;
-      flex-wrap: wrap;
-    }
-
-    .section-header h2 { margin-bottom: 0; }
-
-    .service {
-      display: grid;
-      grid-template-columns: 1fr 150px 100px 110px;
-      gap: 10px;
-      align-items: center;
-      padding: 14px 0;
-      border-bottom: 1px solid #eee;
-    }
-
-    .service:last-child { border-bottom: none; }
-    .service-name { font-weight: bold; }
-
-    input, select {
-      width: 100%;
-      padding: 10px;
-      border: 1px solid #ccc;
-      border-radius: 7px;
-      background: white;
-    }
-
-    button { cursor: pointer; }
-
-    button:disabled {
-      opacity: .45;
-      cursor: not-allowed;
-    }
-
-    .save {
-      background: #087f5b;
-      color: white;
-      border: none;
-      padding: 10px;
-      border-radius: 7px;
-      font-weight: bold;
-    }
-
-    .toggle {
-      padding: 9px;
-      border: none;
-      border-radius: 7px;
-      font-weight: bold;
-      cursor: pointer;
-    }
-
-    .active { background: #d3f9d8; color: #087f5b; }
-    .inactive { background: #ffe3e3; color: #c92a2a; }
-
-    .payment-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 15px 0;
-      border-bottom: 1px solid #eee;
-    }
-
-    .payment-row:last-child { border-bottom: none; }
-
-    textarea {
-      width: 100%;
-      min-height: 120px;
-      padding: 12px;
-      border: 1px solid #ccc;
-      border-radius: 7px;
-      resize: vertical;
-    }
-
-    .announcement-box {
-      border: 1px solid #ddd;
-      border-radius: 8px;
-      padding: 15px;
-      margin-top: 15px;
-      overflow-wrap: anywhere;
-    }
-
-    .announcement-box h3 { margin-top: 0; }
-
-    .delete {
-      background: #c92a2a;
-      color: white;
-      border: none;
-      padding: 9px 12px;
-      border-radius: 7px;
-      margin-left: 8px;
-    }
-
-    .table-wrap { overflow-x: auto; }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      min-width: 900px;
-    }
-
-    th, td {
-      padding: 11px;
-      border-bottom: 1px solid #eee;
-      text-align: left;
-      vertical-align: middle;
-      overflow-wrap: anywhere;
-    }
-
-    th { background: #f1f3f5; }
-
-    .small { color: #666; font-size: 13px; }
-    .empty { text-align: center; color: #777; padding: 20px; }
-
-    .refresh-btn {
-      background: white;
-      color: #087f5b;
-      border: 1px solid #087f5b;
-      padding: 9px 14px;
-      border-radius: 7px;
-      font-weight: bold;
-      margin-bottom: 15px;
-    }
-
-    .user-search { margin: 15px 0; }
-    .user-search input { max-width: 500px; }
-
-    .action-btn {
-      border: none;
-      padding: 8px 10px;
-      border-radius: 6px;
-      font-weight: bold;
-      margin: 2px;
-      color: white;
-    }
-
-    .fund-btn { background: #087f5b; }
-    .subtract-btn { background: #e67700; }
-    .remove-btn { background: #c92a2a; }
-
-    .add-user-form {
-      display: grid;
-      grid-template-columns: 1fr 1fr 150px;
-      gap: 10px;
-      margin-top: 15px;
-      padding: 15px;
-      background: #f8f9fa;
-      border-radius: 8px;
-    }
-
-    .wallet-box {
-      display: grid;
-      grid-template-columns: 1fr 1fr 150px;
-      gap: 10px;
-      padding: 15px;
-      background: #f8f9fa;
-      border-radius: 8px;
-      margin-top: 15px;
-    }
-
-    .wallet-box select, .wallet-box input {
-      width: 100%;
-      padding: 10px;
-      border: 1px solid #ccc;
-      border-radius: 7px;
-      background: white;
-    }
-
-    .user-balance { font-weight: bold; color: #087f5b; }
-
-    .status-badge {
-      display: inline-block;
-      padding: 5px 8px;
-      border-radius: 5px;
-      font-size: 12px;
-      font-weight: bold;
-    }
-
-    .status-active { background: #d3f9d8; color: #087f5b; }
-    .status-inactive { background: #ffe3e3; color: #c92a2a; }
-    .credit { color: #087f5b; font-weight: bold; }
-    .debit { color: #c92a2a; font-weight: bold; }
-
-    .transaction-filters {
-      display: grid;
-      grid-template-columns: 2fr 1fr 1fr;
-      gap: 10px;
-      margin: 15px 0;
-      padding: 15px;
-      background: #f8f9fa;
-      border-radius: 8px;
-    }
-
-    .report-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 12px;
-      margin-top: 15px;
-    }
-
-    .report-card {
-      background: #f8f9fa;
-      border: 1px solid #e9ecef;
-      border-radius: 9px;
-      padding: 15px;
-    }
-
-    .report-card .label {
-      color: #666;
-      font-size: 13px;
-      margin-bottom: 7px;
-    }
-
-    .report-card .value {
-      font-size: 21px;
-      font-weight: bold;
-      color: #087f5b;
-    }
-
-    .clear-btn {
-      background: #6c757d;
-      color: white;
-      border: none;
-      padding: 10px 14px;
-      border-radius: 7px;
-      font-weight: bold;
-    }
-
-    .request-note {
-      max-width: 220px;
-      white-space: normal;
-      overflow-wrap: anywhere;
-    }
-
-    .document-links a {
-      display: inline-block;
-      margin: 3px 0;
-      color: #087f5b;
-      font-weight: bold;
-    }
-
-    @media(max-width:800px) {
-      .service, .add-user-form, .wallet-box, .transaction-filters {
-        grid-template-columns: 1fr;
-      }
-
-      .payment-row { gap: 10px; }
-      header { gap: 10px; }
-      header h1 { font-size: 17px; }
-      .container { padding: 12px; }
-      .section { padding: 15px; }
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gracioustec Admin Dashboard</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#f4f7f9;color:#17212b}
+header{background:#087f5b;color:white;padding:18px;display:flex;justify-content:space-between;align-items:center}
+header h1{margin:0;font-size:21px}
+.logout{background:white;color:#087f5b;border:none;padding:9px 14px;border-radius:7px;font-weight:bold;cursor:pointer}
+.container{max-width:1300px;margin:auto;padding:18px}
+#loading{text-align:center;padding:40px;font-size:18px}
+#error{display:none;background:#ffe3e3;color:#b00020;padding:15px;border-radius:8px;margin-bottom:15px;overflow-wrap:anywhere}
+.success-message{display:none;background:#d3f9d8;color:#087f5b;padding:12px;border-radius:8px;margin-bottom:15px}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:15px;margin-bottom:25px}
+.stat{background:white;padding:20px;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,.07)}
+.stat h3{margin:0 0 10px;font-size:14px;color:#666}
+.stat strong{font-size:24px;color:#087f5b}
+.section{background:white;padding:20px;margin-bottom:20px;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,.06)}
+.section h2{margin-top:0;color:#087f5b}
+.section-header{display:flex;justify-content:space-between;align-items:center;gap:15px;flex-wrap:wrap}
+.section-header h2{margin-bottom:0}
+.service{display:grid;grid-template-columns:1fr 150px 100px 110px;gap:10px;align-items:center;padding:14px 0;border-bottom:1px solid #eee}
+.service:last-child{border-bottom:none}
+.service-name{font-weight:bold}
+input,select{width:100%;padding:10px;border:1px solid #ccc;border-radius:7px;background:white}
+button{cursor:pointer}
+button:disabled{opacity:.45;cursor:not-allowed}
+.save{background:#087f5b;color:white;border:none;padding:10px;border-radius:7px;font-weight:bold}
+.toggle{padding:9px;border:none;border-radius:7px;font-weight:bold;cursor:pointer}
+.active{background:#d3f9d8;color:#087f5b}
+.inactive{background:#ffe3e3;color:#c92a2a}
+.payment-row{display:flex;justify-content:space-between;align-items:center;padding:15px 0;border-bottom:1px solid #eee}
+.payment-row:last-child{border-bottom:none}
+textarea{width:100%;min-height:120px;padding:12px;border:1px solid #ccc;border-radius:7px;resize:vertical}
+.announcement-box{border:1px solid #ddd;border-radius:8px;padding:15px;margin-top:15px;overflow-wrap:anywhere}
+.announcement-box h3{margin-top:0}
+.delete{background:#c92a2a;color:white;border:none;padding:9px 12px;border-radius:7px;margin-left:8px}
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;min-width:900px}
+th,td{padding:11px;border-bottom:1px solid #eee;text-align:left;vertical-align:middle;overflow-wrap:anywhere}
+th{background:#f1f3f5}
+.small{color:#666;font-size:13px}
+.empty{text-align:center;color:#777;padding:20px}
+.refresh-btn{background:white;color:#087f5b;border:1px solid #087f5b;padding:9px 14px;border-radius:7px;font-weight:bold;margin-bottom:15px}
+.user-search{margin:15px 0}
+.user-search input{max-width:500px}
+.action-btn{border:none;padding:8px 10px;border-radius:6px;font-weight:bold;margin:2px;color:white}
+.fund-btn{background:#087f5b}
+.subtract-btn{background:#e67700}
+.remove-btn{background:#c92a2a}
+.add-user-form{display:grid;grid-template-columns:1fr 1fr 150px;gap:10px;margin-top:15px;padding:15px;background:#f8f9fa;border-radius:8px}
+.wallet-box{display:grid;grid-template-columns:1fr 1fr 150px;gap:10px;padding:15px;background:#f8f9fa;border-radius:8px;margin-top:15px}
+.wallet-box select,.wallet-box input{width:100%;padding:10px;border:1px solid #ccc;border-radius:7px;background:white}
+.user-balance{font-weight:bold;color:#087f5b}
+.status-badge{display:inline-block;padding:5px 8px;border-radius:5px;font-size:12px;font-weight:bold}
+.status-active{background:#d3f9d8;color:#087f5b}
+.status-inactive{background:#ffe3e3;color:#c92a2a}
+.credit{color:#087f5b;font-weight:bold}
+.debit{color:#c92a2a;font-weight:bold}
+.transaction-filters{display:grid;grid-template-columns:2fr 1fr 1fr;gap:10px;margin:15px 0;padding:15px;background:#f8f9fa;border-radius:8px}
+.report-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-top:15px}
+.report-card{background:#f8f9fa;border:1px solid #e9ecef;border-radius:9px;padding:15px}
+.report-card .label{color:#666;font-size:13px;margin-bottom:7px}
+.report-card .value{font-size:21px;font-weight:bold;color:#087f5b}
+.clear-btn{background:#6c757d;color:white;border:none;padding:10px 14px;border-radius:7px;font-weight:bold}
+.request-note{max-width:220px;white-space:normal;overflow-wrap:anywhere}
+.document-links a{display:inline-block;margin:3px 0;color:#087f5b;font-weight:bold}
+.service-provider{display:inline-block;margin-top:5px;padding:4px 7px;border-radius:5px;background:#e7f5ef;color:#087f5b;font-size:11px;font-weight:bold}
+@media(max-width:800px){
+.service,.add-user-form,.wallet-box,.transaction-filters{grid-template-columns:1fr}
+.payment-row{gap:10px}
+header{gap:10px}
+header h1{font-size:17px}
+.container{padding:12px}
+.section{padding:15px}
+}
+</style>
 </head>
-
 <body>
 
 <header>
-  <h1>Gracioustec Admin</h1>
-  <button class="logout" onclick="logout()">Logout</button>
+<h1>Gracioustec Admin</h1>
+<button class="logout" onclick="logout()">Logout</button>
 </header>
 
 <div class="container">
+<div id="loading">Loading Gracioustec Admin Dashboard...</div>
+<div id="error"></div>
+<div id="success" class="success-message"></div>
 
-  <div id="loading">Loading Gracioustec Admin Dashboard...</div>
-  <div id="error"></div>
-  <div id="success" class="success-message"></div>
+<div id="dashboard" style="display:none">
 
-  <div id="dashboard" style="display:none">
+<button class="refresh-btn" onclick="loadDashboard()">↻ Refresh Dashboard</button>
 
-    <button class="refresh-btn" onclick="loadDashboard()">↻ Refresh Dashboard</button>
-
-    <div class="stats">
-      <div class="stat"><h3>Total Users</h3><strong id="totalUsers">0</strong></div>
-      <div class="stat"><h3>Total Deposits</h3><strong id="totalDeposits">₦0.00</strong></div>
-      <div class="stat"><h3>Total Wallet Balance</h3><strong id="totalWallet">₦0.00</strong></div>
-      <div class="stat"><h3>NIN Reprints</h3><strong id="ninReprints">0</strong></div>
-      <div class="stat"><h3>BVN Reprints</h3><strong id="bvnReprints">0</strong></div>
-      <div class="stat"><h3>NIN Revenue</h3><strong id="ninRevenue">₦0.00</strong></div>
-      <div class="stat"><h3>BVN Revenue</h3><strong id="bvnRevenue">₦0.00</strong></div>
-      <div class="stat"><h3>Wallet Transactions</h3><strong id="walletTransactions">0</strong></div>
-      <div class="stat"><h3>Funded Users</h3><strong id="fundedUsers">0</strong></div>
-    </div>
-
-    <div class="section">
-      <h2>Financial Overview</h2>
-      <p class="small">Summary of wallet funding, service revenue and current customer wallet balances.</p>
-
-      <div class="report-grid">
-        <div class="report-card"><div class="label">Total Deposits</div><div class="value" id="reportDeposits">₦0.00</div></div>
-        <div class="report-card"><div class="label">NIN Revenue</div><div class="value" id="reportNIN">₦0.00</div></div>
-        <div class="report-card"><div class="label">BVN Revenue</div><div class="value" id="reportBVN">₦0.00</div></div>
-        <div class="report-card"><div class="label">Current Wallet Balance</div><div class="value" id="reportWallet">₦0.00</div></div>
-        <div class="report-card"><div class="label">Wallet Transactions</div><div class="value" id="reportTransactions">0</div></div>
-        <div class="report-card"><div class="label">Users With Funds</div><div class="value" id="reportFundedUsers">0</div></div>
-      </div>
-    </div>
-
-    <div class="section">
-      <div class="section-header"><h2>User Management</h2></div>
-      <p class="small">Add users, search registered users, fund wallets, subtract funds, or remove user login accounts.</p>
-
-      <h3>Add New User</h3>
-      <div class="add-user-form">
-        <input id="newUserEmail" type="email" placeholder="User email">
-        <input id="newUserPassword" type="password" placeholder="Temporary password">
-        <button class="save" onclick="createUser()">Add User</button>
-      </div>
-
-      <p class="small">Password must contain at least 6 characters. The new user will be created as a confirmed account.</p>
-
-      <h3>Wallet Control</h3>
-      <div class="wallet-box">
-        <select id="walletUser"><option value="">Select a user</option></select>
-        <input id="walletAmount" type="number" min="1" step="1" placeholder="Amount">
-        <button class="save" onclick="applyWalletFromBox()">Apply</button>
-      </div>
-      <p class="small">Select a user and amount, then choose CREDIT to fund the wallet or DEBIT to subtract funds.</p>
-
-      <h3>Registered Users</h3>
-      <div class="user-search">
-        <input id="userSearch" type="search" placeholder="Search user by email or ID..." oninput="filterUsers()">
-      </div>
-
-      <div class="table-wrap">
-        <table>
-          <thead><tr><th>Email</th><th>Registration</th><th>Last Login</th><th>Wallet Balance</th><th>Status</th><th>Actions</th></tr></thead>
-          <tbody id="usersTable"></tbody>
-        </table>
-      </div>
-    </div>
-
-    <div class="section">
-      <h2>Service Pricing</h2>
-      <p class="small">These prices are stored in Supabase. Customer payment functions use the current database price when charging the wallet.</p>
-      <div id="services"></div>
-    </div>
-
-    <div class="section">
-      <h2>Payment Methods</h2>
-      <p class="small">Turn a payment method ON or OFF. Existing customer accounts are not deleted.</p>
-      <div id="paymentMethods"></div>
-    </div>
-
-    <div class="section">
-      <h2>Broadcast Announcement</h2>
-      <p class="small">Create an announcement that can be shown to customers when they log in.</p>
-      <input id="announcementTitle" type="text" placeholder="Announcement title">
-      <br><br>
-      <textarea id="announcementMessage" placeholder="Write your announcement here..."></textarea>
-      <br><br>
-      <button class="save" onclick="createAnnouncement()">Publish Announcement</button>
-      <div id="announcements"></div>
-    </div>
-
-    <div class="section">
-      <div class="section-header">
-        <h2>Wallet Transactions</h2>
-        <button class="refresh-btn" onclick="clearTransactionFilters()">Clear Filters</button>
-      </div>
-      <p class="small">Search deposits, service payments, admin wallet adjustments and other wallet transactions.</p>
-
-      <div class="transaction-filters">
-        <input id="transactionSearch" type="search" placeholder="Search email, description or reference..." oninput="applyTransactionFilters()">
-        <select id="transactionType" onchange="applyTransactionFilters()">
-          <option value="all">All Types</option>
-          <option value="credit">Credit</option>
-          <option value="debit">Debit</option>
-          <option value="deposit">Deposit</option>
-        </select>
-        <select id="transactionCategory" onchange="applyTransactionFilters()">
-          <option value="all">All Categories</option>
-          <option value="nin">NIN</option>
-          <option value="bvn">BVN</option>
-          <option value="admin">Admin Adjustment</option>
-          <option value="funding">Wallet Funding</option>
-        </select>
-      </div>
-
-      <div class="table-wrap">
-        <table>
-          <thead><tr><th>Date</th><th>User</th><th>Type</th><th>Amount</th><th>Description</th><th>Reference</th></tr></thead>
-          <tbody id="transactionsTable"></tbody>
-        </table>
-      </div>
-    </div>
-
-    <div class="section">
-      <h2>NIN Reprint Transactions</h2>
-      <div class="table-wrap">
-        <table>
-          <thead><tr><th>Date</th><th>User</th><th>Amount</th><th>Status</th></tr></thead>
-          <tbody id="ninTable"></tbody>
-        </table>
-      </div>
-    </div>
-
-    <div class="section">
-      <h2>BVN Reprint Transactions</h2>
-      <div class="table-wrap">
-        <table>
-          <thead><tr><th>Date</th><th>User</th><th>Amount</th><th>Status</th></tr></thead>
-          <tbody id="bvnTable"></tbody>
-        </table>
-      </div>
-    </div>
-
-    <!-- NIN PERSONALISATION -->
-    <div class="section">
-      <h2>NIN Personalisation Requests</h2>
-      <p class="small">View customer requests, tracking IDs and provider processing statuses.</p>
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>Date</th>
-              <th>User</th>
-              <th>Tracking ID</th>
-              <th>Slip Type</th>
-              <th>Provider ID</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody id="personalisationTable"></tbody>
-        </table>
-      </div>
-    </div>
-
-    <!-- NIN MODIFICATION -->
-<div class="section">
-  <h2>NIN Modification Requests</h2>
-  <p class="small">
-    Review requests, view submitted documents, upload completed files,
-    update paid requests and process refunds.
-  </p>
-
-  <div class="table-wrap">
-    <table>
-      <thead>
-        <tr>
-          <th>Date</th>
-          <th>User</th>
-          <th>Reference</th>
-          <th>Modification</th>
-          <th>NIN</th>
-          <th>Amount</th>
-          <th>Payment</th>
-          <th>Request Status</th>
-          <th>Documents</th>
-          <th>Completed File Upload</th>
-          <th>Admin Actions</th>
-        </tr>
-      </thead>
-
-      <tbody id="modificationTable">
-        <tr>
-          <td colspan="11" class="empty">
-            Loading NIN Modification requests...
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
+<div class="stats">
+<div class="stat"><h3>Total Users</h3><strong id="totalUsers">0</strong></div>
+<div class="stat"><h3>Total Deposits</h3><strong id="totalDeposits">₦0.00</strong></div>
+<div class="stat"><h3>Total Wallet Balance</h3><strong id="totalWallet">₦0.00</strong></div>
+<div class="stat"><h3>NIN Reprints</h3><strong id="ninReprints">0</strong></div>
+<div class="stat"><h3>BVN Reprints</h3><strong id="bvnReprints">0</strong></div>
+<div class="stat"><h3>NIN Revenue</h3><strong id="ninRevenue">₦0.00</strong></div>
+<div class="stat"><h3>BVN Revenue</h3><strong id="bvnRevenue">₦0.00</strong></div>
+<div class="stat"><h3>Wallet Transactions</h3><strong id="walletTransactions">0</strong></div>
+<div class="stat"><h3>Funded Users</h3><strong id="fundedUsers">0</strong></div>
 </div>
 
-    <!-- IPE CLEARANCE -->
-    <div class="section">
-      <h2>IPE Clearance Requests</h2>
-      <p class="small">View IPE tracking IDs, provider references and clearance statuses.</p>
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>Date</th>
-              <th>User</th>
-              <th>Tracking ID</th>
-              <th>Reference</th>
-              <th>Amount</th>
-              <th>Provider Amount</th>
-              <th>Clearance Status</th>
-              <th>Transaction Status</th>
-            </tr>
-          </thead>
-          <tbody id="ipeTable"></tbody>
-        </table>
-      </div>
-    </div>
+<div class="section">
+<h2>Financial Overview</h2>
+<p class="small">Summary of wallet funding, service revenue and current customer wallet balances.</p>
+<div class="report-grid">
+<div class="report-card"><div class="label">Total Deposits</div><div class="value" id="reportDeposits">₦0.00</div></div>
+<div class="report-card"><div class="label">NIN Revenue</div><div class="value" id="reportNIN">₦0.00</div></div>
+<div class="report-card"><div class="label">BVN Revenue</div><div class="value" id="reportBVN">₦0.00</div></div>
+<div class="report-card"><div class="label">Current Wallet Balance</div><div class="value" id="reportWallet">₦0.00</div></div>
+<div class="report-card"><div class="label">Wallet Transactions</div><div class="value" id="reportTransactions">0</div></div>
+<div class="report-card"><div class="label">Users With Funds</div><div class="value" id="reportFundedUsers">0</div></div>
+</div>
+</div>
 
-  </div>
+<div class="section">
+<div class="section-header"><h2>User Management</h2></div>
+<p class="small">Add users, search registered users, fund wallets, subtract funds, or remove user login accounts.</p>
+<h3>Add New User</h3>
+<div class="add-user-form">
+<input id="newUserEmail" type="email" placeholder="User email">
+<input id="newUserPassword" type="password" placeholder="Temporary password">
+<button class="save" onclick="createUser()">Add User</button>
+</div>
+<p class="small">Password must contain at least 6 characters. The new user will be created as a confirmed account.</p>
+<h3>Wallet Control</h3>
+<div class="wallet-box">
+<select id="walletUser"><option value="">Select a user</option></select>
+<input id="walletAmount" type="number" min="1" step="1" placeholder="Amount">
+<button class="save" onclick="applyWalletFromBox()">Apply</button>
+</div>
+<p class="small">Select a user and amount, then choose CREDIT to fund the wallet or DEBIT to subtract funds.</p>
+<h3>Registered Users</h3>
+<div class="user-search">
+<input id="userSearch" type="search" placeholder="Search user by email or ID..." oninput="filterUsers()">
+</div>
+<div class="table-wrap">
+<table>
+<thead><tr><th>Email</th><th>Registration</th><th>Last Login</th><th>Wallet Balance</th><th>Status</th><th>Actions</th></tr></thead>
+<tbody id="usersTable"></tbody>
+</table>
+</div>
+</div>
+
+<div class="section">
+<h2>Service Pricing & ON/OFF Controls</h2>
+<p class="small">Each service below has its own independent ON/OFF switch. Turning one service OFF does not automatically turn off the others.</p>
+<div id="services"></div>
+</div>
+
+<div class="section">
+<h2>Payment Methods</h2>
+<p class="small">Turn a payment method ON or OFF. Existing customer accounts are not deleted.</p>
+<div id="paymentMethods"></div>
+</div>
+
+<div class="section">
+<h2>Broadcast Announcement</h2>
+<p class="small">Create an announcement that can be shown to customers when they log in.</p>
+<input id="announcementTitle" type="text" placeholder="Announcement title">
+<br><br>
+<textarea id="announcementMessage" placeholder="Write your announcement here..."></textarea>
+<br><br>
+<button class="save" onclick="createAnnouncement()">Publish Announcement</button>
+<div id="announcements"></div>
+</div>
+
+<div class="section">
+<div class="section-header">
+<h2>Wallet Transactions</h2>
+<button class="refresh-btn" onclick="clearTransactionFilters()">Clear Filters</button>
+</div>
+<p class="small">Search deposits, service payments, admin wallet adjustments and other wallet transactions.</p>
+<div class="transaction-filters">
+<input id="transactionSearch" type="search" placeholder="Search email, description or reference..." oninput="applyTransactionFilters()">
+<select id="transactionType" onchange="applyTransactionFilters()">
+<option value="all">All Types</option>
+<option value="credit">Credit</option>
+<option value="debit">Debit</option>
+<option value="deposit">Deposit</option>
+</select>
+<select id="transactionCategory" onchange="applyTransactionFilters()">
+<option value="all">All Categories</option>
+<option value="nin">NIN</option>
+<option value="bvn">BVN</option>
+<option value="admin">Admin Adjustment</option>
+<option value="funding">Wallet Funding</option>
+</select>
+</div>
+<div class="table-wrap">
+<table>
+<thead><tr><th>Date</th><th>User</th><th>Type</th><th>Amount</th><th>Description</th><th>Reference</th></tr></thead>
+<tbody id="transactionsTable"></tbody>
+</table>
+</div>
+</div>
+
+<div class="section">
+<h2>NIN Reprint Transactions</h2>
+<div class="table-wrap">
+<table>
+<thead><tr><th>Date</th><th>User</th><th>Amount</th><th>Status</th></tr></thead>
+<tbody id="ninTable"></tbody>
+</table>
+</div>
+</div>
+
+<div class="section">
+<h2>BVN Reprint Transactions</h2>
+<div class="table-wrap">
+<table>
+<thead><tr><th>Date</th><th>User</th><th>Amount</th><th>Status</th></tr></thead>
+<tbody id="bvnTable"></tbody>
+</table>
+</div>
+</div>
+
+<div class="section">
+<h2>NIN Personalisation Requests</h2>
+<p class="small">View customer requests, tracking IDs and provider processing statuses.</p>
+<div class="table-wrap">
+<table>
+<thead><tr><th>Date</th><th>User</th><th>Tracking ID</th><th>Slip Type</th><th>Provider ID</th><th>Status</th></tr></thead>
+<tbody id="personalisationTable"></tbody>
+</table>
+</div>
+</div>
+
+<div class="section">
+<h2>NIN Modification Requests</h2>
+<p class="small">Review requests, view submitted documents, upload completed files, update paid requests and process refunds.</p>
+<div class="table-wrap">
+<table>
+<thead>
+<tr><th>Date</th><th>User</th><th>Reference</th><th>Modification</th><th>NIN</th><th>Amount</th><th>Payment</th><th>Request Status</th><th>Documents</th><th>Completed File Upload</th><th>Admin Actions</th></tr>
+</thead>
+<tbody id="modificationTable">
+<tr><td colspan="11" class="empty">Loading NIN Modification requests...</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+
+<div class="section">
+<h2>IPE Clearance Requests</h2>
+<p class="small">View IPE tracking IDs, provider references and clearance statuses.</p>
+<div class="table-wrap">
+<table>
+<thead><tr><th>Date</th><th>User</th><th>Tracking ID</th><th>Reference</th><th>Amount</th><th>Provider Amount</th><th>Clearance Status</th><th>Transaction Status</th></tr></thead>
+<tbody id="ipeTable"></tbody>
+</table>
+</div>
+</div>
+
+</div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
 <script>
-const SUPABASE_URL = "https://iknhifndgpwibkfidggq.supabase.co";
-const SUPABASE_KEY = "sb_publishable_xELauxOMm7eMkNrPz55Mrw_LVkRoASn";
+const SUPABASE_URL="https://iknhifndgpwibkfidggq.supabase.co";
+const SUPABASE_KEY="sb_publishable_xELauxOMm7eMkNrPz55Mrw_LVkRoASn";
+const supabaseClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+const FUNCTION_URL=SUPABASE_URL+"/functions/v1/admin-dashboard";
 
-const supabaseClient = window.supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_KEY
-);
+/* Four independent provider controls have been added here. */
+const ALLOWED_SERVICES=[
+"nin_standard",
+"nin_lost",
+"nin_premium",
+"bvn_reprint",
 
-const FUNCTION_URL = SUPABASE_URL + "/functions/v1/admin-dashboard";
+"nin_reprint_1",
+"nin_reprint_2",
+"bvn_reprint_1",
+"bvn_reprint_2",
 
-const ALLOWED_SERVICES = [
-  "nin_standard",
-  "nin_lost",
-  "nin_premium",
-  "bvn_reprint",
-  "ipe_clearance",
-  "nin_validation_no_record",
-  "nin_validation_update_record",
-  "nin_personalisation_standard",
-  "nin_personalisation_premium",
-  "nin_modification_name",
-  "nin_modification_dob",
-  "nin_modification_phone",
-  "nin_modification_address"
+"ipe_clearance",
+"nin_validation_no_record",
+"nin_validation_update_record",
+"nin_personalisation_standard",
+"nin_personalisation_premium",
+"nin_modification_name",
+"nin_modification_dob",
+"nin_modification_phone",
+"nin_modification_address"
 ];
 
-let allUsers = [];
-let allWalletTransactions = [];
+const SERVICE_ORDER=[
+"nin_reprint_1",
+"nin_reprint_2",
+"bvn_reprint_1",
+"bvn_reprint_2",
+"nin_standard",
+"nin_lost",
+"nin_premium",
+"bvn_reprint",
+"ipe_clearance",
+"nin_validation_no_record",
+"nin_validation_update_record",
+"nin_personalisation_standard",
+"nin_personalisation_premium",
+"nin_modification_name",
+"nin_modification_dob",
+"nin_modification_phone",
+"nin_modification_address"
+];
 
-async function callAdmin(action, extra = {}) {
-  const {
-    data: { session },
-    error
-  } = await supabaseClient.auth.getSession();
+const PROVIDER_LABELS={
+nin_reprint_1:"NIN Reprinting 1 — NINSLIP",
+nin_reprint_2:"NIN Reprinting 2 — IDFIXER",
+bvn_reprint_1:"BVN Reprinting 1 — NINSLIP",
+bvn_reprint_2:"BVN Reprinting 2 — IDFIXER"
+};
 
-  if (error || !session) {
-    window.location.href = "login.html?next=admin.html";
-    return null;
-  }
+let allUsers=[];
+let allWalletTransactions=[];
 
-  const response = await fetch(FUNCTION_URL, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": "Bearer " + session.access_token
-    },
-    body: JSON.stringify({ action, ...extra })
-  });
-
-  let result;
-
-  try {
-    result = await response.json();
-  } catch {
-    throw new Error("Invalid response from admin server.");
-  }
-
-  if (!response.ok || !result.success) {
-    throw new Error(result.message || "Admin request failed.");
-  }
-
-  return result;
+async function callAdmin(action,extra={}){
+const {data:{session},error}=await supabaseClient.auth.getSession();
+if(error||!session){window.location.href="login.html?next=admin.html";return null}
+const response=await fetch(FUNCTION_URL,{
+method:"POST",
+headers:{"Content-Type":"application/json","Authorization":"Bearer "+session.access_token},
+body:JSON.stringify({action,...extra})
+});
+let result;
+try{result=await response.json()}catch{throw new Error("Invalid response from admin server.")}
+if(!response.ok||!result.success)throw new Error(result.message||"Admin request failed.");
+return result;
 }
 
-async function loadDashboard() {
-  const loading = document.getElementById("loading");
-  const dashboard = document.getElementById("dashboard");
-  const errorBox = document.getElementById("error");
-
-  errorBox.style.display = "none";
-  loading.style.display = "block";
-  dashboard.style.display = "none";
-
-  try {
-    const result = await callAdmin("get_data");
-    if (!result) return;
-
-    loading.style.display = "none";
-    dashboard.style.display = "block";
-
-    const statistics = result.stats || {};
-
-    document.getElementById("totalUsers").textContent =
-      Number(statistics.total_users || 0).toLocaleString("en-NG");
-    document.getElementById("totalDeposits").textContent =
-      money(statistics.total_deposits);
-    document.getElementById("totalWallet").textContent =
-      money(statistics.total_wallet_balance);
-    document.getElementById("ninReprints").textContent =
-      Number(statistics.total_nin_reprints || 0).toLocaleString("en-NG");
-    document.getElementById("bvnReprints").textContent =
-      Number(statistics.total_bvn_reprints || 0).toLocaleString("en-NG");
-    document.getElementById("ninRevenue").textContent =
-      money(statistics.total_nin_revenue);
-    document.getElementById("bvnRevenue").textContent =
-      money(statistics.total_bvn_revenue);
-    document.getElementById("walletTransactions").textContent =
-      Number(statistics.total_wallet_transactions || 0).toLocaleString("en-NG");
-    document.getElementById("fundedUsers").textContent =
-      Number(statistics.total_users_with_wallet || 0).toLocaleString("en-NG");
-
-    document.getElementById("reportDeposits").textContent =
-      money(statistics.total_deposits);
-    document.getElementById("reportNIN").textContent =
-      money(statistics.total_nin_revenue);
-    document.getElementById("reportBVN").textContent =
-      money(statistics.total_bvn_revenue);
-    document.getElementById("reportWallet").textContent =
-      money(statistics.total_wallet_balance);
-    document.getElementById("reportTransactions").textContent =
-      Number(statistics.total_wallet_transactions || 0).toLocaleString("en-NG");
-    document.getElementById("reportFundedUsers").textContent =
-      Number(statistics.total_users_with_wallet || 0).toLocaleString("en-NG");
-
-    allUsers = result.users || [];
-    allWalletTransactions = result.wallet_transactions || [];
-
-    renderServices(result.service_settings || []);
-    renderPaymentMethods(result.payment_methods || []);
-    renderAnnouncements(result.announcements || []);
-    renderUsers(allUsers);
-    populateWalletUsers(allUsers);
-    applyTransactionFilters();
-    renderNIN(result.nin_transactions || []);
-    renderBVN(result.bvn_transactions || []);
-
-    renderPersonalisation(
-      result.nin_personalisation_requests || []
-    );
-
-    renderModification(
-      result.nin_modification_requests || []
-    );
-
-    renderIPE(
-      result.ipe_clearance_transactions || []
-    );
-
-  } catch (error) {
-    loading.style.display = "none";
-    dashboard.style.display = "none";
-    errorBox.style.display = "block";
-    errorBox.textContent = error.message ||
-      "Unable to load Gracioustec admin dashboard.";
-  }
+async function loadDashboard(){
+const loading=document.getElementById("loading");
+const dashboard=document.getElementById("dashboard");
+const errorBox=document.getElementById("error");
+errorBox.style.display="none";
+loading.style.display="block";
+dashboard.style.display="none";
+try{
+const result=await callAdmin("get_data");
+if(!result)return;
+loading.style.display="none";
+dashboard.style.display="block";
+const s=result.stats||{};
+const set=(id,value)=>document.getElementById(id).textContent=value;
+set("totalUsers",Number(s.total_users||0).toLocaleString("en-NG"));
+set("totalDeposits",money(s.total_deposits));
+set("totalWallet",money(s.total_wallet_balance));
+set("ninReprints",Number(s.total_nin_reprints||0).toLocaleString("en-NG"));
+set("bvnReprints",Number(s.total_bvn_reprints||0).toLocaleString("en-NG"));
+set("ninRevenue",money(s.total_nin_revenue));
+set("bvnRevenue",money(s.total_bvn_revenue));
+set("walletTransactions",Number(s.total_wallet_transactions||0).toLocaleString("en-NG"));
+set("fundedUsers",Number(s.total_users_with_wallet||0).toLocaleString("en-NG"));
+set("reportDeposits",money(s.total_deposits));
+set("reportNIN",money(s.total_nin_revenue));
+set("reportBVN",money(s.total_bvn_revenue));
+set("reportWallet",money(s.total_wallet_balance));
+set("reportTransactions",Number(s.total_wallet_transactions||0).toLocaleString("en-NG"));
+set("reportFundedUsers",Number(s.total_users_with_wallet||0).toLocaleString("en-NG"));
+allUsers=result.users||[];
+allWalletTransactions=result.wallet_transactions||[];
+renderServices(result.service_settings||[]);
+renderPaymentMethods(result.payment_methods||[]);
+renderAnnouncements(result.announcements||[]);
+renderUsers(allUsers);
+populateWalletUsers(allUsers);
+applyTransactionFilters();
+renderNIN(result.nin_transactions||[]);
+renderBVN(result.bvn_transactions||[]);
+renderPersonalisation(result.nin_personalisation_requests||[]);
+renderModification(result.nin_modification_requests||[]);
+renderIPE(result.ipe_clearance_transactions||[]);
+}catch(error){
+loading.style.display="none";
+dashboard.style.display="none";
+errorBox.style.display="block";
+errorBox.textContent=error.message||"Unable to load Gracioustec admin dashboard.";
+}
 }
 
-function money(value) {
-  return "₦" + Number(value || 0).toLocaleString("en-NG", {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2
-  });
+function money(value){
+return "₦"+Number(value||0).toLocaleString("en-NG",{minimumFractionDigits:2,maximumFractionDigits:2});
+}
+function showSuccess(message){
+const box=document.getElementById("success");
+box.textContent=message;
+box.style.display="block";
+setTimeout(()=>box.style.display="none",3000);
+}
+function renderUsers(users){
+const table=document.getElementById("usersTable");
+table.innerHTML="";
+if(!users.length){table.innerHTML='<tr><td colspan="6" class="empty">No registered users found.</td></tr>';return}
+const search=(document.getElementById("userSearch")?.value||"").trim().toLowerCase();
+const filtered=users.filter(user=>{
+const email=String(user.email||"").toLowerCase();
+const id=String(user.id||"").toLowerCase();
+return !search||email.includes(search)||id.includes(search);
+});
+if(!filtered.length){table.innerHTML='<tr><td colspan="6" class="empty">No user matches your search.</td></tr>';return}
+filtered.forEach(user=>{
+const row=document.createElement("tr");
+const confirmed=Boolean(user.email_confirmed_at);
+row.innerHTML=`
+<td><strong>${escapeHTML(user.email||"")}</strong><div class="small">${escapeHTML(user.id||"")}</div></td>
+<td>${formatDate(user.created_at)}</td>
+<td>${user.last_sign_in_at?formatDate(user.last_sign_in_at):"Never"}</td>
+<td><span class="user-balance">${money(user.wallet_balance)}</span></td>
+<td><span class="status-badge ${confirmed?"status-active":"status-inactive"}">${confirmed?"Confirmed":"Unconfirmed"}</span></td>
+<td><button class="action-btn fund-btn" data-action="fund">Fund</button><button class="action-btn subtract-btn" data-action="subtract">Subtract</button><button class="action-btn remove-btn" data-action="remove">Remove</button></td>`;
+row.querySelector('[data-action="fund"]').addEventListener("click",()=>fundUser(user.id,user.email||""));
+row.querySelector('[data-action="subtract"]').addEventListener("click",()=>subtractUser(user.id,user.email||""));
+row.querySelector('[data-action="remove"]').addEventListener("click",()=>removeUser(user.id,user.email||""));
+table.appendChild(row);
+});
+}
+function filterUsers(){renderUsers(allUsers)}
+function populateWalletUsers(users){
+const select=document.getElementById("walletUser");
+if(!select)return;
+const current=select.value;
+select.innerHTML='<option value="">Select a user</option>';
+users.forEach(user=>{
+const option=document.createElement("option");
+option.value=user.id;
+option.textContent=`${user.email||user.id} — ${money(user.wallet_balance)}`;
+select.appendChild(option);
+});
+if(current&&users.some(u=>u.id===current))select.value=current;
+}
+async function createUser(){
+const email=document.getElementById("newUserEmail").value.trim().toLowerCase();
+const password=document.getElementById("newUserPassword").value;
+if(!email){alert("Enter the user's email.");return}
+if(password.length<6){alert("Password must contain at least 6 characters.");return}
+if(!confirm(`Create this user?\n\n${email}`))return;
+try{
+await callAdmin("create_user",{email,password});
+document.getElementById("newUserEmail").value="";
+document.getElementById("newUserPassword").value="";
+showSuccess("User created successfully.");
+await loadDashboard();
+}catch(error){alert(error.message)}
+}
+async function fundUser(userId,email){
+const amount=prompt(`Enter amount to FUND:\n\n${email}`);
+if(amount===null)return;
+const value=Number(amount);
+if(!Number.isFinite(value)||value<=0){alert("Enter a valid amount greater than zero.");return}
+if(!confirm(`Fund ${email} with ${money(value)}?`))return;
+try{
+await callAdmin("adjust_wallet",{user_id:userId,amount:value,wallet_action:"credit",description:"Admin wallet funding"});
+showSuccess(`${email} wallet funded with ${money(value)}.`);
+await loadDashboard();
+}catch(error){alert(error.message)}
+}
+async function subtractUser(userId,email){
+const amount=prompt(`Enter amount to SUBTRACT:\n\n${email}`);
+if(amount===null)return;
+const value=Number(amount);
+if(!Number.isFinite(value)||value<=0){alert("Enter a valid amount greater than zero.");return}
+if(!confirm(`Remove ${money(value)} from ${email}'s wallet?`))return;
+try{
+await callAdmin("adjust_wallet",{user_id:userId,amount:value,wallet_action:"debit",description:"Admin wallet deduction"});
+showSuccess(`${money(value)} removed from ${email}'s wallet.`);
+await loadDashboard();
+}catch(error){alert(error.message)}
+}
+async function applyWalletFromBox(){
+const userId=document.getElementById("walletUser").value;
+const amount=Number(document.getElementById("walletAmount").value);
+if(!userId){alert("Select a user first.");return}
+if(!Number.isFinite(amount)||amount<=0){alert("Enter a valid amount.");return}
+const user=allUsers.find(u=>u.id===userId);
+if(!user){alert("User not found.");return}
+const action=prompt(`Enter action for ${user.email}:\n\nType CREDIT to fund the wallet.\nType DEBIT to subtract funds.`);
+if(!action)return;
+const normalized=action.trim().toLowerCase();
+if(normalized!=="credit"&&normalized!=="debit"){alert("Enter CREDIT or DEBIT.");return}
+if(normalized==="debit"&&Number(user.wallet_balance||0)<amount){alert("The user's current wallet balance is not enough for this deduction.");return}
+if(!confirm(normalized==="credit"?`Fund ${user.email} with ${money(amount)}?`:`Subtract ${money(amount)} from ${user.email}'s wallet?`))return;
+try{
+await callAdmin("adjust_wallet",{user_id:userId,amount,wallet_action:normalized,description:normalized==="credit"?"Admin wallet funding":"Admin wallet deduction"});
+document.getElementById("walletAmount").value="";
+showSuccess(normalized==="credit"?"User wallet funded successfully.":"Funds removed from user wallet successfully.");
+await loadDashboard();
+}catch(error){alert(error.message)}
+}
+async function removeUser(userId,email){
+const confirmed=confirm(`REMOVE USER?\n\n${email}\n\nThis will remove the user's login account.\n\nFinancial transaction records are retained for audit purposes.\n\nThis action cannot be undone.`);
+if(!confirmed)return;
+const secondConfirm=prompt(`To confirm removal of ${email}, type:\n\nREMOVE`);
+if(String(secondConfirm||"").trim().toUpperCase()!=="REMOVE"){alert("User removal cancelled.");return}
+try{await callAdmin("delete_user",{user_id:userId});showSuccess("User removed successfully.");await loadDashboard()}
+catch(error){alert(error.message)}
 }
 
-function showSuccess(message) {
-  const box = document.getElementById("success");
-  box.textContent = message;
-  box.style.display = "block";
-
-  setTimeout(() => {
-    box.style.display = "none";
-  }, 3000);
+/* SERVICE SETTINGS: includes the four separate provider switches. */
+function renderServices(services){
+const container=document.getElementById("services");
+container.innerHTML="";
+const filtered=services.filter(service=>ALLOWED_SERVICES.includes(service.service_code));
+if(!filtered.length){container.innerHTML='<div class="empty">No service settings found.</div>';return}
+filtered.sort((a,b)=>{
+const ai=SERVICE_ORDER.indexOf(a.service_code);
+const bi=SERVICE_ORDER.indexOf(b.service_code);
+return (ai<0?999:ai)-(bi<0?999:bi);
+});
+filtered.forEach(service=>{
+const code=service.service_code;
+const providerName=PROVIDER_LABELS[code];
+const displayName=providerName||service.service_name;
+const div=document.createElement("div");
+div.className="service";
+div.innerHTML=`
+<div>
+<div class="service-name">${escapeHTML(displayName)}</div>
+<div class="small">${escapeHTML(code)}</div>
+${providerName?'<span class="service-provider">SEPARATE PROVIDER CONTROL</span>':""}
+</div>
+<input type="number" id="price-${escapeAttribute(code)}" value="${Number(service.price||0)}" min="0" step="1">
+<button class="save" data-action="save">Save</button>
+<button class="toggle ${service.is_active?"active":"inactive"}" data-action="toggle">${service.is_active?"ON":"OFF"}</button>`;
+div.querySelector('[data-action="save"]').addEventListener("click",()=>updatePrice(code));
+div.querySelector('[data-action="toggle"]').addEventListener("click",()=>toggleService(code,!service.is_active));
+container.appendChild(div);
+});
+}
+async function updatePrice(serviceCode){
+const input=document.getElementById("price-"+escapeAttribute(serviceCode));
+if(!input){alert("Price field not found.");return}
+const price=Number(input.value);
+if(!Number.isFinite(price)||price<0){alert("Enter a valid price.");return}
+try{await callAdmin("update_service",{service_code:serviceCode,price});showSuccess("Price updated successfully.");await loadDashboard()}
+catch(error){alert(error.message)}
+}
+async function toggleService(serviceCode,active){
+try{
+await callAdmin("toggle_service",{service_code:serviceCode,is_active:active});
+showSuccess(active?"Service enabled.":"Service disabled.");
+await loadDashboard();
+}catch(error){alert(error.message)}
+}
+function renderPaymentMethods(methods){
+const container=document.getElementById("paymentMethods");
+container.innerHTML="";
+if(!methods.length){container.innerHTML='<div class="empty">No payment methods found.</div>';return}
+methods.forEach(method=>{
+const row=document.createElement("div");
+row.className="payment-row";
+row.innerHTML=`<div><strong>${escapeHTML(method.method_name)}</strong><div class="small">${escapeHTML(method.method_code)}</div></div><button class="toggle ${method.is_active?"active":"inactive"}">${method.is_active?"ON":"OFF"}</button>`;
+row.querySelector("button").addEventListener("click",()=>togglePayment(method.method_code,!method.is_active));
+container.appendChild(row);
+});
+}
+async function togglePayment(methodCode,active){
+try{await callAdmin("toggle_payment_method",{method_code:methodCode,is_active:active});showSuccess(active?"Payment method enabled.":"Payment method disabled.");await loadDashboard()}
+catch(error){alert(error.message)}
+}
+async function createAnnouncement(){
+const title=document.getElementById("announcementTitle").value.trim();
+const message=document.getElementById("announcementMessage").value.trim();
+if(!title||!message){alert("Enter both a title and message.");return}
+try{
+await callAdmin("create_announcement",{title,message,is_active:true});
+document.getElementById("announcementTitle").value="";
+document.getElementById("announcementMessage").value="";
+showSuccess("Announcement published successfully.");
+await loadDashboard();
+}catch(error){alert(error.message)}
+}
+function renderAnnouncements(announcements){
+const container=document.getElementById("announcements");
+container.innerHTML="";
+if(!announcements.length){container.innerHTML='<div class="empty">No announcements yet.</div>';return}
+announcements.forEach(item=>{
+const div=document.createElement("div");
+div.className="announcement-box";
+div.innerHTML=`<h3>${escapeHTML(item.title)}</h3><p>${escapeHTML(item.message)}</p><p class="small">Status: <strong>${item.is_active?"Active":"Inactive"}</strong></p><button class="toggle ${item.is_active?"active":"inactive"}" data-action="toggle">${item.is_active?"Deactivate":"Activate"}</button><button class="delete" data-action="delete">Delete</button>`;
+div.querySelector('[data-action="toggle"]').addEventListener("click",()=>toggleAnnouncement(item.id,!item.is_active));
+div.querySelector('[data-action="delete"]').addEventListener("click",()=>deleteAnnouncement(item.id));
+container.appendChild(div);
+});
+}
+async function toggleAnnouncement(id,active){
+try{await callAdmin("toggle_announcement",{announcement_id:id,is_active:active});showSuccess(active?"Announcement activated.":"Announcement deactivated.");await loadDashboard()}
+catch(error){alert(error.message)}
+}
+async function deleteAnnouncement(id){
+if(!confirm("Delete this announcement?"))return;
+try{await callAdmin("delete_announcement",{announcement_id:id});showSuccess("Announcement deleted.");await loadDashboard()}
+catch(error){alert(error.message)}
 }
 
-function renderUsers(users) {
-  const table = document.getElementById("usersTable");
-  table.innerHTML = "";
+function applyTransactionFilters(){
+const table=document.getElementById("transactionsTable");
+if(!table)return;
+const search=String(document.getElementById("transactionSearch")?.value||"").trim().toLowerCase();
+const typeFilter=document.getElementById("transactionType")?.value||"all";
+const categoryFilter=document.getElementById("transactionCategory")?.value||"all";
+const filtered=allWalletTransactions.filter(item=>{
+const email=findUserEmail(item.user_id).toLowerCase();
+const description=String(item.description||"").toLowerCase();
+const reference=String(item.reference||"").toLowerCase();
+const type=String(item.type||"").toLowerCase();
+const searchMatch=!search||email.includes(search)||description.includes(search)||reference.includes(search);
+let typeMatch=true;
+if(typeFilter!=="all"){
+if(typeFilter==="deposit")typeMatch=type.includes("deposit")||type.includes("fund")||reference.includes("paymentpoint")||reference.includes("recopay")||reference.includes("reckopay");
+else typeMatch=type===typeFilter;
+}
+let categoryMatch=true;
+if(categoryFilter==="nin")categoryMatch=reference.startsWith("nin-");
+else if(categoryFilter==="bvn")categoryMatch=reference.startsWith("bvn-");
+else if(categoryFilter==="admin")categoryMatch=reference.startsWith("admin-credit-")||reference.startsWith("admin-debit-");
+else if(categoryFilter==="funding")categoryMatch=type.includes("deposit")||type.includes("fund")||reference.includes("paymentpoint")||reference.includes("recopay")||reference.includes("reckopay");
+return searchMatch&&typeMatch&&categoryMatch;
+});
+renderTransactions(filtered);
+}
+function clearTransactionFilters(){
+document.getElementById("transactionSearch").value="";
+document.getElementById("transactionType").value="all";
+document.getElementById("transactionCategory").value="all";
+applyTransactionFilters();
+}
+function renderTransactions(transactions){
+const table=document.getElementById("transactionsTable");
+table.innerHTML="";
+if(!transactions.length){table.innerHTML='<tr><td colspan="6" class="empty">No wallet transactions found.</td></tr>';return}
+transactions.forEach(item=>{
+const row=document.createElement("tr");
+const type=String(item.type||"").toLowerCase();
+const reference=String(item.reference||"").toLowerCase();
+const isCredit=type==="credit"||type==="deposit"||type==="fund"||reference.includes("paymentpoint")||reference.includes("recopay")||reference.includes("reckopay");
+const typeClass=isCredit?"credit":"debit";
+const sign=isCredit?"+":"-";
+row.innerHTML=`<td>${formatDate(item.created_at)}</td><td>${escapeHTML(findUserEmail(item.user_id))}</td><td><span class="${typeClass}">${escapeHTML(item.type||"")}</span></td><td><span class="${typeClass}">${sign}${money(item.amount)}</span></td><td>${escapeHTML(item.description||"")}</td><td>${escapeHTML(item.reference||"")}</td>`;
+table.appendChild(row);
+});
+}
+function renderNIN(transactions){
+const table=document.getElementById("ninTable");
+table.innerHTML="";
+if(!transactions.length){table.innerHTML='<tr><td colspan="4" class="empty">No NIN reprint transactions found.</td></tr>';return}
+transactions.forEach(item=>{
+const row=document.createElement("tr");
+row.innerHTML=`<td>${formatDate(item.created_at)}</td><td>${escapeHTML(findUserEmail(item.user_id))}</td><td>${money(item.amount)}</td><td>${escapeHTML(item.status||"Paid")}</td>`;
+table.appendChild(row);
+});
+}
+function renderBVN(transactions){
+const table=document.getElementById("bvnTable");
+table.innerHTML="";
+if(!transactions.length){table.innerHTML='<tr><td colspan="4" class="empty">No BVN reprint transactions found.</td></tr>';return}
+transactions.forEach(item=>{
+const row=document.createElement("tr");
+row.innerHTML=`<td>${formatDate(item.created_at)}</td><td>${escapeHTML(findUserEmail(item.user_id))}</td><td>${money(item.amount)}</td><td>${escapeHTML(item.status||"Paid")}</td>`;
+table.appendChild(row);
+});
+}
+function findUserEmail(userId){
+const user=allUsers.find(u=>u.id===userId);
+return user?.email||userId||"";
+}
+function formatDate(date){
+if(!date)return "";
+const parsed=new Date(date);
+if(Number.isNaN(parsed.getTime()))return String(date);
+return parsed.toLocaleString("en-NG");
+}
+function escapeHTML(value){
+return String(value??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;");
+}
+function escapeAttribute(value){return String(value??"").replace(/[^a-zA-Z0-9_-]/g,"_")}
 
-  if (!users.length) {
-    table.innerHTML = '<tr><td colspan="6" class="empty">No registered users found.</td></tr>';
-    return;
-  }
-
-  const search = (document.getElementById("userSearch")?.value || "")
-    .trim().toLowerCase();
-
-  const filtered = users.filter(user => {
-    const email = String(user.email || "").toLowerCase();
-    const id = String(user.id || "").toLowerCase();
-    return !search || email.includes(search) || id.includes(search);
-  });
-
-  if (!filtered.length) {
-    table.innerHTML = '<tr><td colspan="6" class="empty">No user matches your search.</td></tr>';
-    return;
-  }
-
-  filtered.forEach(user => {
-    const row = document.createElement("tr");
-    const confirmed = Boolean(user.email_confirmed_at);
-
-    row.innerHTML = `
-      <td><strong>${escapeHTML(user.email || "")}</strong>
-        <div class="small">${escapeHTML(user.id || "")}</div></td>
-      <td>${formatDate(user.created_at)}</td>
-      <td>${user.last_sign_in_at ? formatDate(user.last_sign_in_at) : "Never"}</td>
-      <td><span class="user-balance">${money(user.wallet_balance)}</span></td>
-      <td><span class="status-badge ${confirmed ? "status-active" : "status-inactive"}">
-        ${confirmed ? "Confirmed" : "Unconfirmed"}</span></td>
-      <td>
-        <button class="action-btn fund-btn" data-action="fund">Fund</button>
-        <button class="action-btn subtract-btn" data-action="subtract">Subtract</button>
-        <button class="action-btn remove-btn" data-action="remove">Remove</button>
-      </td>`;
-
-    row.querySelector('[data-action="fund"]').addEventListener("click", () =>
-      fundUser(user.id, user.email || ""));
-    row.querySelector('[data-action="subtract"]').addEventListener("click", () =>
-      subtractUser(user.id, user.email || ""));
-    row.querySelector('[data-action="remove"]').addEventListener("click", () =>
-      removeUser(user.id, user.email || ""));
-
-    table.appendChild(row);
-  });
+function renderPersonalisation(records){
+const table=document.getElementById("personalisationTable");
+table.innerHTML="";
+if(!records.length){table.innerHTML='<tr><td colspan="6" class="empty">No NIN Personalisation requests found.</td></tr>';return}
+records.forEach(item=>{
+const row=document.createElement("tr");
+row.innerHTML=`<td>${formatDate(item.created_at)}</td><td>${escapeHTML(findUserEmail(item.user_id))}</td><td><strong>${escapeHTML(item.tracking_id||"")}</strong></td><td>${escapeHTML(item.slip_type||"")}</td><td>${escapeHTML(item.provider_id||"Pending")}</td><td>${escapeHTML(item.status||"Pending")}</td>`;
+table.appendChild(row);
+});
 }
 
-function filterUsers() {
-  renderUsers(allUsers);
+async function uploadModificationFile(requestId,file,button,statusEl){
+const allowedTypes=["application/pdf","image/jpeg","image/png","image/webp"];
+if(!file||!allowedTypes.includes(file.type)){alert("Select a PDF, JPG, PNG or WEBP file.");return}
+if(file.size===0||file.size>10*1024*1024){alert("The file must not exceed 10MB.");return}
+if(!confirm("Upload this completed NIN Modification file?"))return;
+button.disabled=true;
+button.textContent="Uploading...";
+statusEl.textContent="Uploading file...";
+try{
+const {data,error}=await supabaseClient.auth.getSession();
+if(error||!data.session)throw new Error("Please log in again.");
+const formData=new FormData();
+formData.append("action","upload_completed_file");
+formData.append("request_id",requestId);
+formData.append("file",file);
+const response=await fetch(SUPABASE_URL+"/functions/v1/upload-nin-modification-file",{
+method:"POST",
+headers:{"Authorization":"Bearer "+data.session.access_token},
+body:formData
+});
+const result=await response.json();
+if(!response.ok||!result.success)throw new Error(result.message||"Upload failed.");
+statusEl.textContent="Upload successful.";
+showSuccess("Completed file uploaded successfully.");
+await loadDashboard();
+}catch(error){statusEl.textContent=error.message;alert(error.message)}
+finally{button.disabled=false;button.textContent="Upload Completed File"}
 }
 
-function populateWalletUsers(users) {
-  const select = document.getElementById("walletUser");
-  if (!select) return;
-
-  const current = select.value;
-  select.innerHTML = '<option value="">Select a user</option>';
-
-  users.forEach(user => {
-    const option = document.createElement("option");
-    option.value = user.id;
-    option.textContent = `${user.email || user.id} — ${money(user.wallet_balance)}`;
-    select.appendChild(option);
-  });
-
-  if (current && users.some(u => u.id === current)) {
-    select.value = current;
-  }
+function renderModification(records){
+const table=document.getElementById("modificationTable");
+table.innerHTML="";
+if(!records.length){table.innerHTML='<tr><td colspan="11" class="empty">No NIN Modification requests found.</td></tr>';return}
+records.forEach(item=>{
+const details=item.request_details||{};
+const row=document.createElement("tr");
+const paid=String(item.payment_status||"").toLowerCase()==="paid";
+const passportLink=item.passport_photo_url?`<a href="${escapeHTML(item.passport_photo_url)}" target="_blank" rel="noopener">View Passport</a>`:"Unavailable";
+const supportingLink=item.supporting_document_url?`<a href="${escapeHTML(item.supporting_document_url)}" target="_blank" rel="noopener">View Document</a>`:"Unavailable";
+const uploadedFile=item.completed_file_name?`<strong>${escapeHTML(item.completed_file_name)}</strong>`:"No completed file uploaded";
+row.innerHTML=`
+<td>${formatDate(item.created_at)}</td>
+<td>${escapeHTML(findUserEmail(item.user_id))}</td>
+<td><strong>${escapeHTML(item.payment_reference||item.id||"")}</strong></td>
+<td>${escapeHTML(item.modification_type||"")}</td>
+<td>${escapeHTML(details.nin||"")}</td>
+<td>${money(item.amount)}</td>
+<td><span class="status-badge ${paid?"status-active":"status-inactive"}">${escapeHTML(item.payment_status||"Unpaid")}</span></td>
+<td>${escapeHTML(item.request_status||"Pending")}</td>
+<td class="document-links">${passportLink}<br>${supportingLink}</td>
+<td>${uploadedFile}<br><input type="file" class="completed-file-input" accept=".pdf,.jpg,.jpeg,.png,.webp" ${paid?"":"disabled"}><br><button class="action-btn fund-btn upload-completed-btn" ${paid?"":"disabled"}>Upload Completed File</button><div class="upload-status"></div></td>
+<td><button class="action-btn fund-btn" data-action="update" ${paid?"":"disabled"}>Update</button><button class="action-btn remove-btn" data-action="refund" ${paid?"":"disabled"}>Refund</button></td>`;
+row.querySelector('[data-action="update"]').addEventListener("click",()=>updateModificationRequest(item));
+row.querySelector('[data-action="refund"]').addEventListener("click",()=>refundModificationRequest(item));
+const fileInput=row.querySelector(".completed-file-input");
+const uploadButton=row.querySelector(".upload-completed-btn");
+const uploadStatus=row.querySelector(".upload-status");
+uploadButton.addEventListener("click",()=>{
+const file=fileInput.files[0];
+if(!file){alert("Please select the completed file first.");return}
+uploadModificationFile(item.id,file,uploadButton,uploadStatus);
+});
+table.appendChild(row);
+});
+}
+async function updateModificationRequest(item){
+if(String(item.payment_status||"").toLowerCase()!=="paid"){alert("This request cannot be processed because payment is not confirmed.");return}
+const currentStatus=String(item.request_status||"pending").toLowerCase();
+const status=prompt("Choose the new request status:\n\nPENDING\nPROCESSING\nCOMPLETED\nREJECTED\n\nCurrent status: "+currentStatus);
+if(status===null)return;
+const newStatus=status.trim().toLowerCase();
+const allowed=["pending","processing","completed","rejected"];
+if(!allowed.includes(newStatus)){alert("Invalid status. Use pending, processing, completed or rejected.");return}
+const adminNote=prompt("Enter an admin note (optional):");
+if(adminNote===null)return;
+if(!confirm("Update this NIN Modification request to "+newStatus.toUpperCase()+"?"))return;
+try{
+await callAdmin("update_nin_modification",{request_id:item.id,request_status:newStatus,admin_note:adminNote.trim()});
+showSuccess("NIN Modification status updated.");
+await loadDashboard();
+}catch(error){alert(error.message)}
+}
+async function refundModificationRequest(item){
+if(String(item.payment_status||"").toLowerCase()!=="paid"){alert("This request has no confirmed payment to refund.");return}
+if(!item.payment_reference){alert("This request has no payment reference.");return}
+const reason=prompt("Enter the reason for refunding this NIN Modification request:");
+if(reason===null)return;
+if(!reason.trim()){alert("A refund reason is required.");return}
+const confirmed=confirm("You are about to refund this NIN Modification request.\n\nReference: "+item.payment_reference+"\nAmount: "+money(item.amount)+"\n\nContinue?");
+if(!confirmed)return;
+try{
+await callAdmin("refund_nin_modification",{payment_reference:item.payment_reference,reason:reason.trim()});
+showSuccess("NIN Modification refund processed.");
+await loadDashboard();
+}catch(error){alert(error.message)}
+}
+function renderIPE(records){
+const table=document.getElementById("ipeTable");
+table.innerHTML="";
+if(!records.length){table.innerHTML='<tr><td colspan="8" class="empty">No IPE Clearance requests found.</td></tr>';return}
+records.forEach(item=>{
+const row=document.createElement("tr");
+row.innerHTML=`<td>${formatDate(item.created_at)}</td><td>${escapeHTML(findUserEmail(item.user_id))}</td><td><strong>${escapeHTML(item.tracking_id||"")}</strong></td><td>${escapeHTML(item.reference||"")}</td><td>${money(item.amount)}</td><td>${money(item.provider_amount)}</td><td>${escapeHTML(item.clearance_status||"Pending")}</td><td>${escapeHTML(item.status||"Pending")}</td>`;
+table.appendChild(row);
+});
 }
 
-async function createUser() {
-  const email = document.getElementById("newUserEmail").value.trim().toLowerCase();
-  const password = document.getElementById("newUserPassword").value;
-
-  if (!email) {
-    alert("Enter the user's email.");
-    return;
-  }
-
-  if (password.length < 6) {
-    alert("Password must contain at least 6 characters.");
-    return;
-  }
-
-  if (!confirm(`Create this user?\n\n${email}`)) return;
-
-  try {
-    await callAdmin("create_user", { email, password });
-    document.getElementById("newUserEmail").value = "";
-    document.getElementById("newUserPassword").value = "";
-    showSuccess("User created successfully.");
-    await loadDashboard();
-  } catch (error) {
-    alert(error.message);
-  }
+async function logout(){
+await supabaseClient.auth.signOut();
+window.location.href="login.html";
 }
 
-async function fundUser(userId, email) {
-  const amount = prompt(`Enter amount to FUND:\n\n${email}`);
-  if (amount === null) return;
-
-  const value = Number(amount);
-  if (!Number.isFinite(value) || value <= 0) {
-    alert("Enter a valid amount greater than zero.");
-    return;
-  }
-
-  if (!confirm(`Fund ${email} with ${money(value)}?`)) return;
-
-  try {
-    await callAdmin("adjust_wallet", {
-      user_id: userId,
-      amount: value,
-      wallet_action: "credit",
-      description: "Admin wallet funding"
-    });
-
-    showSuccess(`${email} wallet funded with ${money(value)}.`);
-    await loadDashboard();
-  } catch (error) {
-    alert(error.message);
-  }
+/* DAILY EMAIL MANAGER */
+(function(){
+const walletSection=[...document.querySelectorAll(".section")].find(section=>section.querySelector("h2")?.textContent.trim()==="Wallet Transactions");
+if(!walletSection)return;
+const section=document.createElement("div");
+section.className="section";
+section.innerHTML=`
+<h2>Daily Email Manager</h2>
+<p class="small">Edit your daily greeting, marketing message and image. Promotional email sending is currently OFF.</p>
+<p id="dailyEmailStatus"><strong>Status: OFF</strong></p>
+<label>Email Subject</label>
+<input id="dailyEmailSubject" type="text" placeholder="Enter email subject">
+<br><br>
+<label>Daily Email Message</label>
+<textarea id="dailyEmailMessage" placeholder="Write your daily greeting and announcement"></textarea>
+<br><br>
+<label>Daily Marketing Image</label>
+<input id="dailyEmailImage" type="file" accept="image/jpeg,image/png,image/webp,image/gif">
+<br><br>
+<button class="save" id="uploadDailyEmailButton">Upload Image</button>
+<p id="dailyEmailImageStatus" class="small"></p>
+<button class="save" id="saveDailyEmailButton">Save Daily Email</button>
+<p class="small">Saving content does not activate or send promotional emails.</p>`;
+walletSection.parentNode.insertBefore(section,walletSection);
+const DAILY_EMAIL_URL=SUPABASE_URL+"/functions/v1/daily-email-admin";
+async function dailyEmailRequest(action,extra={}){
+const {data,error}=await supabaseClient.auth.getSession();
+if(error||!data.session)throw new Error("Your login session has expired. Please log in again.");
+const response=await fetch(DAILY_EMAIL_URL,{
+method:"POST",
+headers:{"Content-Type":"application/json","Authorization":"Bearer "+data.session.access_token},
+body:JSON.stringify({action,...extra})
+});
+const result=await response.json();
+if(!response.ok||!result.success)throw new Error(result.message||"Daily email request failed.");
+return result;
 }
-
-async function subtractUser(userId, email) {
-  const amount = prompt(`Enter amount to SUBTRACT:\n\n${email}`);
-  if (amount === null) return;
-
-  const value = Number(amount);
-  if (!Number.isFinite(value) || value <= 0) {
-    alert("Enter a valid amount greater than zero.");
-    return;
-  }
-
-  if (!confirm(`Remove ${money(value)} from ${email}'s wallet?`)) return;
-
-  try {
-    await callAdmin("adjust_wallet", {
-      user_id: userId,
-      amount: value,
-      wallet_action: "debit",
-      description: "Admin wallet deduction"
-    });
-
-    showSuccess(`${money(value)} removed from ${email}'s wallet.`);
-    await loadDashboard();
-  } catch (error) {
-    alert(error.message);
-  }
+async function loadDailyEmailSettings(){
+try{
+const result=await dailyEmailRequest("get_settings");
+const settings=result.settings||{};
+document.getElementById("dailyEmailSubject").value=settings.subject||"";
+document.getElementById("dailyEmailMessage").value=settings.message||"";
+document.getElementById("dailyEmailStatus").textContent="Status: "+(settings.is_enabled?"ON":"OFF")+" — promotional sending remains protected.";
+if(settings.image_url)document.getElementById("dailyEmailImageStatus").textContent="Current image is uploaded.";
+}catch(error){document.getElementById("dailyEmailStatus").textContent="Unable to load email settings: "+error.message}
 }
-
-async function applyWalletFromBox() {
-  const userId = document.getElementById("walletUser").value;
-  const amount = Number(document.getElementById("walletAmount").value);
-
-  if (!userId) {
-    alert("Select a user first.");
-    return;
-  }
-
-  if (!Number.isFinite(amount) || amount <= 0) {
-    alert("Enter a valid amount.");
-    return;
-  }
-
-  const user = allUsers.find(u => u.id === userId);
-  if (!user) {
-    alert("User not found.");
-    return;
-  }
-
-  const action = prompt(
-    `Enter action for ${user.email}:\n\n` +
-    "Type CREDIT to fund the wallet.\n" +
-    "Type DEBIT to subtract funds."
-  );
-
-  if (!action) return;
-
-  const normalized = action.trim().toLowerCase();
-
-  if (normalized !== "credit" && normalized !== "debit") {
-    alert("Enter CREDIT or DEBIT.");
-    return;
-  }
-
-  if (normalized === "debit" && Number(user.wallet_balance || 0) < amount) {
-    alert("The user's current wallet balance is not enough for this deduction.");
-    return;
-  }
-
-  const confirmed = confirm(
-    normalized === "credit"
-      ? `Fund ${user.email} with ${money(amount)}?`
-      : `Subtract ${money(amount)} from ${user.email}'s wallet?`
-  );
-
-  if (!confirmed) return;
-
-  try {
-    await callAdmin("adjust_wallet", {
-      user_id: userId,
-      amount,
-      wallet_action: normalized,
-      description: normalized === "credit"
-        ? "Admin wallet funding"
-        : "Admin wallet deduction"
-    });
-
-    document.getElementById("walletAmount").value = "";
-    showSuccess(normalized === "credit"
-      ? "User wallet funded successfully."
-      : "Funds removed from user wallet successfully.");
-    await loadDashboard();
-  } catch (error) {
-    alert(error.message);
-  }
+async function saveDailyEmailSettings(){
+const subject=document.getElementById("dailyEmailSubject").value.trim();
+const message=document.getElementById("dailyEmailMessage").value.trim();
+if(!subject||!message){alert("Enter both the email subject and message.");return}
+const button=document.getElementById("saveDailyEmailButton");
+button.disabled=true;button.textContent="Saving...";
+try{
+const result=await dailyEmailRequest("save_settings",{subject,message});
+alert(result.message);
+await loadDailyEmailSettings();
+}catch(error){alert(error.message)}
+finally{button.disabled=false;button.textContent="Save Daily Email"}
 }
-
-async function removeUser(userId, email) {
-  const confirmed = confirm(
-    `REMOVE USER?\n\n${email}\n\n` +
-    "This will remove the user's login account.\n\n" +
-    "Financial transaction records are retained for audit purposes.\n\n" +
-    "This action cannot be undone."
-  );
-
-  if (!confirmed) return;
-
-  const secondConfirm = prompt(
-    `To confirm removal of ${email}, type:\n\nREMOVE`
-  );
-
-  if (String(secondConfirm || "").trim().toUpperCase() !== "REMOVE") {
-    alert("User removal cancelled.");
-    return;
-  }
-
-  try {
-    await callAdmin("delete_user", { user_id: userId });
-    showSuccess("User removed successfully.");
-    await loadDashboard();
-  } catch (error) {
-    alert(error.message);
-  }
+async function uploadDailyEmailImage(){
+const input=document.getElementById("dailyEmailImage");
+const file=input.files[0];
+if(!file){alert("Please select an image first.");return}
+if(file.size>5*1024*1024){alert("Image must not exceed 5MB.");return}
+const button=document.getElementById("uploadDailyEmailButton");
+const status=document.getElementById("dailyEmailImageStatus");
+button.disabled=true;button.textContent="Uploading...";status.textContent="Please wait...";
+try{
+const {data,error}=await supabaseClient.auth.getSession();
+if(error||!data.session)throw new Error("Please log in again.");
+const formData=new FormData();
+formData.append("file",file);
+const response=await fetch(DAILY_EMAIL_URL,{method:"POST",headers:{"Authorization":"Bearer "+data.session.access_token},body:formData});
+const result=await response.json();
+if(!response.ok||!result.success)throw new Error(result.message||"Image upload failed.");
+status.textContent="Image uploaded successfully.";
+input.value="";
+alert(result.message);
+}catch(error){status.textContent=error.message;alert(error.message)}
+finally{button.disabled=false;button.textContent="Upload Image"}
 }
-
-function renderServices(services) {
-  const container = document.getElementById("services");
-  container.innerHTML = "";
-
-  const filtered = services.filter(service =>
-    ALLOWED_SERVICES.includes(service.service_code)
-  );
-
-  if (!filtered.length) {
-    container.innerHTML = '<div class="empty">No service settings found.</div>';
-    return;
-  }
-
-  const order = [
-    "nin_standard",
-    "nin_lost",
-    "nin_premium",
-    "bvn_reprint",
-    "ipe_clearance",
-    "nin_validation_no_record",
-    "nin_validation_update_record",
-    "nin_personalisation_standard",
-    "nin_personalisation_premium",
-    "nin_modification_name",
-    "nin_modification_dob",
-    "nin_modification_phone",
-    "nin_modification_address"
-  ];
-
-  filtered.sort((a, b) =>
-    order.indexOf(a.service_code) - order.indexOf(b.service_code)
-  );
-
-  filtered.forEach(service => {
-    const div = document.createElement("div");
-    div.className = "service";
-
-    div.innerHTML = `
-      <div>
-        <div class="service-name">${escapeHTML(service.service_name)}</div>
-        <div class="small">${escapeHTML(service.service_code)}</div>
-      </div>
-      <input type="number"
-        id="price-${escapeAttribute(service.service_code)}"
-        value="${Number(service.price || 0)}" min="0" step="1">
-      <button class="save" data-action="save">Save</button>
-      <button class="toggle ${service.is_active ? "active" : "inactive"}" data-action="toggle">
-        ${service.is_active ? "Enabled" : "Disabled"}
-      </button>`;
-
-    div.querySelector('[data-action="save"]').addEventListener("click", () =>
-      updatePrice(service.service_code));
-
-    div.querySelector('[data-action="toggle"]').addEventListener("click", () =>
-      toggleService(service.service_code, !service.is_active));
-
-    container.appendChild(div);
-  });
-}
-
-async function updatePrice(serviceCode) {
-  const input = document.getElementById("price-" + escapeAttribute(serviceCode));
-
-  if (!input) {
-    alert("Price field not found.");
-    return;
-  }
-
-  const price = Number(input.value);
-
-  if (!Number.isFinite(price) || price < 0) {
-    alert("Enter a valid price.");
-    return;
-  }
-
-  try {
-    await callAdmin("update_service", { service_code: serviceCode, price });
-    showSuccess("Price updated successfully.");
-    await loadDashboard();
-  } catch (error) {
-    alert(error.message);
-  }
-}
-
-async function toggleService(serviceCode, active) {
-  try {
-    await callAdmin("toggle_service", {
-      service_code: serviceCode,
-      is_active: active
-    });
-
-    showSuccess(active ? "Service enabled." : "Service disabled.");
-    await loadDashboard();
-  } catch (error) {
-    alert(error.message);
-  }
-}
-
-function renderPaymentMethods(methods) {
-  const container = document.getElementById("paymentMethods");
-  container.innerHTML = "";
-
-  if (!methods.length) {
-    container.innerHTML = '<div class="empty">No payment methods found.</div>';
-    return;
-  }
-
-  methods.forEach(method => {
-    const row = document.createElement("div");
-    row.className = "payment-row";
-
-    row.innerHTML = `
-      <div>
-        <strong>${escapeHTML(method.method_name)}</strong>
-        <div class="small">${escapeHTML(method.method_code)}</div>
-      </div>
-      <button class="toggle ${method.is_active ? "active" : "inactive"}">
-        ${method.is_active ? "ON" : "OFF"}
-      </button>`;
-
-    row.querySelector("button").addEventListener("click", () =>
-      togglePayment(method.method_code, !method.is_active));
-
-    container.appendChild(row);
-  });
-}
-
-async function togglePayment(methodCode, active) {
-  try {
-    await callAdmin("toggle_payment_method", {
-      method_code: methodCode,
-      is_active: active
-    });
-
-    showSuccess(active ? "Payment method enabled." : "Payment method disabled.");
-    await loadDashboard();
-  } catch (error) {
-    alert(error.message);
-  }
-}
-
-async function createAnnouncement() {
-  const title = document.getElementById("announcementTitle").value.trim();
-  const message = document.getElementById("announcementMessage").value.trim();
-
-  if (!title || !message) {
-    alert("Enter both a title and message.");
-    return;
-  }
-
-  try {
-    await callAdmin("create_announcement", {
-      title,
-      message,
-      is_active: true
-    });
-
-    document.getElementById("announcementTitle").value = "";
-    document.getElementById("announcementMessage").value = "";
-    showSuccess("Announcement published successfully.");
-    await loadDashboard();
-  } catch (error) {
-    alert(error.message);
-  }
-}
-
-function renderAnnouncements(announcements) {
-  const container = document.getElementById("announcements");
-  container.innerHTML = "";
-
-  if (!announcements.length) {
-    container.innerHTML = '<div class="empty">No announcements yet.</div>';
-    return;
-  }
-
-  announcements.forEach(item => {
-    const div = document.createElement("div");
-    div.className = "announcement-box";
-
-    div.innerHTML = `
-      <h3>${escapeHTML(item.title)}</h3>
-      <p>${escapeHTML(item.message)}</p>
-      <p class="small">Status: <strong>${item.is_active ? "Active" : "Inactive"}</strong></p>
-      <button class="toggle ${item.is_active ? "active" : "inactive"}" data-action="toggle">
-        ${item.is_active ? "Deactivate" : "Activate"}
-      </button>
-      <button class="delete" data-action="delete">Delete</button>`;
-
-    div.querySelector('[data-action="toggle"]').addEventListener("click", () =>
-      toggleAnnouncement(item.id, !item.is_active));
-
-    div.querySelector('[data-action="delete"]').addEventListener("click", () =>
-      deleteAnnouncement(item.id));
-
-    container.appendChild(div);
-  });
-}
-
-async function toggleAnnouncement(id, active) {
-  try {
-    await callAdmin("toggle_announcement", {
-      announcement_id: id,
-      is_active: active
-    });
-
-    showSuccess(active ? "Announcement activated." : "Announcement deactivated.");
-    await loadDashboard();
-  } catch (error) {
-    alert(error.message);
-  }
-}
-
-async function deleteAnnouncement(id) {
-  if (!confirm("Delete this announcement?")) return;
-
-  try {
-    await callAdmin("delete_announcement", { announcement_id: id });
-    showSuccess("Announcement deleted.");
-    await loadDashboard();
-  } catch (error) {
-    alert(error.message);
-  }
-}
-
-function applyTransactionFilters() {
-  const table = document.getElementById("transactionsTable");
-  if (!table) return;
-
-  const search = String(document.getElementById("transactionSearch")?.value || "")
-    .trim().toLowerCase();
-
-  const typeFilter = document.getElementById("transactionType")?.value || "all";
-  const categoryFilter = document.getElementById("transactionCategory")?.value || "all";
-
-  const filtered = allWalletTransactions.filter(item => {
-    const email = findUserEmail(item.user_id).toLowerCase();
-    const description = String(item.description || "").toLowerCase();
-    const reference = String(item.reference || "").toLowerCase();
-    const type = String(item.type || "").toLowerCase();
-
-    const searchMatch = !search ||
-      email.includes(search) ||
-      description.includes(search) ||
-      reference.includes(search);
-
-    let typeMatch = true;
-
-    if (typeFilter !== "all") {
-      if (typeFilter === "deposit") {
-        typeMatch = type.includes("deposit") ||
-          type.includes("fund") ||
-          reference.includes("paymentpoint") ||
-          reference.includes("recopay") ||
-          reference.includes("reckopay");
-      } else {
-        typeMatch = type === typeFilter;
-      }
-    }
-
-    let categoryMatch = true;
-
-    if (categoryFilter === "nin") {
-      categoryMatch = reference.startsWith("nin-");
-    } else if (categoryFilter === "bvn") {
-      categoryMatch = reference.startsWith("bvn-");
-    } else if (categoryFilter === "admin") {
-      categoryMatch = reference.startsWith("admin-credit-") ||
-        reference.startsWith("admin-debit-");
-    } else if (categoryFilter === "funding") {
-      categoryMatch = type.includes("deposit") ||
-        type.includes("fund") ||
-        reference.includes("paymentpoint") ||
-        reference.includes("recopay") ||
-        reference.includes("reckopay");
-    }
-
-    return searchMatch && typeMatch && categoryMatch;
-  });
-
-  renderTransactions(filtered);
-}
-
-function clearTransactionFilters() {
-  document.getElementById("transactionSearch").value = "";
-  document.getElementById("transactionType").value = "all";
-  document.getElementById("transactionCategory").value = "all";
-  applyTransactionFilters();
-}
-
-function renderTransactions(transactions) {
-  const table = document.getElementById("transactionsTable");
-  table.innerHTML = "";
-
-  if (!transactions.length) {
-    table.innerHTML = '<tr><td colspan="6" class="empty">No wallet transactions found.</td></tr>';
-    return;
-  }
-
-  transactions.forEach(item => {
-    const row = document.createElement("tr");
-    const type = String(item.type || "").toLowerCase();
-    const reference = String(item.reference || "").toLowerCase();
-
-    const isCredit = type === "credit" ||
-      type === "deposit" ||
-      type === "fund" ||
-      reference.includes("paymentpoint") ||
-      reference.includes("recopay") ||
-      reference.includes("reckopay");
-
-    const typeClass = isCredit ? "credit" : "debit";
-    const sign = isCredit ? "+" : "-";
-
-    row.innerHTML = `
-      <td>${formatDate(item.created_at)}</td>
-      <td>${escapeHTML(findUserEmail(item.user_id))}</td>
-      <td><span class="${typeClass}">${escapeHTML(item.type || "")}</span></td>
-      <td><span class="${typeClass}">${sign}${money(item.amount)}</span></td>
-      <td>${escapeHTML(item.description || "")}</td>
-      <td>${escapeHTML(item.reference || "")}</td>`;
-
-    table.appendChild(row);
-  });
-}
-
-function renderNIN(transactions) {
-  const table = document.getElementById("ninTable");
-  table.innerHTML = "";
-
-  if (!transactions.length) {
-    table.innerHTML = '<tr><td colspan="4" class="empty">No NIN reprint transactions found.</td></tr>';
-    return;
-  }
-
-  transactions.forEach(item => {
-    const row = document.createElement("tr");
-    row.innerHTML = `
-      <td>${formatDate(item.created_at)}</td>
-      <td>${escapeHTML(findUserEmail(item.user_id))}</td>
-      <td>${money(item.amount)}</td>
-      <td>${escapeHTML(item.status || "Paid")}</td>`;
-    table.appendChild(row);
-  });
-}
-
-function renderBVN(transactions) {
-  const table = document.getElementById("bvnTable");
-  table.innerHTML = "";
-
-  if (!transactions.length) {
-    table.innerHTML = '<tr><td colspan="4" class="empty">No BVN reprint transactions found.</td></tr>';
-    return;
-  }
-
-  transactions.forEach(item => {
-    const row = document.createElement("tr");
-    row.innerHTML = `
-      <td>${formatDate(item.created_at)}</td>
-      <td>${escapeHTML(findUserEmail(item.user_id))}</td>
-      <td>${money(item.amount)}</td>
-      <td>${escapeHTML(item.status || "Paid")}</td>`;
-    table.appendChild(row);
-  });
-}
-
-function findUserEmail(userId) {
-  const user = allUsers.find(u => u.id === userId);
-  return user?.email || userId || "";
-}
-
-function formatDate(date) {
-  if (!date) return "";
-
-  const parsed = new Date(date);
-  if (Number.isNaN(parsed.getTime())) return String(date);
-
-  return parsed.toLocaleString("en-NG");
-}
-
-function escapeHTML(value) {
-  return String(value ?? "")
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
-}
-
-function escapeAttribute(value) {
-  return String(value ?? "").replace(/[^a-zA-Z0-9_-]/g, "_");
-}
-
-
-// =====================================================
-// NIN PERSONALISATION REQUESTS
-// =====================================================
-
-function renderPersonalisation(records) {
-  const table = document.getElementById("personalisationTable");
-  table.innerHTML = "";
-
-  if (!records.length) {
-    table.innerHTML =
-      '<tr><td colspan="6" class="empty">No NIN Personalisation requests found.</td></tr>';
-    return;
-  }
-
-  records.forEach(item => {
-    const row = document.createElement("tr");
-
-    row.innerHTML = `
-      <td>${formatDate(item.created_at)}</td>
-      <td>${escapeHTML(findUserEmail(item.user_id))}</td>
-      <td><strong>${escapeHTML(item.tracking_id || "")}</strong></td>
-      <td>${escapeHTML(item.slip_type || "")}</td>
-      <td>${escapeHTML(item.provider_id || "Pending")}</td>
-      <td>${escapeHTML(item.status || "Pending")}</td>
-    `;
-
-    table.appendChild(row);
-  });
-}
-
-
-// =====================================================
-// NIN MODIFICATION REQUESTS
-// =====================================================
-async function uploadModificationFile(requestId, file, button, statusEl) {
-  const allowedTypes = [
-    "application/pdf",
-    "image/jpeg",
-    "image/png",
-    "image/webp"
-  ];
-
-  if (!file || !allowedTypes.includes(file.type)) {
-    alert("Select a PDF, JPG, PNG or WEBP file.");
-    return;
-  }
-
-  if (file.size === 0 || file.size > 10 * 1024 * 1024) {
-    alert("The file must not exceed 10MB.");
-    return;
-  }
-
-  if (!confirm("Upload this completed NIN Modification file?")) return;
-
-  button.disabled = true;
-  button.textContent = "Uploading...";
-  statusEl.textContent = "Uploading file...";
-
-  try {
-    const { data, error } = await supabaseClient.auth.getSession();
-
-    if (error || !data.session) {
-      throw new Error("Please log in again.");
-    }
-
-    const formData = new FormData();
-    formData.append("action", "upload_completed_file");
-    formData.append("request_id", requestId);
-    formData.append("file", file);
-
-    const response = await fetch(
-      SUPABASE_URL + "/functions/v1/upload-nin-modification-file",
-      {
-        method: "POST",
-        headers: {
-          "Authorization": "Bearer " + data.session.access_token
-        },
-        body: formData
-      }
-    );
-
-    const result = await response.json();
-
-    if (!response.ok || !result.success) {
-      throw new Error(result.message || "Upload failed.");
-    }
-
-    statusEl.textContent = "Upload successful.";
-    showSuccess("Completed file uploaded successfully.");
-    await loadDashboard();
-
-  } catch (error) {
-    statusEl.textContent = error.message;
-    alert(error.message);
-
-  } finally {
-    button.disabled = false;
-    button.textContent = "Upload Completed File";
-  }
-}
-
-
-function renderModification(records) {
-  const table = document.getElementById("modificationTable");
-  table.innerHTML = "";
-
-  if (!records.length) {
-    table.innerHTML =
-      '<tr><td colspan="11" class="empty">No NIN Modification requests found.</td></tr>';
-    return;
-  }
-
-  records.forEach(item => {
-    const details = item.request_details || {};
-    const row = document.createElement("tr");
-
-    const paid = String(item.payment_status || "").toLowerCase() === "paid";
-
-    const passportLink = item.passport_photo_url
-      ? `<a href="${escapeHTML(item.passport_photo_url)}" target="_blank" rel="noopener">View Passport</a>`
-      : "Unavailable";
-
-    const supportingLink = item.supporting_document_url
-      ? `<a href="${escapeHTML(item.supporting_document_url)}" target="_blank" rel="noopener">View Document</a>`
-      : "Unavailable";
-
-    const uploadedFile = item.completed_file_name
-      ? `<strong>${escapeHTML(item.completed_file_name)}</strong>`
-      : "No completed file uploaded";
-
-    row.innerHTML = `
-      <td>${formatDate(item.created_at)}</td>
-      <td>${escapeHTML(findUserEmail(item.user_id))}</td>
-      <td><strong>${escapeHTML(item.payment_reference || item.id || "")}</strong></td>
-      <td>${escapeHTML(item.modification_type || "")}</td>
-      <td>${escapeHTML(details.nin || "")}</td>
-      <td>${money(item.amount)}</td>
-      <td>
-        <span class="status-badge ${paid ? "status-active" : "status-inactive"}">
-          ${escapeHTML(item.payment_status || "Unpaid")}
-        </span>
-      </td>
-      <td>${escapeHTML(item.request_status || "Pending")}</td>
-      <td class="document-links">${passportLink}<br>${supportingLink}</td>
-      <td>
-        ${uploadedFile}
-        <br>
-        <input type="file" class="completed-file-input"
-          accept=".pdf,.jpg,.jpeg,.png,.webp"
-          ${paid ? "" : "disabled"}>
-        <br>
-        <button class="action-btn fund-btn upload-completed-btn"
-          ${paid ? "" : "disabled"}>
-          Upload Completed File
-        </button>
-        <div class="upload-status"></div>
-      </td>
-      <td>
-        <button class="action-btn fund-btn" data-action="update"
-          ${paid ? "" : "disabled"}>Update</button>
-        <button class="action-btn remove-btn" data-action="refund"
-          ${paid ? "" : "disabled"}>Refund</button>
-      </td>
-    `;
-
-    row.querySelector('[data-action="update"]').addEventListener("click", () => {
-      updateModificationRequest(item);
-    });
-
-    row.querySelector('[data-action="refund"]').addEventListener("click", () => {
-      refundModificationRequest(item);
-    });
-
-    const fileInput = row.querySelector(".completed-file-input");
-    const uploadButton = row.querySelector(".upload-completed-btn");
-    const uploadStatus = row.querySelector(".upload-status");
-
-    uploadButton.addEventListener("click", () => {
-      const file = fileInput.files[0];
-
-      if (!file) {
-        alert("Please select the completed file first.");
-        return;
-      }
-
-      uploadModificationFile(
-        item.id,
-        file,
-        uploadButton,
-        uploadStatus
-      );
-    });
-
-    table.appendChild(row);
-  });
-  }
-
-
-// =====================================================
-// UPDATE NIN MODIFICATION STATUS
-// =====================================================
-
-async function updateModificationRequest(item) {
-  if (String(item.payment_status || "").toLowerCase() !== "paid") {
-    alert("This request cannot be processed because payment is not confirmed.");
-    return;
-  }
-
-  const currentStatus = String(item.request_status || "pending").toLowerCase();
-
-  const status = prompt(
-    "Choose the new request status:\n\n" +
-    "PENDING\nPROCESSING\nCOMPLETED\nREJECTED\n\n" +
-    "Current status: " + currentStatus
-  );
-
-  if (status === null) return;
-
-  const newStatus = status.trim().toLowerCase();
-
-  const allowed = [
-    "pending",
-    "processing",
-    "completed",
-    "rejected"
-  ];
-
-  if (!allowed.includes(newStatus)) {
-    alert("Invalid status. Use pending, processing, completed or rejected.");
-    return;
-  }
-
-  const adminNote = prompt("Enter an admin note (optional):");
-  if (adminNote === null) return;
-
-  if (!confirm(
-    "Update this NIN Modification request to " +
-    newStatus.toUpperCase() + "?"
-  )) return;
-
-  try {
-    await callAdmin("update_nin_modification", {
-      request_id: item.id,
-      request_status: newStatus,
-      admin_note: adminNote.trim()
-    });
-
-    showSuccess("NIN Modification status updated.");
-    await loadDashboard();
-
-  } catch (error) {
-    alert(error.message);
-  }
-}
-
-
-// =====================================================
-// REFUND NIN MODIFICATION
-// =====================================================
-
-async function refundModificationRequest(item) {
-  if (String(item.payment_status || "").toLowerCase() !== "paid") {
-    alert("This request has no confirmed payment to refund.");
-    return;
-  }
-
-  if (!item.payment_reference) {
-    alert("This request has no payment reference.");
-    return;
-  }
-
-  const reason = prompt(
-    "Enter the reason for refunding this NIN Modification request:"
-  );
-
-  if (reason === null) return;
-
-  if (!reason.trim()) {
-    alert("A refund reason is required.");
-    return;
-  }
-
-  const confirmed = confirm(
-    "You are about to refund this NIN Modification request.\n\n" +
-    "Reference: " + item.payment_reference + "\n" +
-    "Amount: " + money(item.amount) + "\n\nContinue?"
-  );
-
-  if (!confirmed) return;
-
-  try {
-    await callAdmin("refund_nin_modification", {
-      payment_reference: item.payment_reference,
-      reason: reason.trim()
-    });
-
-    showSuccess("NIN Modification refund processed.");
-    await loadDashboard();
-
-  } catch (error) {
-    alert(error.message);
-  }
-}
-
-
-// =====================================================
-// IPE CLEARANCE REQUESTS
-// =====================================================
-
-function renderIPE(records) {
-  const table = document.getElementById("ipeTable");
-  table.innerHTML = "";
-
-  if (!records.length) {
-    table.innerHTML =
-      '<tr><td colspan="8" class="empty">No IPE Clearance requests found.</td></tr>';
-    return;
-  }
-
-  records.forEach(item => {
-    const row = document.createElement("tr");
-
-    row.innerHTML = `
-      <td>${formatDate(item.created_at)}</td>
-      <td>${escapeHTML(findUserEmail(item.user_id))}</td>
-      <td><strong>${escapeHTML(item.tracking_id || "")}</strong></td>
-      <td>${escapeHTML(item.reference || "")}</td>
-      <td>${money(item.amount)}</td>
-      <td>${money(item.provider_amount)}</td>
-      <td>${escapeHTML(item.clearance_status || "Pending")}</td>
-      <td>${escapeHTML(item.status || "Pending")}</td>
-    `;
-
-    table.appendChild(row);
-  });
-}
-
-
-// =====================================================
-// LOGOUT
-// =====================================================
-
-async function logout() {
-  await supabaseClient.auth.signOut();
-  window.location.href = "login.html";
-}
-
-
-// =====================================================
-// DAILY EMAIL MANAGER
-// =====================================================
-
-(function () {
-  const walletSection = [...document.querySelectorAll(".section")]
-    .find(section =>
-      section.querySelector("h2")?.textContent.trim() === "Wallet Transactions"
-    );
-
-  if (!walletSection) return;
-
-  const section = document.createElement("div");
-  section.className = "section";
-
-  section.innerHTML = `
-    <h2>Daily Email Manager</h2>
-    <p class="small">
-      Edit your daily greeting, marketing message and image.
-      Promotional email sending is currently OFF.
-    </p>
-
-    <p id="dailyEmailStatus"><strong>Status: OFF</strong></p>
-
-    <label>Email Subject</label>
-    <input id="dailyEmailSubject" type="text"
-      placeholder="Enter email subject">
-
-    <br><br>
-
-    <label>Daily Email Message</label>
-    <textarea id="dailyEmailMessage"
-      placeholder="Write your daily greeting and announcement"></textarea>
-
-    <br><br>
-
-    <label>Daily Marketing Image</label>
-    <input id="dailyEmailImage" type="file"
-      accept="image/jpeg,image/png,image/webp,image/gif">
-
-    <br><br>
-
-    <button class="save" id="uploadDailyEmailButton">
-      Upload Image
-    </button>
-
-    <p id="dailyEmailImageStatus" class="small"></p>
-
-    <button class="save" id="saveDailyEmailButton">
-      Save Daily Email
-    </button>
-
-    <p class="small">
-      Saving content does not activate or send promotional emails.
-    </p>
-  `;
-
-  walletSection.parentNode.insertBefore(section, walletSection);
-
-  const DAILY_EMAIL_URL =
-    SUPABASE_URL + "/functions/v1/daily-email-admin";
-
-  async function dailyEmailRequest(action, extra = {}) {
-    const { data, error } = await supabaseClient.auth.getSession();
-
-    if (error || !data.session) {
-      throw new Error("Your login session has expired. Please log in again.");
-    }
-
-    const response = await fetch(DAILY_EMAIL_URL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": "Bearer " + data.session.access_token
-      },
-      body: JSON.stringify({ action, ...extra })
-    });
-
-    const result = await response.json();
-
-    if (!response.ok || !result.success) {
-      throw new Error(result.message || "Daily email request failed.");
-    }
-
-    return result;
-  }
-
-  async function loadDailyEmailSettings() {
-    try {
-      const result = await dailyEmailRequest("get_settings");
-      const settings = result.settings || {};
-
-      document.getElementById("dailyEmailSubject").value =
-        settings.subject || "";
-
-      document.getElementById("dailyEmailMessage").value =
-        settings.message || "";
-
-      document.getElementById("dailyEmailStatus").textContent =
-        "Status: " + (settings.is_enabled ? "ON" : "OFF") +
-        " — promotional sending remains protected.";
-
-      if (settings.image_url) {
-        document.getElementById("dailyEmailImageStatus").textContent =
-          "Current image is uploaded.";
-      }
-    } catch (error) {
-      document.getElementById("dailyEmailStatus").textContent =
-        "Unable to load email settings: " + error.message;
-    }
-  }
-
-  async function saveDailyEmailSettings() {
-    const subject =
-      document.getElementById("dailyEmailSubject").value.trim();
-
-    const message =
-      document.getElementById("dailyEmailMessage").value.trim();
-
-    if (!subject || !message) {
-      alert("Enter both the email subject and message.");
-      return;
-    }
-
-    const button = document.getElementById("saveDailyEmailButton");
-    button.disabled = true;
-    button.textContent = "Saving...";
-
-    try {
-      const result = await dailyEmailRequest("save_settings", {
-        subject,
-        message
-      });
-
-      alert(result.message);
-      await loadDailyEmailSettings();
-
-    } catch (error) {
-      alert(error.message);
-
-    } finally {
-      button.disabled = false;
-      button.textContent = "Save Daily Email";
-    }
-  }
-
-  async function uploadDailyEmailImage() {
-    const input = document.getElementById("dailyEmailImage");
-    const file = input.files[0];
-
-    if (!file) {
-      alert("Please select an image first.");
-      return;
-    }
-
-    if (file.size > 5 * 1024 * 1024) {
-      alert("Image must not exceed 5MB.");
-      return;
-    }
-
-    const button = document.getElementById("uploadDailyEmailButton");
-    const status = document.getElementById("dailyEmailImageStatus");
-
-    button.disabled = true;
-    button.textContent = "Uploading...";
-    status.textContent = "Please wait...";
-
-    try {
-      const { data, error } = await supabaseClient.auth.getSession();
-
-      if (error || !data.session) {
-        throw new Error("Please log in again.");
-      }
-
-      const formData = new FormData();
-      formData.append("file", file);
-
-      const response = await fetch(DAILY_EMAIL_URL, {
-        method: "POST",
-        headers: {
-          "Authorization": "Bearer " + data.session.access_token
-        },
-        body: formData
-      });
-
-      const result = await response.json();
-
-      if (!response.ok || !result.success) {
-        throw new Error(result.message || "Image upload failed.");
-      }
-
-      status.textContent = "Image uploaded successfully.";
-      input.value = "";
-      alert(result.message);
-
-    } catch (error) {
-      status.textContent = error.message;
-      alert(error.message);
-
-    } finally {
-      button.disabled = false;
-      button.textContent = "Upload Image";
-    }
-  }
-
-  document.getElementById("saveDailyEmailButton")
-    .addEventListener("click", saveDailyEmailSettings);
-
-  document.getElementById("uploadDailyEmailButton")
-    .addEventListener("click", uploadDailyEmailImage);
-
-  loadDailyEmailSettings();
+document.getElementById("saveDailyEmailButton").addEventListener("click",saveDailyEmailSettings);
+document.getElementById("uploadDailyEmailButton").addEventListener("click",uploadDailyEmailImage);
+loadDailyEmailSettings();
 })();
 
 loadDashboard();
-
 </script>
 </body>
 </html>
